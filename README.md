@@ -46,8 +46,8 @@ Telemetry Server      Telemetry Server     Telemetry Server
  LibreHardwareMonitor
 
 ⸻
-
-🚀 Technology Stack
+```
+Technology Stack
 
 Frontend
 
