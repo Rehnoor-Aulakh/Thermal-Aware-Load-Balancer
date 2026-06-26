@@ -21,8 +21,9 @@ The project collects live system telemetry from multiple backend servers, relays
 
 ⸻
 
-🏗️ Architecture
+## 🏗️ Architecture
 
+```text
                          React Frontend
                     (Dashboard - Port 5173)
                               │
@@ -45,8 +46,8 @@ Telemetry Server      Telemetry Server     Telemetry Server
  LibreHardwareMonitor
 
 ⸻
-
-🚀 Technology Stack
+```
+Technology Stack
 
 Frontend
 
@@ -75,6 +76,7 @@ Networking
 📂 Project Structure
 
 ThermalAwareLoadBalancer/
+
 ├── Load Balancer Frontend/
 │   ├── React
 │   ├── Tailwind
