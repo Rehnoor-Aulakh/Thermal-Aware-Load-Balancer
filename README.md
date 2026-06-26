@@ -76,6 +76,7 @@ Networking
 📂 Project Structure
 
 ThermalAwareLoadBalancer/
+
 ├── Load Balancer Frontend/
 │   ├── React
 │   ├── Tailwind
