@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -32,12 +33,16 @@ public final class StressTestRunner {
             List.of(0, 0, 10, 10, 20, 30, 40, 50, 60, 70, 80, 90,
                     100, 100, 100, 90, 80, 70, 60, 50, 40, 30, 20,
                     10, 0, 0);
+    private static final int CHAOS_STEPS_PER_MIXED_CYCLE = 16;
+    private static final int SQUARE_STEPS_PER_MIXED_CYCLE = 10;
 
     private StressTestRunner() {
     }
 
     public static void main(String[] args) throws Exception {
         Config config = Config.parse(args);
+        Random random = new Random(config.seed());
+        LoadSequence loads = new LoadSequence(config, random);
         AtomicBoolean stopRequested = new AtomicBoolean();
         Runtime.getRuntime().addShutdownHook(new Thread(
                 () -> {
@@ -59,20 +64,27 @@ public final class StressTestRunner {
         writeStressLevel(0);
         System.out.printf(
                 Locale.ROOT,
-                "Stress dataset run started: duration=%s, step=%s, processors=%d, profile=%s%n",
+                "Stress dataset run started: duration=%s, mode=%s, "
+                        + "stepRange=%s-%s, seed=%d, processors=%d%n",
                 formatDuration(config.duration()),
-                formatDuration(config.stepDuration()),
-                PROCESSORS,
-                config.profile()
+                config.mode().name().toLowerCase(Locale.ROOT),
+                formatDuration(config.minimumStepDuration()),
+                formatDuration(config.maximumStepDuration()),
+                config.seed(),
+                PROCESSORS
         );
 
         try {
             while (!stopRequested.get() && Instant.now().isBefore(finishAt)) {
-                int load = config.profile().get(
-                        stepNumber % config.profile().size());
+                int load = loads.next(stepNumber);
                 Duration remaining = Duration.between(Instant.now(), finishAt);
-                Duration step = remaining.compareTo(config.stepDuration()) < 0
-                        ? remaining : config.stepDuration();
+                Duration selectedStep = randomDuration(
+                        random,
+                        config.minimumStepDuration(),
+                        config.maximumStepDuration()
+                );
+                Duration step = remaining.compareTo(selectedStep) < 0
+                        ? remaining : selectedStep;
 
                 if (step.isNegative() || step.isZero()) {
                     break;
@@ -228,27 +240,141 @@ public final class StressTestRunner {
         );
     }
 
+    private static Duration randomDuration(
+            Random random,
+            Duration minimum,
+            Duration maximum
+    ) {
+        long minimumSeconds = minimum.toSeconds();
+        long maximumSeconds = maximum.toSeconds();
+        return Duration.ofSeconds(
+                random.nextLong(minimumSeconds, maximumSeconds + 1));
+    }
+
+    private enum WorkloadMode {
+        RAMP,
+        CHAOS,
+        SQUARE,
+        MIXED,
+        CUSTOM;
+
+        private static WorkloadMode parse(String value) {
+            try {
+                WorkloadMode mode =
+                        valueOf(value.toUpperCase(Locale.ROOT));
+                if (mode == CUSTOM) {
+                    throw new IllegalArgumentException(
+                            "Use --profile to define a custom workload.");
+                }
+                return mode;
+            } catch (IllegalArgumentException invalid) {
+                throw new IllegalArgumentException(
+                        "Mode must be ramp, chaos, square, or mixed: " + value);
+            }
+        }
+    }
+
+    private static final class LoadSequence {
+        private final Config config;
+        private final Random random;
+        private int previousChaosLoad = -1;
+
+        private LoadSequence(Config config, Random random) {
+            this.config = config;
+            this.random = random;
+        }
+
+        private int next(int stepNumber) {
+            return switch (config.mode()) {
+                case RAMP -> rampLoad(stepNumber);
+                case CHAOS -> chaosLoad();
+                case SQUARE -> squareLoad(stepNumber);
+                case CUSTOM -> config.profile().get(
+                        stepNumber % config.profile().size());
+                case MIXED -> mixedLoad(stepNumber);
+            };
+        }
+
+        private int mixedLoad(int stepNumber) {
+            int cycleLength = DEFAULT_PROFILE.size()
+                    + CHAOS_STEPS_PER_MIXED_CYCLE
+                    + SQUARE_STEPS_PER_MIXED_CYCLE;
+            int position = stepNumber % cycleLength;
+            if (position < DEFAULT_PROFILE.size()) {
+                return rampLoad(position);
+            }
+            if (position < DEFAULT_PROFILE.size()
+                    + CHAOS_STEPS_PER_MIXED_CYCLE) {
+                return chaosLoad();
+            }
+            return squareLoad(position);
+        }
+
+        private int rampLoad(int stepNumber) {
+            return DEFAULT_PROFILE.get(stepNumber % DEFAULT_PROFILE.size());
+        }
+
+        private int squareLoad(int stepNumber) {
+            return stepNumber % 2 == 0 ? 0 : 100;
+        }
+
+        private int chaosLoad() {
+            int load;
+            do {
+                load = random.nextInt(11) * 10;
+            } while (load == previousChaosLoad);
+            previousChaosLoad = load;
+            return load;
+        }
+    }
+
     private record Config(
             Duration duration,
-            Duration stepDuration,
-            List<Integer> profile
+            Duration minimumStepDuration,
+            Duration maximumStepDuration,
+            WorkloadMode mode,
+            List<Integer> profile,
+            long seed
     ) {
         private static Config parse(String[] args) {
             Duration duration = Duration.ofHours(6);
-            Duration stepDuration = Duration.ofSeconds(30);
-            List<Integer> profile = DEFAULT_PROFILE;
+            Duration minimumStepDuration = Duration.ofSeconds(5);
+            Duration maximumStepDuration = Duration.ofMinutes(5);
+            WorkloadMode mode = WorkloadMode.MIXED;
+            List<Integer> profile = List.of();
+            long seed = System.nanoTime();
+            boolean modeSpecified = false;
+            boolean profileSpecified = false;
 
             for (int i = 0; i < args.length; i++) {
                 switch (args[i]) {
                     case "--duration-minutes" ->
                             duration = Duration.ofMinutes(
                                     parsePositiveLong(args, ++i, args[i - 1]));
-                    case "--step-seconds" ->
-                            stepDuration = Duration.ofSeconds(
+                    case "--step-seconds" -> {
+                        Duration fixed = Duration.ofSeconds(
+                                parsePositiveLong(args, ++i, args[i - 1]));
+                        minimumStepDuration = fixed;
+                        maximumStepDuration = fixed;
+                    }
+                    case "--min-step-seconds" ->
+                            minimumStepDuration = Duration.ofSeconds(
                                     parsePositiveLong(args, ++i, args[i - 1]));
-                    case "--profile" ->
-                            profile = parseProfile(
-                                    requireValue(args, ++i, args[i - 1]));
+                    case "--max-step-seconds" ->
+                            maximumStepDuration = Duration.ofSeconds(
+                                    parsePositiveLong(args, ++i, args[i - 1]));
+                    case "--mode" -> {
+                        mode = WorkloadMode.parse(
+                                requireValue(args, ++i, args[i - 1]));
+                        modeSpecified = true;
+                    }
+                    case "--profile" -> {
+                        profile = parseProfile(
+                                requireValue(args, ++i, args[i - 1]));
+                        profileSpecified = true;
+                    }
+                    case "--seed" ->
+                            seed = parseLong(args, ++i, args[i - 1]);
                     case "--help", "-h" -> {
                         printUsage();
                         System.exit(0);
@@ -258,7 +384,26 @@ public final class StressTestRunner {
                 }
             }
 
-            return new Config(duration, stepDuration, List.copyOf(profile));
+            if (modeSpecified && profileSpecified) {
+                throw new IllegalArgumentException(
+                        "Use either --mode or --profile, not both.");
+            }
+            if (profileSpecified) {
+                mode = WorkloadMode.CUSTOM;
+            }
+            if (minimumStepDuration.compareTo(maximumStepDuration) > 0) {
+                throw new IllegalArgumentException(
+                        "--min-step-seconds cannot exceed --max-step-seconds.");
+            }
+
+            return new Config(
+                    duration,
+                    minimumStepDuration,
+                    maximumStepDuration,
+                    mode,
+                    List.copyOf(profile),
+                    seed
+            );
         }
 
         private static long parsePositiveLong(
@@ -274,6 +419,20 @@ public final class StressTestRunner {
                             option + " must be greater than zero.");
                 }
                 return parsed;
+            } catch (NumberFormatException invalid) {
+                throw new IllegalArgumentException(
+                        option + " must be a whole number: " + value);
+            }
+        }
+
+        private static long parseLong(
+                String[] args,
+                int index,
+                String option
+        ) {
+            String value = requireValue(args, index, option);
+            try {
+                return Long.parseLong(value);
             } catch (NumberFormatException invalid) {
                 throw new IllegalArgumentException(
                         option + " must be a whole number: " + value);
@@ -319,12 +478,16 @@ public final class StressTestRunner {
             System.out.println("""
                     Usage: StressTestRunner [options]
                       --duration-minutes N  Total run time (default: 360)
-                      --step-seconds N      Time at each level (default: 30)
-                      --profile A,B,C       Repeating 0-100 levels in steps of 10
+                      --mode MODE           ramp, chaos, square, or mixed (default: mixed)
+                      --min-step-seconds N  Minimum random step duration (default: 5)
+                      --max-step-seconds N  Maximum random step duration (default: 300)
+                      --step-seconds N      Use one fixed duration instead
+                      --profile A,B,C       Use a custom repeating profile
+                      --seed N              Reproduce the same random run
 
                     Example:
-                      --duration-minutes 480 --step-seconds 60 \
-                    --profile 0,0,10,20,30,40,50,60,70,80,90,100,100,90,80,70,60,50,40,30,20,10,0
+                      --duration-minutes 480 --mode mixed \
+                    --min-step-seconds 2 --max-step-seconds 300 --seed 42
                     """);
         }
     }
