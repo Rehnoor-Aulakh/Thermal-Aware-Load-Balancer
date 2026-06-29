@@ -12,9 +12,15 @@ public class SystemLog {
 
     public double gpuMemoryLoad;
 
+    public double gpuUsage;
+
     public double ramUsage;
 
     public int networkConnections;
 
     public int processCount;
+
+    public double cpuPackagePower;
+
+    public double cpuAverageClock;
 }

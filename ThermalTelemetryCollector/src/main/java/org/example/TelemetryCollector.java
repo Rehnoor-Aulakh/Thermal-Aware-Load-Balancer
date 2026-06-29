@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 public class TelemetryCollector {
 
     private static final URI LIBRE_HARDWARE_MONITOR_URL =
-            URI.create("http://192.168.1.56:8085/data.json");
+            URI.create("http://192.168.29.204:8085/data.json");
 
     private static final Pattern NUMBER_PATTERN =
             Pattern.compile("-?\\d+(?:\\.\\d+)?");
@@ -103,6 +103,9 @@ public class TelemetryCollector {
 
         log.gpuTemperature = -1;
         log.gpuMemoryLoad = -1;
+        log.gpuUsage=-1;
+        log.cpuPackagePower = -1;
+        log.cpuAverageClock = -1;
     }
 
     private void readLibreHardwareMonitor(SystemLog log) {
@@ -202,6 +205,14 @@ public class TelemetryCollector {
                         round2(value);
             }
 
+            if (sensorId.equals("/amdcpu/0/power/0")) {
+                log.cpuPackagePower = round2(value);
+            }
+
+            if (sensorId.equals("/amdcpu/0/clock/1")) {
+                log.cpuAverageClock = round2(value);
+            }
+
             if(sensorId.equals("/gpu-nvidia/0/temperature/2")
                     || (text.equals("GPU Hot Spot")
                     && type.equals("Temperature"))) {
@@ -216,6 +227,15 @@ public class TelemetryCollector {
                     && type.equals("Load"))) {
 
                 log.gpuMemoryLoad =
+                        round2(value);
+            }
+
+            if ((sensorId.equals("/gpu-nvidia/0/load/0")
+                    && text.equals("GPU Core"))
+                    || (text.equals("GPU Core")
+                    && type.equals("Load"))) {
+
+                log.gpuUsage =
                         round2(value);
             }
 
