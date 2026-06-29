@@ -1,10 +1,11 @@
+//amd-feature
 package org.example;
 
 import java.net.InetSocketAddress;
 
 public class Main {
 
-    private static final int TELEMETRY_INTERVAL_MS = 1000;
+    private static final int TELEMETRY_INTERVAL_MS = 2000;
     private static final int TELEMETRY_WEBSOCKET_PORT = 8086;
 
     public static void main(String[] args)

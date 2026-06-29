@@ -18,6 +18,7 @@ public class TelemetryWebSocketServer extends WebSocketServer {
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
+
         String snapshot =
                 lastTelemetry.get();
 
