@@ -30,6 +30,10 @@ export default function TelemetryTable({ logs }) {
               <th className="p-3 text-left">Net</th>
 
               <th className="p-3 text-left">Processes</th>
+
+              <th className="p-3 text-left">CPU Power</th>
+
+              <th className="p-3 text-left">CPU Clock</th>
             </tr>
           </thead>
 
@@ -58,6 +62,10 @@ export default function TelemetryTable({ logs }) {
                 <td className="p-3">{log.networkConnections}</td>
 
                 <td className="p-3">{log.processCount}</td>
+
+                <td className="p-3">{log.cpuPackagePower}</td>
+
+                <td className="p-3"> {log.cpuAverageClock}</td>
               </tr>
             ))}
           </tbody>
