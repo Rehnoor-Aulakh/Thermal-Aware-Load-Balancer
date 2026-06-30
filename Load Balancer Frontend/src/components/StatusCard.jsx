@@ -47,6 +47,10 @@ export default function StatusCard({ latest }) {
       <Stat label="Network Connections" value={latest.networkConnections} />
 
       <Stat label="Process Count" value={latest.processCount} />
+
+      <Stat label="CPU Power" value={latest.cpuPackagePower} />
+
+      <Stat label="CPU Average Clock" value={latest.cpuAverageClock} />
     </div>
   );
 }

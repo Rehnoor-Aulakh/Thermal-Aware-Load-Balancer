@@ -8,12 +8,10 @@ import java.net.http.WebSocket;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -32,8 +30,7 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
 
     private final ObjectMapper objectMapper;
     private final HttpClient httpClient;
-    private final AtomicReference<WebSocketSession> activeSession = new AtomicReference<>();
-    private final AtomicReference<WebSocket> upstreamConnection = new AtomicReference<>();
+    private final Map<String, WebSocket> upstreamConnections = new ConcurrentHashMap<>();
 
     public LoadBalancerWebSocketHandler(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
@@ -42,11 +39,6 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        WebSocketSession existing = activeSession.getAndSet(session);
-        if (existing != null && existing.isOpen() && !existing.getId().equals(session.getId())) {
-            closeQuietly(existing);
-        }
-
         String backendIp = getQueryParameter(session.getUri(), "backendIp");
         if (backendIp == null || backendIp.isBlank()) {
             sendJson(session, Map.of(
@@ -70,16 +62,12 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        if (activeSession.compareAndSet(session, null)) {
-            closeBackendConnection();
-        }
+        closeBackendConnection(session.getId());
     }
 
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) {
-        if (activeSession.compareAndSet(session, null)) {
-            closeBackendConnection();
-        }
+        closeBackendConnection(session.getId());
         closeQuietly(session);
     }
 
@@ -101,7 +89,7 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
     }
 
     private void connectUpstream(WebSocketSession frontendSession, String backendIp, int backendPort) {
-        closeBackendConnection();
+        closeBackendConnection(frontendSession.getId());
 
         String backendUriText = "ws://" + backendIp + ":" + backendPort + "/telemetry";
         URI backendUri = URI.create(backendUriText);
@@ -119,7 +107,7 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
                     public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
                         messageBuffer.append(data);
                         if (last) {
-                            forwardBackendMessage(messageBuffer.toString());
+                            forwardBackendMessage(frontendSession, messageBuffer.toString());
                             messageBuffer.setLength(0);
                         }
                         webSocket.request(1);
@@ -128,6 +116,7 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
 
                     @Override
                     public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
+                        upstreamConnections.remove(frontendSession.getId(), webSocket);
                         sendJson(frontendSession, Map.of(
                                 "type", "backendDisconnected",
                                 "timestamp", Instant.now().toString(),
@@ -138,6 +127,7 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
 
                     @Override
                     public void onError(WebSocket webSocket, Throwable error) {
+                        upstreamConnections.remove(frontendSession.getId(), webSocket);
                         sendJson(frontendSession, Map.of(
                                 "type", "error",
                                 "timestamp", Instant.now().toString(),
@@ -156,7 +146,15 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
                 return;
             }
 
-            upstreamConnection.set(webSocket);
+            if (!frontendSession.isOpen()) {
+                closeBackendConnection(webSocket);
+                return;
+            }
+
+            WebSocket previous = upstreamConnections.put(frontendSession.getId(), webSocket);
+            if (previous != null && previous != webSocket) {
+                closeBackendConnection(previous);
+            }
             sendJson(frontendSession, Map.of(
                     "type", "backendConnected",
                     "timestamp", Instant.now().toString(),
@@ -166,9 +164,8 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
         });
     }
 
-    private void forwardBackendMessage(String message) {
-        WebSocketSession session = activeSession.get();
-        if (session == null || !session.isOpen()) {
+    private void forwardBackendMessage(WebSocketSession session, String message) {
+        if (!session.isOpen()) {
             return;
         }
 
@@ -184,8 +181,12 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    private void closeBackendConnection() {
-        WebSocket upstream = upstreamConnection.getAndSet(null);
+    private void closeBackendConnection(String sessionId) {
+        WebSocket upstream = upstreamConnections.remove(sessionId);
+        closeBackendConnection(upstream);
+    }
+
+    private void closeBackendConnection(WebSocket upstream) {
         if (upstream != null) {
             try {
                 upstream.sendClose(WebSocket.NORMAL_CLOSURE, "frontend disconnected");
@@ -194,6 +195,12 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
                 upstream.abort();
             }
         }
+    }
+
+    @PreDestroy
+    public void closeAllBackendConnections() {
+        upstreamConnections.values().forEach(this::closeBackendConnection);
+        upstreamConnections.clear();
     }
 
     private String getQueryParameter(URI uri, String key) {
