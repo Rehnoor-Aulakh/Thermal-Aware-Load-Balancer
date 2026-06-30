@@ -37,6 +37,12 @@ export default function TabsBar({
         return (
           <div
             key={tab.id}
+            onMouseDown={(e) => {
+              if (e.button == 1) {
+                e.preventDefault();
+                onCloseTab(tab.id);
+              }
+            }}
             className={`
               group
               flex
