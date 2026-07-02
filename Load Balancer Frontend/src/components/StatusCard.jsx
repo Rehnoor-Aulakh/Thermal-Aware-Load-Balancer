@@ -25,32 +25,50 @@ function Stat({ label, value }) {
   );
 }
 
-export default function StatusCard({ latest }) {
+export default function StatusCard({ latest, statusMessage }) {
   if (!latest) {
-    return <p className="text-slate-400">No telemetry received yet.</p>;
+    return (
+      <div className="space-y-3">
+        {statusMessage ? (
+          <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200">
+            {statusMessage}
+          </div>
+        ) : (
+          <p className="text-slate-400">No telemetry received yet.</p>
+        )}
+      </div>
+    );
   }
 
   return (
-    <div className="grid md:grid-cols-2 gap-3">
-      <Stat label="Timestamp" value={latest.timestamp} />
+    <div className="space-y-4">
+      {statusMessage ? (
+        <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200">
+          {statusMessage}
+        </div>
+      ) : null}
 
-      <Stat label="CPU Usage" value={`${latest.cpuUsage}%`} />
+      <div className="grid md:grid-cols-2 gap-3">
+        <Stat label="Timestamp" value={latest.timestamp} />
 
-      <Stat label="CPU Temperature" value={`${latest.cpuTemperature}°C`} />
+        <Stat label="CPU Usage" value={`${latest.cpuUsage}%`} />
 
-      <Stat label="GPU Temperature" value={`${latest.gpuTemperature}°C`} />
+        <Stat label="CPU Temperature" value={`${latest.cpuTemperature}°C`} />
 
-      <Stat label="GPU Memory Load" value={`${latest.gpuMemoryLoad}%`} />
+        <Stat label="GPU Temperature" value={`${latest.gpuTemperature}°C`} />
 
-      <Stat label="RAM Usage" value={`${latest.ramUsage}%`} />
+        <Stat label="GPU Memory Load" value={`${latest.gpuMemoryLoad}%`} />
 
-      <Stat label="Network Connections" value={latest.networkConnections} />
+        <Stat label="RAM Usage" value={`${latest.ramUsage}%`} />
 
-      <Stat label="Process Count" value={latest.processCount} />
+        <Stat label="Network Connections" value={latest.networkConnections} />
 
-      <Stat label="CPU Power" value={latest.cpuPackagePower} />
+        <Stat label="Process Count" value={latest.processCount} />
 
-      <Stat label="CPU Average Clock" value={latest.cpuAverageClock} />
+        <Stat label="CPU Power" value={latest.cpuPackagePower} />
+
+        <Stat label="CPU Average Clock" value={latest.cpuAverageClock} />
+      </div>
     </div>
   );
 }

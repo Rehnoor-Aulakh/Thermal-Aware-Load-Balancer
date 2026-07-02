@@ -60,7 +60,10 @@ export default function App() {
           >
             <h2 className="text-2xl font-bold mb-4">Live Telemetry</h2>
 
-            <StatusCard latest={activeTab.logs[0]} />
+            <StatusCard
+              latest={activeTab.logs[0]}
+              statusMessage={activeTab.statusMessage}
+            />
           </div>
 
           <EventsTable events={activeTab.events} />

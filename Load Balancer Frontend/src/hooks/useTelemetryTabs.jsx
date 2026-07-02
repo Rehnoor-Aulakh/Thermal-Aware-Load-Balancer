@@ -20,6 +20,7 @@ function createTab(name = "Server 1") {
     connecting: false,
     logs: [],
     events: [],
+    statusMessage: "",
   };
 }
 
@@ -98,6 +99,7 @@ export default function useTelemetryTabs() {
         backendHost: host,
         connecting: true,
         connected: false,
+        statusMessage: "",
       }));
 
       socket.onopen = () => {
@@ -115,7 +117,20 @@ export default function useTelemetryTabs() {
           const payload = JSON.parse(event.data);
 
           if (payload.type) {
-            addEvent(tabId, payload.type, payload.message || JSON.stringify(payload));
+            const message = payload.message || JSON.stringify(payload);
+            addEvent(tabId, payload.type, message);
+
+            if (payload.type === "error" || payload.type === "warning") {
+              updateTab(tabId, () => ({ statusMessage: message }));
+            }
+
+            if (
+              payload.type === "backendConnected" ||
+              payload.type === "connectionEstablished"
+            ) {
+              updateTab(tabId, () => ({ statusMessage: "" }));
+            }
+
             return;
           }
 
@@ -127,6 +142,7 @@ export default function useTelemetryTabs() {
               },
               ...tab.logs,
             ].slice(0, MAX_LOGS),
+            statusMessage: "",
           }));
         } catch {
           addEvent(tabId, "error", "Failed to parse payload");
