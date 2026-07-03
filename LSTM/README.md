@@ -9,7 +9,6 @@
   <img src="./prediction.jpg" alt="Prediction Graph" width="900"/>
 </p>
 
-> **Note:** Ensure `prediction.png` is placed in the same `LSTM` folder as this `README.md`.
 
 ---
 
