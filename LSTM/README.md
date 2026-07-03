@@ -1,111 +1,53 @@
 
-# 🌡️ CPU Temperature Prediction using LSTM
-
----
-
-# 📈 Prediction Results
+# 🌡️ CPU Temperature Predictor (LSTM) — Final Evaluation Version
 
 <p align="center">
-  <img src="./prediction.jpg" alt="Prediction Graph" width="900"/>
+  <img src="./prediction.jpg" alt="CPU Temperature Prediction Graph" width="940"/>
 </p>
 
+<p align="center">
+  <em>Actual vs Predicted CPU temperature on test telemetry logs</em>
+</p>
+
+<p align="center">
+  <img src="./cross_hardware.png" alt="Cross-Hardware Prediction Graph" width="940"/>
+</p>
+
+<p align="center">
+  <em>Cross-hardware test (trained on one laptop, evaluated on another laptop)</em>
+</p>
 
 ---
 
-# 📖 Overview
+## 📋 Model Summary (Evaluation Panel)
 
-This module implements a **Stacked Long Short-Term Memory (LSTM)** regression model for forecasting CPU temperature using sequential hardware telemetry collected from a physical system.
-
-Telemetry was generated using a custom workload generator together with **Libre Hardware Monitor** and **OSHI**, enabling the model to learn temporal relationships between processor activity and thermal response.
-
-The prediction engine is intended for proactive thermal monitoring, intelligent scheduling, anomaly detection, and overheating prevention.
-
----
-
-## 🏗️ Deep Learning Network Architecture
-
-The network processes 6 historical server resource inputs sequentially over a rolling window to map nonlinear thermal dependencies through recurrent memory structures.
-
-```text
-Input Sequence: (Batch, 15, 6)
-       │
-       ▼
-┌─────────────────────────────────────────┐
-│  LSTM Layer 1 (64 Neurons)              │ -> return_sequences=True
-└─────────────────────────────────────────┘
-       │
-       ▼
-┌─────────────────────────────────────────┐
-│  Dropout Layer (Rate: 0.2)              │ -> Prevents overfitting
-└─────────────────────────────────────────┘
-       │
-       ▼
-┌─────────────────────────────────────────┐
-│  LSTM Layer 2 (32 Neurons)              │ -> return_sequences=False
-└─────────────────────────────────────────┘
-       │
-       ▼
-┌─────────────────────────────────────────┐
-│  Dropout Layer (Rate: 0.2)              │ -> Regularization step
-└─────────────────────────────────────────┘
-       │
-       ▼
-┌─────────────────────────────────────────┐
-│  Dense Output Layer (1 Neuron)          │ -> Continuous Linear Activation
-└─────────────────────────────────────────┘
-       │
-       ▼
-Output Forecast: Predicted CPU Temperature (°C)
-
-# ⚙️ Model Details
-
-| Component | Configuration |
-|-----------|---------------|
-| **Model** | Stacked LSTM Regressor |
-| **Framework** | TensorFlow / Keras |
+| Section | Details |
+|---|---|
+| **Model Used** | **Stacked LSTM Regressor** (TensorFlow/Keras Sequential) |
+| **Architecture** | LSTM(64, `return_sequences=True`) → Dropout(0.2) → LSTM(64, `return_sequences=False`) → Dropout(0.2) → Dense(1) |
+| **Input Features (6)** | `cpuUsage`, `ramUsage`, `networkConnections`, `processCount`, `cpuPackagePower`, `cpuAverageClock` |
+| **Target Variable** | `cpuTemperature` |
+| **Window / Lookback** | **8** timesteps |
+| **Train/Test Split** | 80% / 20% (chronological split, no shuffling) |
+| **Scaling** | MinMax normalization for both features and target (`scaler_X`, `scaler_Y`) |
 | **Optimizer** | Adam |
 | **Loss Function** | Mean Squared Error (MSE) |
-| **Learning Rate** | 0.001 |
-| **Epochs** | 50 |
-| **Batch Size** | 32 |
-| **Sequence Length** | 30 Timesteps |
-| **Target Variable** | CPU Temperature |
-| **Prediction Type** | Time-Series Regression |
+| **Training Hyperparameters** | Epochs = **40**, Batch Size = **32**, Dropout = **0.2** |
+| **Evaluation Metrics (Test Set)** | **MAE = 2.00 °C**, **RMSE = 5.09 °C**, **R² = 0.8076** |
+| **Cross-Hardware Result** | On Manan logs: **MAE = 3.53 °C**, **RMSE = 4.83 °C**, **R² = 0.8403**. Despite these aggregate metrics, the prediction curve remains nearly flat and does not follow rapid thermal changes, so the model is **not reliable for different-hardware datasets**. |
+| **Key Features of This Version** | ✅ Updated hyperparameters for improved stability  <br> ✅ Sequence-aware forecasting for proactive thermal monitoring  <br> ✅ Independent scaling to reduce data leakage risk  <br> ✅ Cross-device validation included for robustness |
 
 ---
 
-## 📈 Mean Absolute Error (MAE)
+## 🎯 Why this version is strong
 
-The model predicts CPU temperature with an **average error of only 2.02 °C**, demonstrating stable performance across most workload conditions.
-
-## 📉 Root Mean Squared Error (RMSE)
-
-The RMSE of **5.14 °C** indicates that while the model accurately follows gradual thermal changes, it occasionally underestimates abrupt temperature spikes caused by rapid workload transitions.
-
-## 📊 R² Score
-
-An **R² score of 0.8045** confirms that the model captures a significant portion of the relationship between workload characteristics and CPU thermal behaviour, making it reliable for real-world telemetry prediction.
+- Captures temporal thermal dynamics using recurrent memory (`LSTM`).
+- Maintains low prediction error on in-domain test data.
+- Suitable for thermal risk alerting, load balancing support, and predictive system management.
 
 ---
 
-# 📂 Dataset Features
+## ⚠️ Important Limitation (Cross-Hardware)
 
-| Feature |
-|---------|
-| CPU Usage |
-| CPU Temperature |
-| CPU Package Power |
-| CPU Average Clock |
-| GPU Usage |
-| GPU Temperature |
-| GPU Memory Usage |
-| RAM Usage |
-| Process Count |
-| Network Connections |
-| Timestamp |
-
----
-
-# 📌 Conclusion
-
-The proposed LSTM model successfully learns temporal dependencies from hardware telemetry and predicts CPU temperature with high accuracy. The achieved **MAE of 2.02 °C** and **R² score of 0.8045** demonstrate that the model can effectively model real-world thermal behaviour, making it suitable for predictive monitoring and intelligent system management.
+When telemetry is collected from a **different hardware platform**, this model is currently **not able to make reliable predictions**.  
+The cross-hardware graph shows that predictions stay close to a narrow band and fail to track real temperature swings.
