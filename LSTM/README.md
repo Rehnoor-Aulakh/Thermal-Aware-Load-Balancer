@@ -1,0 +1,152 @@
+
+# 🌡️ CPU Temperature Prediction using LSTM
+
+<p align="center">
+
+![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-LSTM-FF6F00?logo=tensorflow)
+![License](https://img.shields.io/badge/License-MIT-green)
+
+**Time-Series CPU Temperature Forecasting using Deep Learning and Real-Time Hardware Telemetry**
+
+</p>
+
+---
+
+# 📈 Prediction Results
+
+<p align="center">
+  <img src="./prediction.jpg" alt="Prediction Graph" width="900"/>
+</p>
+
+> **Note:** Ensure `prediction.png` is placed in the same `LSTM` folder as this `README.md`.
+
+---
+
+# 📖 Overview
+
+This module implements a **Stacked Long Short-Term Memory (LSTM)** regression model for forecasting CPU temperature using sequential hardware telemetry collected from a physical system.
+
+Telemetry was generated using a custom workload generator together with **Libre Hardware Monitor** and **OSHI**, enabling the model to learn temporal relationships between processor activity and thermal response.
+
+The prediction engine is intended for proactive thermal monitoring, intelligent scheduling, anomaly detection, and overheating prevention.
+
+---
+
+# 🏗️ Model Pipeline
+
+```text
+Hardware Stress Generator
+          │
+          ▼
+Telemetry Collection
+(OSHI + Libre Hardware Monitor)
+          │
+          ▼
+Data Preprocessing
+(Normalization + Windowing)
+          │
+          ▼
+Stacked LSTM Network
+          │
+          ▼
+CPU Temperature Prediction
+```
+
+---
+
+# ⚙️ Model Details
+
+| Component | Configuration |
+|-----------|---------------|
+| **Model** | Stacked LSTM Regressor |
+| **Framework** | TensorFlow / Keras |
+| **Optimizer** | Adam |
+| **Loss Function** | Mean Squared Error (MSE) |
+| **Learning Rate** | 0.001 |
+| **Epochs** | 50 |
+| **Batch Size** | 32 |
+| **Sequence Length** | 30 Timesteps |
+| **Target Variable** | CPU Temperature |
+| **Prediction Type** | Time-Series Regression |
+
+---
+
+# 📊 Evaluation Metrics
+
+| Metric | Value | Interpretation |
+|-------|------:|----------------|
+| **MAE** | **2.02 °C** | Average prediction error across the test set. |
+| **RMSE** | **5.14 °C** | Larger errors are penalized more heavily; indicates occasional misses during sudden thermal spikes. |
+| **R² Score** | **0.8045** | Explains **80.45%** of the variance in CPU temperature. |
+
+---
+
+## 📈 Mean Absolute Error (MAE)
+
+The model predicts CPU temperature with an **average error of only 2.02 °C**, demonstrating stable performance across most workload conditions.
+
+## 📉 Root Mean Squared Error (RMSE)
+
+The RMSE of **5.14 °C** indicates that while the model accurately follows gradual thermal changes, it occasionally underestimates abrupt temperature spikes caused by rapid workload transitions.
+
+## 📊 R² Score
+
+An **R² score of 0.8045** confirms that the model captures a significant portion of the relationship between workload characteristics and CPU thermal behaviour, making it reliable for real-world telemetry prediction.
+
+---
+
+# 📂 Dataset Features
+
+| Feature |
+|---------|
+| CPU Usage |
+| CPU Temperature |
+| CPU Package Power |
+| CPU Average Clock |
+| GPU Usage |
+| GPU Temperature |
+| GPU Memory Usage |
+| RAM Usage |
+| Process Count |
+| Network Connections |
+| Timestamp |
+
+---
+
+# 🛠️ Technology Stack
+
+- Python
+- TensorFlow / Keras
+- NumPy
+- Pandas
+- Scikit-learn
+- Matplotlib
+- Libre Hardware Monitor
+- OSHI
+
+---
+
+# 🎯 Key Highlights
+
+- Real-time telemetry acquisition
+- Time-series forecasting using LSTM
+- Low prediction error (**MAE: 2.02 °C**)
+- Strong explanatory power (**R²: 0.8045**)
+- Suitable for predictive thermal management and anomaly detection
+
+---
+
+# 🚀 Future Improvements
+
+- Multi-step temperature forecasting
+- GPU temperature prediction
+- Attention-enhanced LSTM architecture
+- Transformer-based sequence models
+- Live deployment with streaming telemetry
+
+---
+
+# 📌 Conclusion
+
+The proposed LSTM model successfully learns temporal dependencies from hardware telemetry and predicts CPU temperature with high accuracy. The achieved **MAE of 2.02 °C** and **R² score of 0.8045** demonstrate that the model can effectively model real-world thermal behaviour, making it suitable for predictive monitoring and intelligent system management.
