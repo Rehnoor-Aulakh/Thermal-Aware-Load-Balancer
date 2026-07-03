@@ -1,16 +1,6 @@
 
 # 🌡️ CPU Temperature Prediction using LSTM
 
-<p align="center">
-
-![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)
-![TensorFlow](https://img.shields.io/badge/TensorFlow-LSTM-FF6F00?logo=tensorflow)
-![License](https://img.shields.io/badge/License-MIT-green)
-
-**Time-Series CPU Temperature Forecasting using Deep Learning and Real-Time Hardware Telemetry**
-
-</p>
-
 ---
 
 # 📈 Prediction Results
@@ -114,19 +104,6 @@ An **R² score of 0.8045** confirms that the model captures a significant portio
 
 ---
 
-# 🛠️ Technology Stack
-
-- Python
-- TensorFlow / Keras
-- NumPy
-- Pandas
-- Scikit-learn
-- Matplotlib
-- Libre Hardware Monitor
-- OSHI
-
----
-
 # 🎯 Key Highlights
 
 - Real-time telemetry acquisition
@@ -134,16 +111,6 @@ An **R² score of 0.8045** confirms that the model captures a significant portio
 - Low prediction error (**MAE: 2.02 °C**)
 - Strong explanatory power (**R²: 0.8045**)
 - Suitable for predictive thermal management and anomaly detection
-
----
-
-# 🚀 Future Improvements
-
-- Multi-step temperature forecasting
-- GPU temperature prediction
-- Attention-enhanced LSTM architecture
-- Transformer-based sequence models
-- Live deployment with streaming telemetry
 
 ---
 
