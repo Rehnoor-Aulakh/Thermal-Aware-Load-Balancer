@@ -104,16 +104,6 @@ An **R² score of 0.8045** confirms that the model captures a significant portio
 
 ---
 
-# 🎯 Key Highlights
-
-- Real-time telemetry acquisition
-- Time-series forecasting using LSTM
-- Low prediction error (**MAE: 2.02 °C**)
-- Strong explanatory power (**R²: 0.8045**)
-- Suitable for predictive thermal management and anomaly detection
-
----
-
 # 📌 Conclusion
 
 The proposed LSTM model successfully learns temporal dependencies from hardware telemetry and predicts CPU temperature with high accuracy. The achieved **MAE of 2.02 °C** and **R² score of 0.8045** demonstrate that the model can effectively model real-world thermal behaviour, making it suitable for predictive monitoring and intelligent system management.
