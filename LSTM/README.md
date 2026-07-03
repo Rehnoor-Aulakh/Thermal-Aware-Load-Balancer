@@ -74,16 +74,6 @@ Output Forecast: Predicted CPU Temperature (°C)
 
 ---
 
-# 📊 Evaluation Metrics
-
-| Metric | Value | Interpretation |
-|-------|------:|----------------|
-| **MAE** | **2.02 °C** | Average prediction error across the test set. |
-| **RMSE** | **5.14 °C** | Larger errors are penalized more heavily; indicates occasional misses during sudden thermal spikes. |
-| **R² Score** | **0.8045** | Explains **80.45%** of the variance in CPU temperature. |
-
----
-
 ## 📈 Mean Absolute Error (MAE)
 
 The model predicts CPU temperature with an **average error of only 2.02 °C**, demonstrating stable performance across most workload conditions.
