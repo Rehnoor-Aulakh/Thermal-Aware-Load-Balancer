@@ -22,27 +22,40 @@ The prediction engine is intended for proactive thermal monitoring, intelligent 
 
 ---
 
-# 🏗️ Model Pipeline
+## 🏗️ Deep Learning Network Architecture
+
+The network processes 6 historical server resource inputs sequentially over a rolling window to map nonlinear thermal dependencies through recurrent memory structures.
 
 ```text
-Hardware Stress Generator
-          │
-          ▼
-Telemetry Collection
-(OSHI + Libre Hardware Monitor)
-          │
-          ▼
-Data Preprocessing
-(Normalization + Windowing)
-          │
-          ▼
-Stacked LSTM Network
-          │
-          ▼
-CPU Temperature Prediction
-```
-
----
+Input Sequence: (Batch, 15, 6)
+       │
+       ▼
+┌─────────────────────────────────────────┐
+│  LSTM Layer 1 (64 Neurons)              │ -> return_sequences=True
+└─────────────────────────────────────────┘
+       │
+       ▼
+┌─────────────────────────────────────────┐
+│  Dropout Layer (Rate: 0.2)              │ -> Prevents overfitting
+└─────────────────────────────────────────┘
+       │
+       ▼
+┌─────────────────────────────────────────┐
+│  LSTM Layer 2 (32 Neurons)              │ -> return_sequences=False
+└─────────────────────────────────────────┘
+       │
+       ▼
+┌─────────────────────────────────────────┐
+│  Dropout Layer (Rate: 0.2)              │ -> Regularization step
+└─────────────────────────────────────────┘
+       │
+       ▼
+┌─────────────────────────────────────────┐
+│  Dense Output Layer (1 Neuron)          │ -> Continuous Linear Activation
+└─────────────────────────────────────────┘
+       │
+       ▼
+Output Forecast: Predicted CPU Temperature (°C)
 
 # ⚙️ Model Details
 
