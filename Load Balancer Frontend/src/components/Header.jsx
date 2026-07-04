@@ -1,4 +1,4 @@
-export default function Header({ connectedCount, serverCount }) {
+export default function Header({ connected }) {
   return (
     <header
       className="
@@ -46,8 +46,9 @@ export default function Header({ connectedCount, serverCount }) {
         leading-8
       "
       >
-        Open a tab for each backend server. Every tab keeps its own WebSocket
-        alive, so switching between servers does not interrupt telemetry.
+        Type the backend server IP, connect, and the load balancer will open a
+        WebSocket to the collector running on that machine. The collector keeps
+        writing system_logs.jsonl and pushes a new snapshot every 2 seconds.
       </p>
 
       <div
@@ -61,14 +62,14 @@ export default function Header({ connectedCount, serverCount }) {
           mt-5
           font-semibold
           ${
-            connectedCount > 0
+            connected
               ? "bg-green-500/10 text-green-300"
               : "bg-red-500/10 text-red-300"
           }
         `}
       >
         <span className="h-2.5 w-2.5 rounded-full bg-current" />
-        {connectedCount} of {serverCount} servers connected
+        {connected ? "Connected" : "Disconnected"}
       </div>
     </header>
   );

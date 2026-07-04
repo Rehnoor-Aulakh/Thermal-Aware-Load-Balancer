@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 public class TelemetryCollector {
 
     private static final URI LIBRE_HARDWARE_MONITOR_URL =
-            URI.create("http://192.168.29.204:8085/data.json");
+            URI.create("http://192.168.31.112:8085/data.json");
 
     private static final Pattern NUMBER_PATTERN =
             Pattern.compile("-?\\d+(?:\\.\\d+)?");
@@ -53,6 +53,9 @@ public class TelemetryCollector {
 
         return log;
     }
+
+    private double cpuClockSum = 0;
+    private int cpuClockCount = 0;
 
     private void readOshiMetrics(SystemLog log)
             throws InterruptedException {
@@ -101,11 +104,14 @@ public class TelemetryCollector {
 
     private void initializeLibreHardwareMonitorMetrics(SystemLog log) {
 
-        log.gpuTemperature = -1;
-        log.gpuMemoryLoad = -1;
-        log.gpuUsage=-1;
+        log.cpuTemperature = -1;
+        log.cpuCoreMaxTemperature = -1;
         log.cpuPackagePower = -1;
         log.cpuAverageClock = -1;
+
+        log.gpuTemperature = -1;
+        log.gpuMemoryLoad = -1;
+        log.gpuUsage = -1;
     }
 
     private void readLibreHardwareMonitor(SystemLog log) {
@@ -181,62 +187,82 @@ public class TelemetryCollector {
         String sensorId =
                 node.has("SensorId")
                         ? node.get("SensorId")
-                                .asText()
+                        .asText()
                         : "";
 
         try {
 
-            double value =
-                    numericValue(node);
+            double value = numericValue(node);
 
-            if(sensorId.equals("/amdcpu/0/load/0")
-                    || (text.equals("CPU Total")
-                    && type.equals("Load"))) {
+            // ================= CPU Usage =================
+            if (sensorId.equals("/intelcpu/0/load/0")
+                    || sensorId.equals("/amdcpu/0/load/0")
+                    || (text.equals("CPU Total") && type.equals("Load"))) {
 
-                log.cpuUsage =
-                        round2(value);
+                log.cpuUsage = round2(value);
             }
 
-            if(sensorId.equals("/amdcpu/0/temperature/2")
-                    || (text.equals("Core (Tctl/Tdie)")
-                    && type.equals("Temperature"))) {
+            // ================= CPU Temperature =================
+            if (sensorId.equals("/intelcpu/0/temperature/18")
+                    || sensorId.equals("/amdcpu/0/temperature/2")
+                    || (text.equals("CPU Package") && type.equals("Temperature"))
+                    || (text.equals("Core (Tctl/Tdie)") && type.equals("Temperature"))) {
 
-                log.cpuTemperature =
-                        round2(value);
+                log.cpuTemperature = round2(value);
             }
 
-            if (sensorId.equals("/amdcpu/0/power/0")) {
+            // ================= CPU Package Power =================
+            if (sensorId.equals("/intelcpu/0/power/0")
+                    || sensorId.equals("/amdcpu/0/power/0")) {
+
                 log.cpuPackagePower = round2(value);
             }
 
-            if (sensorId.equals("/amdcpu/0/clock/1")) {
+            // ================= CPU Average Clock =================
+            if ((sensorId.equals("/intelcpu/0/clock/0") && text.equals("Bus Speed"))
+                    || (sensorId.equals("/amdcpu/0/clock/1"))) {
+
                 log.cpuAverageClock = round2(value);
             }
 
-            if(sensorId.equals("/gpu-nvidia/0/temperature/2")
-                    || (text.equals("GPU Hot Spot")
-                    && type.equals("Temperature"))) {
+            // ================= GPU Temperature =================
+            if (sensorId.equals("/gpu-nvidia/0/temperature/0")
+                    || sensorId.equals("/gpu-nvidia/0/temperature/2")
+                    || (text.equals("GPU Core") && type.equals("Temperature"))
+                    || (text.equals("GPU Hot Spot") && type.equals("Temperature"))) {
 
-                log.gpuTemperature =
-                        round2(value);
+                log.gpuTemperature = round2(value);
             }
 
-            if((sensorId.equals("/gpu-nvidia/0/load/3")
-                    && text.equals("GPU Memory"))
-                    || (text.equals("GPU Memory")
-                    && type.equals("Load"))) {
+            // ================= GPU Memory Usage =================
+            if (sensorId.equals("/gpu-nvidia/0/load/3")
+                    || (text.equals("GPU Memory") && type.equals("Load"))) {
 
-                log.gpuMemoryLoad =
-                        round2(value);
+                log.gpuMemoryLoad = round2(value);
             }
 
-            if ((sensorId.equals("/gpu-nvidia/0/load/0")
-                    && text.equals("GPU Core"))
-                    || (text.equals("GPU Core")
-                    && type.equals("Load"))) {
+            // ================= GPU Core Usage =================
+            if (sensorId.equals("/gpu-nvidia/0/load/0")
+                    || (text.equals("GPU Core") && type.equals("Load"))) {
 
-                log.gpuUsage =
-                        round2(value);
+                log.gpuUsage = round2(value);
+            }
+            if (sensorId.equals("/intelcpu/0/temperature/0")
+                    || text.equals("Core Max")) {
+
+                log.cpuCoreMaxTemperature = round2(value);
+            }
+            if (type.equals("Clock")) {
+
+                if (text.startsWith("P-Core")
+                        || text.startsWith("E-Core")) {
+
+                    cpuClockSum += value;
+                    cpuClockCount++;
+
+                    log.cpuAverageClock =
+                            round2(cpuClockSum / cpuClockCount);
+                }
             }
 
         }
@@ -249,9 +275,9 @@ public class TelemetryCollector {
         String value =
                 node.has("RawValue")
                         ? node.get("RawValue")
-                                .asText()
+                        .asText()
                         : node.get("Value")
-                                .asText();
+                        .asText();
 
         Matcher matcher =
                 NUMBER_PATTERN.matcher(value);

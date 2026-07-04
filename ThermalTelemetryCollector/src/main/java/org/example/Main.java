@@ -46,23 +46,28 @@ public class Main {
             telemetryServer.publish(json);
 
             System.out.println(
-                    "Logged: "
-                            + log.timestamp
-                            + " | CPU Load: "
-                            + log.cpuUsage
-                            + "%"
-                            + " | CPU Temp: "
-                            + log.cpuTemperature
-                            + " C"
-                            + " | GPU Temp: "
-                            + log.gpuTemperature
-                            + " C"
-                            + " | GPU Memory: "
-                            + log.gpuMemoryLoad
-                            + "%"
+                    "\n================ TELEMETRY ================\n" +
+
+                            "Timestamp              : " + log.timestamp + "\n\n" +
+
+                            "CPU Usage              : " + log.cpuUsage + " %\n" +
+                            "CPU Temperature        : " + log.cpuTemperature + " °C\n" +
+                            "CPU Core Max Temp      : " + log.cpuCoreMaxTemperature + " °C\n" +
+                            "CPU Package Power      : " + log.cpuPackagePower + " W\n" +
+                            "CPU Average Clock      : " + log.cpuAverageClock + " MHz\n\n" +
+
+                            "GPU Usage              : " + log.gpuUsage + " %\n" +
+                            "GPU Temperature        : " + log.gpuTemperature + " °C\n" +
+                            "GPU Memory Usage       : " + log.gpuMemoryLoad + " %\n\n" +
+
+                            "RAM Usage              : " + log.ramUsage + " %\n" +
+                            "Processes              : " + log.processCount + "\n" +
+                            "Network Connections    : " + log.networkConnections + "\n" +
+
+                            "=========================================="
             );
 
-                        Thread.sleep(TELEMETRY_INTERVAL_MS);
+            Thread.sleep(TELEMETRY_INTERVAL_MS);
         }
     }
 }

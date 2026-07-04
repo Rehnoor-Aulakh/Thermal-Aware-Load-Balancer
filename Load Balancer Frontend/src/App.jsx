@@ -3,23 +3,10 @@ import ControlPanel from "./components/ControlPanel";
 import StatusCard from "./components/StatusCard";
 import EventsTable from "./components/EventsTable";
 import TelemetryTable from "./components/TelemetryTable";
-import TabsBar from "./components/TabsBar";
-import useTelemetryTabs from "./hooks/useTelemetryTabs";
+import useTelemetrySocket from "./hooks/useTelemetrySocket";
 
 export default function App() {
-  const {
-    tabs,
-    activeTab,
-    activeTabId,
-    setActiveTabId,
-    addTab,
-    closeTab,
-    updateBackendHost,
-    connect,
-    disconnect,
-  } = useTelemetryTabs();
-
-  const connectedCount = tabs.filter((tab) => tab.connected).length;
+  const { connected, logs, events, connect, disconnect } = useTelemetrySocket();
 
   return (
     <div
@@ -30,23 +17,12 @@ export default function App() {
     "
     >
       <div className="max-w-7xl mx-auto p-6">
-        <Header connectedCount={connectedCount} serverCount={tabs.length} />
-
-        <TabsBar
-          tabs={tabs}
-          activeTabId={activeTabId}
-          onSelectTab={setActiveTabId}
-          onAddTab={addTab}
-          onCloseTab={closeTab}
-        />
+        <Header connected={connected} />
 
         <ControlPanel
-          tab={activeTab}
-          connect={(backendHost) => connect(activeTab.id, backendHost)}
-          disconnect={() => disconnect(activeTab.id)}
-          updateBackendHost={(backendHost) =>
-            updateBackendHost(activeTab.id, backendHost)
-          }
+          connect={connect}
+          disconnect={disconnect}
+          connected={connected}
         />
 
         <div className="grid lg:grid-cols-2 gap-5 mt-5">
@@ -60,13 +36,13 @@ export default function App() {
           >
             <h2 className="text-2xl font-bold mb-4">Live Telemetry</h2>
 
-            <StatusCard latest={activeTab.logs[0]} />
+            <StatusCard latest={logs[0]} />
           </div>
 
-          <EventsTable events={activeTab.events} />
+          <EventsTable events={events} />
         </div>
 
-        <TelemetryTable logs={activeTab.logs} />
+        <TelemetryTable logs={logs} />
       </div>
     </div>
   );
