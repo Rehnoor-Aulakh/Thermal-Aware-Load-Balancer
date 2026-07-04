@@ -19,6 +19,19 @@
 
 ---
 
+## 📈 Performance Comparison
+
+| Model | Same-device MAE | Unseen-device MAE | Unseen-device R² |
+|:------|----------------:|------------------:|-----------------:|
+| **Original TensorFlow LSTM** | **2.00 °C** | **3.53 °C** | **0.8403** |
+| **PyTorch LSTM (Current Model)** | **1.43 °C** | **1.66 °C** | **0.9446** |
+| **+ Temperature History** | *Planned* | *Planned* | *Planned* |
+| **+ Delta Prediction** | *Planned* | *Planned* | *Planned* |
+| **Multi-device Improved Model** | *Future Work* | *Future Work* | *Future Work* |
+
+> **Current status:** The PyTorch implementation significantly improves both same-device and cross-device prediction accuracy over the original TensorFlow baseline.
+
+
 ## 📋 Model Summary (Evaluation Panel)
 
 | Section | Details |
