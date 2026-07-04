@@ -1,5 +1,5 @@
 
-# 🌡️ CPU Temperature Predictor (LSTM) — Final Evaluation Version
+# 🌡️ CPU Temperature Predictor (LSTM) 
 
 <p align="center">
   <img src="./prediction.jpg" alt="CPU Temperature Prediction Graph" width="940"/>
