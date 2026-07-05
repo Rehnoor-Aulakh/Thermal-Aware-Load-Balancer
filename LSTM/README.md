@@ -167,31 +167,29 @@ This indicates only **mild overfitting**, suggesting that the model generalizes 
 
 # 📊 Test Performance
 
-| Dataset | MAE (°C) | RMSE (°C) |
-|----------|---------|-----------|
-| Prabhsimrat | **1.525** | **4.250** |
-| Sushant | **1.015** | **1.537** |
-| Manan | **1.523** | **2.550** |
+| Test Dataset | MAE (°C) | RMSE (°C) | R² Score |
+|--------------|---------:|----------:|---------:|
+| **Sushant Logs** | **2.36** | **2.67** | **-4.3402** |
+| **Prabhsimrat Logs** | **8.40** | **10.89** | **0.0975** |
+| **Manan Logs** | **5.19** | **7.51** | **0.3642** |
 
 ---
 
 # 📈 Comparison with Persistence Baseline
 
-A persistence model simply predicts:
+The persistence baseline simply predicts:
 
 ```
 Next Temperature = Current Temperature
 ```
 
-The comparison is shown below.
+| Dataset | LSTM MAE (°C) | Persistence MAE (°C) | Improvement |
+|----------|--------------:|---------------------:|------------:|
+| **Prabhsimrat** | **1.525** | **1.458** | **-4.58%** |
+| **Sushant** | **1.015** | **0.994** | **-2.10%** |
+| **Manan** | **1.523** | **1.477** | **-3.14%** |
 
-| Dataset | LSTM MAE | Persistence MAE | Improvement |
-|----------|-----------|-----------------|-------------|
-| Prabhsimrat | 1.525 | 1.458 | -4.58% |
-| Sushant | 1.015 | 0.994 | -2.10% |
-| Manan | 1.523 | 1.477 | -3.14% |
-
----
+> A negative improvement indicates that the persistence baseline slightly outperformed the LSTM on all three datasets.
 
 # 📖 Interpretation
 
