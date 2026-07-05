@@ -1,66 +1,243 @@
+# 🔥 Thermal-Aware CPU Temperature Prediction using LSTM
 
-# 🌡️ CPU Temperature Predictor (LSTM) 
-
-<p align="center">
-  <img src="./prediction.jpg" alt="CPU Temperature Prediction Graph" width="940"/>
-</p>
-
-<p align="center">
-  <em>Actual vs Predicted CPU temperature on test telemetry logs</em>
-</p>
-
-<p align="center">
-  <img src="./cross_hardware.png" alt="Cross-Hardware Prediction Graph" width="940"/>
-</p>
-
-<p align="center">
-  <em>Cross-hardware test (trained on one laptop, evaluated on another laptop)</em>
-</p>
+A deep learning project for forecasting CPU temperature from real-time hardware telemetry collected across multiple laptops. The objective is to predict future CPU temperatures using historical system metrics, enabling proactive thermal management and intelligent scheduling for thermal-aware load balancing systems.
 
 ---
 
-## 📈 Performance Comparison
+# 📊 Prediction Results
 
-| Model | Same-device MAE | Unseen-device MAE | Unseen-device R² |
-|:------|----------------:|------------------:|-----------------:|
-| **Original TensorFlow LSTM** | **2.00 °C** | **3.53 °C** | **0.8403** |
-| **PyTorch LSTM (Current Model)** | **1.43 °C** | **1.66 °C** | **0.9446** |
-| **+ Temperature History** | *Planned* | *Planned* | *Planned* |
-| **+ Delta Prediction** | *Planned* | *Planned* | *Planned* |
-| **Multi-device Improved Model** | *Future Work* | *Future Work* | *Future Work* |
+<table>
+<tr>
+<td align="center">
 
-> **Current status:** The PyTorch implementation significantly improves both same-device and cross-device prediction accuracy over the original TensorFlow baseline.
+### Master Test Set
+<img src="master_test.png" width="430">
 
+</td>
 
-## 📋 Model Summary (Evaluation Panel)
+<td align="center">
 
-| Section | Details |
-|---|---|
-| **Model Used** | **Stacked LSTM Regressor** (TensorFlow/Keras Sequential) |
-| **Architecture** | LSTM(64, `return_sequences=True`) → Dropout(0.2) → LSTM(64, `return_sequences=False`) → Dropout(0.2) → Dense(1) |
-| **Input Features (6)** | `cpuUsage`, `ramUsage`, `networkConnections`, `processCount`, `cpuPackagePower`, `cpuAverageClock` |
-| **Target Variable** | `cpuTemperature` |
-| **Window / Lookback** | **8** timesteps |
-| **Train/Test Split** | 80% / 20% (chronological split, no shuffling) |
-| **Scaling** | MinMax normalization for both features and target (`scaler_X`, `scaler_Y`) |
-| **Optimizer** | Adam |
-| **Loss Function** | Mean Squared Error (MSE) |
-| **Training Hyperparameters** | Epochs = **40**, Batch Size = **32**, Dropout = **0.2** |
-| **Evaluation Metrics (Test Set)** | **MAE = 2.00 °C**, **RMSE = 5.09 °C**, **R² = 0.8076** |
-| **Cross-Hardware Result** | On Manan logs: **MAE = 3.53 °C**, **RMSE = 4.83 °C**, **R² = 0.8403**. Despite these aggregate metrics, the prediction curve remains nearly flat and does not follow rapid thermal changes, so the model is **not reliable for different-hardware datasets**. |
-| **Key Features of This Version** | ✅ Updated hyperparameters for improved stability  <br> ✅ Sequence-aware forecasting for proactive thermal monitoring  <br> ✅ Independent scaling to reduce data leakage risk  <br> ✅ Cross-device validation included for robustness |
+### Prabhsimrat Logs
+<img src="prabhsimrat_logs.png" width="430">
 
----
+</td>
+</tr>
 
-## 🎯 Why this version is strong
+<tr>
+<td align="center">
 
-- Captures temporal thermal dynamics using recurrent memory (`LSTM`).
-- Maintains low prediction error on in-domain test data.
-- Suitable for thermal risk alerting, load balancing support, and predictive system management.
+### Sushant Logs
+<img src="sushant_logs.png" width="430">
+
+</td>
+
+<td align="center">
+
+### Manan Logs
+<img src="manan_logs.png" width="430">
+
+</td>
+</tr>
+</table>
 
 ---
 
-## ⚠️ Important Limitation (Cross-Hardware)
+# 📑 Model Summary
 
-When telemetry is collected from a **different hardware platform**, this model is currently **not able to make reliable predictions**.  
-The cross-hardware graph shows that predictions stay close to a narrow band and fail to track real temperature swings.
+| Property | Value |
+|----------|-------|
+| Model | Bidirectional LSTM |
+| Framework | TensorFlow / Keras |
+| Input Sequence Length | 20 timesteps |
+| Prediction Target | Next CPU Temperature |
+| Features | 7 Hardware Telemetry Features |
+| Optimizer | Adam |
+| Loss Function | Mean Squared Error (MSE) |
+| Evaluation Metrics | MAE, RMSE, R² |
+| Train/Validation/Test Split | 80% / 10% / 10% |
+| Hardware Used | NVIDIA RTX 4060 Laptop GPU |
+
+---
+
+# 📂 Dataset
+
+The model was trained using telemetry collected from **three different laptops**, improving hardware diversity and evaluating cross-device generalization.
+
+| Dataset | Train | Validation | Test |
+|---------|-------|------------|------|
+| Prabhsimrat Logs | 13,088 | 1,636 | 1,637 |
+| Sushant Logs | 12,874 | 1,609 | 1,610 |
+| Manan Logs | 16,191 | 2,024 | 2,024 |
+
+Combined master dataset:
+
+| Split | Samples |
+|-------|---------|
+| Train | 42,006 |
+| Validation | 5,122 |
+| Test | 5,124 |
+
+---
+
+# 📊 Features Used
+
+The LSTM receives the following hardware telemetry as input:
+
+- CPU Usage
+- CPU Average Clock
+- CPU Package Power
+- CPU Temperature
+- CPU Core Maximum Temperature
+- GPU Usage
+- GPU Temperature
+
+Each prediction uses the previous **20 timesteps** to forecast the next CPU temperature.
+
+---
+
+# 🧠 Model Architecture
+
+```
+Input Sequence (20 × 7)
+
+        │
+
+Bidirectional LSTM
+Hidden Size = 64
+2 Layers
+
+        │
+
+Dropout (0.1)
+
+        │
+
+Fully Connected Layer
+
+        │
+
+Predicted CPU Temperature
+```
+
+---
+
+# ⚙️ Training Configuration
+
+| Hyperparameter | Value |
+|---------------|-------|
+| Hidden Size | 64 |
+| LSTM Layers | 2 |
+| Bidirectional | Yes |
+| Dropout | 0.10 |
+| Batch Size | 32 |
+| Lookback Window | 20 |
+| Learning Rate | 0.00779 |
+| Weight Decay | 1.125×10⁻⁶ |
+| Optimizer | Adam |
+| Scheduler | ReduceLROnPlateau |
+| Early Stopping | Enabled |
+
+---
+
+# 📈 Training Performance
+
+The training and validation losses converged smoothly without significant divergence, indicating stable optimization.
+
+Final Training Loss
+
+```
+0.004851
+```
+
+Final Validation Loss
+
+```
+0.003789
+```
+
+Validation Gap
+
+```
+21.9%
+```
+
+This indicates only **mild overfitting**, suggesting that the model generalizes reasonably well while maintaining low prediction error.
+
+---
+
+# 📊 Test Performance
+
+| Dataset | MAE (°C) | RMSE (°C) |
+|----------|---------|-----------|
+| Prabhsimrat | **1.525** | **4.250** |
+| Sushant | **1.015** | **1.537** |
+| Manan | **1.523** | **2.550** |
+
+---
+
+# 📈 Comparison with Persistence Baseline
+
+A persistence model simply predicts:
+
+```
+Next Temperature = Current Temperature
+```
+
+The comparison is shown below.
+
+| Dataset | LSTM MAE | Persistence MAE | Improvement |
+|----------|-----------|-----------------|-------------|
+| Prabhsimrat | 1.525 | 1.458 | -4.58% |
+| Sushant | 1.015 | 0.994 | -2.10% |
+| Manan | 1.523 | 1.477 | -3.14% |
+
+---
+
+# 📖 Interpretation
+
+The persistence baseline consistently performs slightly better than the LSTM across all three datasets.
+
+This changes the interpretation of the current model.
+
+Although the prediction plots appear visually accurate, much of this behaviour is due to reconstructing the predicted temperature using the current reading and the predicted delta.
+
+The forecasting task is currently too easy because adjacent CPU temperature readings change only slightly over short logging intervals. Consequently, predicting the next temperature becomes nearly identical to copying the current one, leaving very little room for the neural network to outperform a trivial baseline.
+
+---
+
+# ⚠️ Current Limitation
+
+The model currently predicts
+
+```
+Last 20 readings
+        ↓
+Next CPU Temperature
+```
+
+For thermal-aware scheduling and proactive load balancing, this prediction horizon is too short to provide meaningful advance warning.
+
+---
+
+# 🚀 Future Work
+
+The next stage of this project is to shift from one-step forecasting to long-horizon prediction.
+
+Instead of predicting the immediate next temperature, the model will forecast temperatures **30–60 seconds into the future**, allowing the scheduler to react before thermal throttling occurs.
+
+Future improvements include:
+
+- Multi-step forecasting
+- Longer prediction horizons
+- Additional hardware telemetry features
+- Attention-based LSTM architectures
+- Transformer-based sequence models
+- Deployment for real-time thermal-aware scheduling
+
+---
+
+# 📌 Conclusion
+
+The proposed Bidirectional LSTM successfully learns relationships between CPU workload and temperature across multiple hardware platforms. However, comparison with the persistence baseline shows that one-step temperature forecasting does not provide sufficient predictive advantage.
+
+This insight is valuable because it motivates the transition toward longer-horizon forecasting, where deep learning models are expected to outperform simple heuristic approaches and provide practical benefits for intelligent thermal-aware load balancing systems.
