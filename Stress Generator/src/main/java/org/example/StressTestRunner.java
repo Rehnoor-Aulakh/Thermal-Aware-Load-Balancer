@@ -30,9 +30,20 @@ public final class StressTestRunner {
     private static final Path STRESS_LEVEL_FILE =
             Path.of("current_tier.txt");
     private static final List<Integer> DEFAULT_PROFILE =
-            List.of(0, 0, 10, 10, 20, 30, 40, 50, 60, 70, 80, 90,
-                    100, 100, 100, 90, 80, 70, 60, 50, 40, 30, 20,
-                    10, 0, 0);
+
+        List.of(
+                0, 0,
+                20, 20,
+                40, 40,
+                60, 60,
+                80, 80,
+                100, 100,
+                80, 80,
+                60, 60,
+                40, 40,
+                20, 20,
+                0, 0
+        );
     private static final int CHAOS_STEPS_PER_MIXED_CYCLE = 16;
     private static final int SQUARE_STEPS_PER_MIXED_CYCLE = 10;
 
@@ -79,9 +90,7 @@ public final class StressTestRunner {
                 int load = loads.next(stepNumber);
                 Duration remaining = Duration.between(Instant.now(), finishAt);
                 Duration selectedStep = randomDuration(
-                        random,
-                        config.minimumStepDuration(),
-                        config.maximumStepDuration()
+                        random
                 );
                 Duration step = remaining.compareTo(selectedStep) < 0
                         ? remaining : selectedStep;
@@ -240,16 +249,28 @@ public final class StressTestRunner {
         );
     }
 
-    private static Duration randomDuration(
-            Random random,
-            Duration minimum,
-            Duration maximum
-    ) {
-        long minimumSeconds = minimum.toSeconds();
-        long maximumSeconds = maximum.toSeconds();
+    private static Duration randomDuration(Random random) {
+    int category = random.nextInt(100);
+
+    if (category < 35) {
+        // Short transitions: 20-45 seconds
         return Duration.ofSeconds(
-                random.nextLong(minimumSeconds, maximumSeconds + 1));
+                random.nextLong(20, 46)
+        );
     }
+
+    if (category < 75) {
+        // Medium periods: 46-120 seconds
+        return Duration.ofSeconds(
+                random.nextLong(46, 121)
+        );
+    }
+
+    // Long sustained periods: 121-240 seconds
+    return Duration.ofSeconds(
+            random.nextLong(121, 241)
+    );
+}
 
     private enum WorkloadMode {
         RAMP,
@@ -314,8 +335,21 @@ public final class StressTestRunner {
             return DEFAULT_PROFILE.get(stepNumber % DEFAULT_PROFILE.size());
         }
 
+        private static final int[][] TRANSITION_PAIRS = {
+            {0, 100},
+            {20, 80},
+            {40, 90},
+            {80, 30},
+            {100, 50}
+        };  
+
         private int squareLoad(int stepNumber) {
-            return stepNumber % 2 == 0 ? 0 : 100;
+            
+            int pairIndex = (stepNumber / 2) % TRANSITION_PAIRS.length;
+
+            int position = stepNumber % 2;
+
+            return TRANSITION_PAIRS[pairIndex][position];
         }
 
         private int chaosLoad() {
@@ -338,8 +372,8 @@ public final class StressTestRunner {
     ) {
         private static Config parse(String[] args) {
             Duration duration = Duration.ofHours(6);
-            Duration minimumStepDuration = Duration.ofSeconds(5);
-            Duration maximumStepDuration = Duration.ofMinutes(5);
+            Duration minimumStepDuration = Duration.ofSeconds(20);
+            Duration maximumStepDuration = Duration.ofSeconds(180);
             WorkloadMode mode = WorkloadMode.MIXED;
             List<Integer> profile = List.of();
             long seed = System.nanoTime();
