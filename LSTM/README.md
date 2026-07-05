@@ -191,47 +191,82 @@ Next Temperature = Current Temperature
 
 > A negative improvement indicates that the persistence baseline slightly outperformed the LSTM on all three datasets.
 
-# 📖 Interpretation
+# 📊 Statistical Analysis
 
-The persistence baseline consistently performs slightly better than the LSTM across all three datasets.
+To better understand the model's behavior, we compared the statistical properties of the predicted temperatures with the actual telemetry.
 
-This changes the interpretation of the current model.
+## Prabhsimrat Logs
 
-Although the prediction plots appear visually accurate, much of this behaviour is due to reconstructing the predicted temperature using the current reading and the predicted delta.
-
-The forecasting task is currently too easy because adjacent CPU temperature readings change only slightly over short logging intervals. Consequently, predicting the next temperature becomes nearly identical to copying the current one, leaving very little room for the neural network to outperform a trivial baseline.
+| Metric | Actual | Predicted |
+|---------|-------:|----------:|
+| Minimum | 0.00 °C | 30.90 °C |
+| Maximum | 95.60 °C | 102.15 °C |
+| Mean | 85.48 °C | 85.03 °C |
+| Standard Deviation | 11.46 °C | 6.92 °C |
 
 ---
 
+## Sushant Logs
+
+| Metric | Actual | Predicted |
+|---------|-------:|----------:|
+| Minimum | 87.00 °C | 89.57 °C |
+| Maximum | 98.00 °C | 95.14 °C |
+| Mean | 94.57 °C | 92.30 °C |
+| Standard Deviation | 1.16 °C | 0.77 °C |
+
+---
+
+## Manan Logs
+
+| Metric | Actual | Predicted |
+|---------|-------:|----------:|
+| Minimum | 67.00 °C | 70.33 °C |
+| Maximum | 99.00 °C | 95.83 °C |
+| Mean | 90.07 °C | 88.30 °C |
+| Standard Deviation | 9.41 °C | 7.17 °C |
+
+# 📖 Interpretation
+
+The proposed Bidirectional LSTM successfully captures the overall thermal behaviour of the processor and predicts average operating temperatures with good accuracy across multiple devices.
+
+Statistical analysis shows that the predicted means closely match the actual means for all datasets, indicating that the network has learned the general thermal operating region of each processor.
+
+However, the predicted standard deviations are consistently lower than the actual values, demonstrating that the model smooths rapid temperature fluctuations and struggles to reproduce sudden thermal spikes.
+
+Although the prediction curves closely follow the overall trend, comparison against the persistence baseline reveals that one-step forecasting does not yet outperform the simple strategy of predicting the next temperature as the current temperature.
+
+This suggests that adjacent telemetry samples are highly correlated, making persistence an exceptionally strong baseline for very short-term prediction.
+
 # ⚠️ Current Limitation
 
-The model currently predicts
+The current model predicts only the immediate next CPU temperature:
 
 ```
-Last 20 readings
-        ↓
-Next CPU Temperature
+Previous 20 Telemetry Samples
+            │
+            ▼
+     Next Temperature
 ```
 
-For thermal-aware scheduling and proactive load balancing, this prediction horizon is too short to provide meaningful advance warning.
-
+Because CPU temperatures change only slightly between adjacent telemetry samples, the persistence baseline becomes extremely competitive, leaving limited opportunity for the LSTM to improve upon it.
 ---
 
 # 🚀 Future Work
 
-The next stage of this project is to shift from one-step forecasting to long-horizon prediction.
+The next phase of this project will focus on **long-horizon forecasting** instead of one-step prediction.
 
-Instead of predicting the immediate next temperature, the model will forecast temperatures **30–60 seconds into the future**, allowing the scheduler to react before thermal throttling occurs.
+Rather than predicting the immediate next reading, the model will forecast CPU temperatures **30–60 seconds into the future**, providing sufficient advance warning for thermal-aware scheduling and workload migration.
 
 Future improvements include:
 
-- Multi-step forecasting
-- Longer prediction horizons
+- Multi-step temperature forecasting
+- Prediction horizon of 30–60 seconds
 - Additional hardware telemetry features
-- Attention-based LSTM architectures
 - Transformer-based sequence models
-- Deployment for real-time thermal-aware scheduling
-
+- Cross-device domain adaptation
+- Online continual learning
+- Integration with the Thermal-Aware Load Balancer
 ---
 
 # 📌 Conclusion
