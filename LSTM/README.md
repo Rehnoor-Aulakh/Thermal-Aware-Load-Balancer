@@ -11,14 +11,14 @@ A deep learning project for forecasting CPU temperature from real-time hardware 
 <td align="center">
 
 ### Master Test Set
-<img src="master_test.png" width="430">
+<img src="masterTestSet.png" width="430">
 
 </td>
 
 <td align="center">
 
 ### Prabhsimrat Logs
-<img src="prabhsimrat_logs.png" width="430">
+<img src="prabh_logs.png" width="430">
 
 </td>
 </tr>
