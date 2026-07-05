@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.time.Duration;
 import java.time.Instant;
@@ -21,9 +20,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Automatic CPU stress dataset generator for LSTM temperature forecasting.
  *
+ * This program is completely independent of the thermal telemetry collector.
+ *
+ * It generates CPU workload and stores its own verification logs only.
+ *
  * One execution automatically performs:
  *
- * 1. Warm-up idle
+ * 1. Initial idle
  * 2. Ramp workload
  * 3. Cooling
  * 4. Chaos workload
@@ -33,21 +36,36 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 8. Mixed workload
  * 9. Final cooling
  *
- * Files generated:
+ * Every run creates:
  *
- * current_tier.json
- *     Current workload state for the telemetry collector.
+ * stress_logs/
+ * └── <RUN_ID>/
+ *     ├── stress_events.jsonl
+ *     └── run_metadata.json
  *
- * stress_events.jsonl
- *     Permanent workload-event history.
- *
- * run_metadata.json
- *     Complete description of the experiment.
+ * Nothing from this program is used as an LSTM input feature.
  */
 public final class StressTestRunner {
 
     // ============================================================
-    // GENERAL CONFIGURATION
+    // DEVICE CONFIGURATION
+    // ============================================================
+
+    private static final String DEVICE_ID =
+            "CHANGE_THIS_DEVICE_NAME";
+
+    /*
+     * Suggested values:
+     *
+     * PRABHSIMRAT -> 101L
+     * MANAN       -> 201L
+     * SUSHANT     -> 301L
+     */
+    private static final long SEED = 101L;
+
+
+    // ============================================================
+    // CPU CONFIGURATION
     // ============================================================
 
     private static final int PROCESSORS =
@@ -56,53 +74,27 @@ public final class StressTestRunner {
                     Runtime.getRuntime().availableProcessors()
             );
 
-    /*
-     * Change this manually for each laptop.
-     *
-     * Examples:
-     *
-     * PRABHSIMRAT
-     * MANAN
-     * SUSHANT
-     */
-    private static final String DEVICE_ID =
-            "CHANGE_THIS_DEVICE_NAME";
-
 
     // ============================================================
-    // OUTPUT FILES
+    // OUTPUT DIRECTORY
     // ============================================================
 
-    private static final Path CURRENT_STATE_FILE =
-            Path.of("current_tier.json");
+    private static final Path BASE_LOG_DIRECTORY =
+            Path.of("stress_logs");
 
-    private static final Path EVENT_LOG_FILE =
-            Path.of("stress_events.jsonl");
-
-    private static final Path RUN_METADATA_FILE =
-            Path.of("run_metadata.json");
-
-
-    // ============================================================
-    // RANDOM SEED
-    // ============================================================
 
     /*
-     * Keep this fixed if you want the same experiment again.
-     *
-     * Use different seeds on different laptops for training data.
-     *
-     * Example:
-     *
-     * Prabhsimrat = 101
-     * Manan       = 201
-     * Sushant     = 301
+     * These are assigned once the run ID has been created.
      */
-    private static final long SEED = 101L;
+    private static Path runDirectory;
+
+    private static Path eventLogFile;
+
+    private static Path metadataFile;
 
 
     // ============================================================
-    // AUTOMATIC SESSION DURATIONS
+    // SESSION DURATIONS
     // ============================================================
 
     private static final Duration INITIAL_IDLE =
@@ -128,7 +120,7 @@ public final class StressTestRunner {
 
 
     // ============================================================
-    // WORKLOAD PROFILES
+    // RAMP PROFILE
     // ============================================================
 
     private static final List<Integer> RAMP_PROFILE =
@@ -147,30 +139,25 @@ public final class StressTestRunner {
             );
 
 
-    /*
-     * These transitions are intentionally more varied than only
-     * switching between 0% and 100%.
-     */
+    // ============================================================
+    // TRANSITION PROFILE
+    // ============================================================
+
     private static final int[][] TRANSITION_PAIRS = {
 
             {0, 100},
-
             {100, 0},
 
             {20, 80},
-
             {80, 20},
 
             {40, 90},
-
             {90, 40},
 
             {80, 30},
-
             {30, 80},
 
             {100, 50},
-
             {50, 100}
     };
 
@@ -200,14 +187,17 @@ public final class StressTestRunner {
 
         String runId = createRunId();
 
-        Random random = new Random(SEED);
+        initialiseRunDirectory(runId);
+
+        Random random =
+                new Random(SEED);
 
         AtomicBoolean stopRequested =
                 new AtomicBoolean(false);
 
 
         // --------------------------------------------------------
-        // Shutdown handling
+        // Safe shutdown handling
         // --------------------------------------------------------
 
         Runtime.getRuntime().addShutdownHook(
@@ -220,18 +210,19 @@ public final class StressTestRunner {
 
                             try {
 
-                                writeCurrentState(
+                                logInstantEvent(
                                         runId,
-                                        "STOPPED",
+                                        "RUN_INTERRUPTED",
+                                        "SYSTEM",
                                         0,
                                         -1,
-                                        "SHUTDOWN"
+                                        "Program was stopped before normal completion."
                                 );
 
                             } catch (IOException error) {
 
                                 System.err.println(
-                                        "Could not reset workload state: "
+                                        "Could not record shutdown event: "
                                                 + error.getMessage()
                                 );
                             }
@@ -243,21 +234,35 @@ public final class StressTestRunner {
 
 
         // --------------------------------------------------------
-        // Prepare output files
+        // Write experiment configuration
         // --------------------------------------------------------
-
-        initialiseEventLog();
 
         writeRunMetadata(runId);
 
-
         printExperimentPlan(runId);
+
+
+        Instant fullRunStart =
+                Instant.now();
+
+
+        logInstantEvent(
+                runId,
+                "RUN_START",
+                "SYSTEM",
+                0,
+                0,
+                "Automatic stress experiment started."
+        );
+
+
+        boolean completedNormally = false;
 
 
         try {
 
             // ====================================================
-            // SESSION 1: INITIAL IDLE
+            // 1. INITIAL IDLE
             // ====================================================
 
             runIdleSession(
@@ -269,7 +274,7 @@ public final class StressTestRunner {
 
 
             // ====================================================
-            // SESSION 2: RAMP
+            // 2. RAMP
             // ====================================================
 
             runWorkloadSession(
@@ -282,7 +287,7 @@ public final class StressTestRunner {
 
 
             // ====================================================
-            // COOLING
+            // 3. COOLING AFTER RAMP
             // ====================================================
 
             runIdleSession(
@@ -294,7 +299,7 @@ public final class StressTestRunner {
 
 
             // ====================================================
-            // SESSION 3: CHAOS
+            // 4. CHAOS
             // ====================================================
 
             runWorkloadSession(
@@ -307,7 +312,7 @@ public final class StressTestRunner {
 
 
             // ====================================================
-            // COOLING
+            // 5. COOLING AFTER CHAOS
             // ====================================================
 
             runIdleSession(
@@ -319,7 +324,7 @@ public final class StressTestRunner {
 
 
             // ====================================================
-            // SESSION 4: TRANSITIONS
+            // 6. TRANSITION
             // ====================================================
 
             runWorkloadSession(
@@ -332,7 +337,7 @@ public final class StressTestRunner {
 
 
             // ====================================================
-            // COOLING
+            // 7. COOLING AFTER TRANSITION
             // ====================================================
 
             runIdleSession(
@@ -344,7 +349,7 @@ public final class StressTestRunner {
 
 
             // ====================================================
-            // SESSION 5: MIXED
+            // 8. MIXED
             // ====================================================
 
             runWorkloadSession(
@@ -357,7 +362,7 @@ public final class StressTestRunner {
 
 
             // ====================================================
-            // FINAL COOLING
+            // 9. FINAL COOLING
             // ====================================================
 
             runIdleSession(
@@ -367,23 +372,36 @@ public final class StressTestRunner {
                     stopRequested
             );
 
+
+            if (!stopRequested.get()) {
+
+                completedNormally = true;
+
+            }
+
         } finally {
 
-            writeCurrentState(
-                    runId,
-                    "FINISHED",
-                    0,
-                    -1,
-                    "FINISHED"
-            );
+            Instant fullRunEnd =
+                    Instant.now();
 
-            logEvent(
-                    runId,
-                    "RUN_FINISHED",
-                    0,
-                    -1,
-                    0
-            );
+
+            if (completedNormally) {
+
+                logCompletedEvent(
+                        runId,
+                        "RUN",
+                        "COMPLETE_EXPERIMENT",
+                        0,
+                        0,
+                        fullRunStart,
+                        fullRunEnd,
+                        Duration.between(
+                                fullRunStart,
+                                fullRunEnd
+                        ).toSeconds(),
+                        "Experiment completed normally."
+                );
+            }
         }
 
 
@@ -392,10 +410,74 @@ public final class StressTestRunner {
         System.out.println("DATASET COLLECTION FINISHED");
         System.out.println("======================================");
 
-        System.out.println("Run ID: " + runId);
+        System.out.println(
+                "Run ID: " + runId
+        );
 
         System.out.println(
                 "Finished at: " + Instant.now()
+        );
+
+        System.out.println(
+                "Logs saved in:"
+        );
+
+        System.out.println(
+                runDirectory.toAbsolutePath()
+        );
+
+        System.out.println("======================================");
+    }
+
+
+    // ============================================================
+    // CREATE UNIQUE RUN DIRECTORY
+    // ============================================================
+
+    private static void initialiseRunDirectory(
+            String runId
+    ) throws IOException {
+
+
+        Files.createDirectories(
+                BASE_LOG_DIRECTORY
+        );
+
+
+        runDirectory =
+                BASE_LOG_DIRECTORY.resolve(runId);
+
+
+        /*
+         * createDirectory(), not createDirectories().
+         *
+         * If the exact run folder somehow already exists,
+         * the program fails instead of overwriting it.
+         */
+        Files.createDirectory(
+                runDirectory
+        );
+
+
+        eventLogFile =
+                runDirectory.resolve(
+                        "stress_events.jsonl"
+                );
+
+
+        metadataFile =
+                runDirectory.resolve(
+                        "run_metadata.json"
+                );
+
+
+        /*
+         * Create the empty event log.
+         *
+         * CREATE_NEW prevents accidental overwriting.
+         */
+        Files.createFile(
+                eventLogFile
         );
     }
 
@@ -434,24 +516,22 @@ public final class StressTestRunner {
         System.out.println("======================================");
 
 
+        Instant sessionStart =
+                Instant.now();
+
+
         Instant finishAt =
-                Instant.now().plus(sessionDuration);
+                sessionStart.plus(sessionDuration);
 
 
         LoadSequence sequence =
-                new LoadSequence(mode, random);
+                new LoadSequence(
+                        mode,
+                        random
+                );
 
 
         int stepNumber = 0;
-
-
-        logEvent(
-                runId,
-                mode.name() + "_SESSION_START",
-                0,
-                stepNumber,
-                sessionDuration.toSeconds()
-        );
 
 
         while (
@@ -499,47 +579,15 @@ public final class StressTestRunner {
             }
 
 
-            // ----------------------------------------------------
-            // Write workload state
-            // ----------------------------------------------------
-
-            writeCurrentState(
-
-                    runId,
-
-                    mode.name(),
-
-                    load,
-
-                    stepNumber + 1,
-
-                    "RUNNING"
-            );
-
-
-            // ----------------------------------------------------
-            // Permanent event history
-            // ----------------------------------------------------
-
-            logEvent(
-
-                    runId,
-
-                    mode.name(),
-
-                    load,
-
-                    stepNumber + 1,
-
-                    actualDuration.toSeconds()
-            );
+            Instant stepStart =
+                    Instant.now();
 
 
             System.out.printf(
 
                     Locale.ROOT,
 
-                    "%s | Step %d | Load %d%% | Duration %s%n",
+                    "%s | Step %d | Load %d%% | Duration %s | Start %s%n",
 
                     mode,
 
@@ -547,7 +595,9 @@ public final class StressTestRunner {
 
                     load,
 
-                    formatDuration(actualDuration)
+                    formatDuration(actualDuration),
+
+                    stepStart
 
             );
 
@@ -557,13 +607,42 @@ public final class StressTestRunner {
             // ----------------------------------------------------
 
             runCpuLoad(
+                    load,
+                    actualDuration,
+                    stopRequested
+            );
+
+
+            Instant stepEnd =
+                    Instant.now();
+
+
+            // ----------------------------------------------------
+            // Log what actually happened
+            // ----------------------------------------------------
+
+            logCompletedEvent(
+
+                    runId,
+
+                    "WORKLOAD_STEP",
+
+                    mode.name(),
 
                     load,
 
-                    actualDuration,
+                    stepNumber + 1,
 
-                    stopRequested
+                    stepStart,
 
+                    stepEnd,
+
+                    Duration.between(
+                            stepStart,
+                            stepEnd
+                    ).toSeconds(),
+
+                    "Completed workload step."
             );
 
 
@@ -571,24 +650,37 @@ public final class StressTestRunner {
         }
 
 
-        logEvent(
+        Instant sessionEnd =
+                Instant.now();
+
+
+        logCompletedEvent(
 
                 runId,
 
-                mode.name() + "_SESSION_END",
+                "SESSION",
+
+                mode.name(),
 
                 0,
 
                 stepNumber,
 
-                0
+                sessionStart,
+
+                sessionEnd,
+
+                Duration.between(
+                        sessionStart,
+                        sessionEnd
+                ).toSeconds(),
+
+                "Workload session completed."
         );
 
 
         System.out.println(
-
                 "Finished session: " + mode
-
         );
     }
 
@@ -618,38 +710,15 @@ public final class StressTestRunner {
         );
 
         System.out.println(
-                "Duration: " + formatDuration(duration)
+                "Duration: "
+                        + formatDuration(duration)
         );
 
         System.out.println("======================================");
 
 
-        writeCurrentState(
-
-                runId,
-
-                sessionName,
-
-                0,
-
-                0,
-
-                "IDLE"
-        );
-
-
-        logEvent(
-
-                runId,
-
-                sessionName,
-
-                0,
-
-                0,
-
-                duration.toSeconds()
-        );
+        Instant startTime =
+                Instant.now();
 
 
         long endNanos =
@@ -660,11 +729,37 @@ public final class StressTestRunner {
 
 
         waitUntil(
-
                 endNanos,
-
                 stopRequested
+        );
 
+
+        Instant endTime =
+                Instant.now();
+
+
+        logCompletedEvent(
+
+                runId,
+
+                "SESSION",
+
+                sessionName,
+
+                0,
+
+                0,
+
+                startTime,
+
+                endTime,
+
+                Duration.between(
+                        startTime,
+                        endTime
+                ).toSeconds(),
+
+                "Idle or cooling session completed."
         );
     }
 
@@ -694,11 +789,8 @@ public final class StressTestRunner {
         if (targetPercent == 0) {
 
             waitUntil(
-
                     endNanos,
-
                     stopRequested
-
             );
 
             return;
@@ -706,27 +798,20 @@ public final class StressTestRunner {
 
 
         AtomicBoolean workersRunning =
-
                 new AtomicBoolean(true);
 
 
         ExecutorService workers =
 
                 Executors.newFixedThreadPool(
-
                         PROCESSORS
-
                 );
 
 
         for (
-
                 int worker = 0;
-
                 worker < PROCESSORS;
-
                 worker++
-
         ) {
 
             workers.submit(
@@ -740,19 +825,14 @@ public final class StressTestRunner {
                             workersRunning,
 
                             stopRequested
-
                     )
-
             );
         }
 
 
         waitUntil(
-
                 endNanos,
-
                 stopRequested
-
         );
 
 
@@ -763,11 +843,8 @@ public final class StressTestRunner {
 
 
         workers.awaitTermination(
-
                 5,
-
                 TimeUnit.SECONDS
-
         );
     }
 
@@ -789,18 +866,7 @@ public final class StressTestRunner {
     ) {
 
 
-        /*
-         * 100 ms duty-cycle window.
-         *
-         * Example:
-         *
-         * 60% target:
-         *
-         * busy  = 60 ms
-         * sleep = 40 ms
-         */
         long cycleNanos =
-
                 TimeUnit.MILLISECONDS.toNanos(100);
 
 
@@ -840,7 +906,6 @@ public final class StressTestRunner {
                             endNanos,
 
                             cycleStart + busyNanos
-
                     );
 
 
@@ -856,13 +921,9 @@ public final class StressTestRunner {
 
 
                 for (
-
                         int calculation = 0;
-
                         calculation < 1_000;
-
                         calculation++
-
                 ) {
 
                     value =
@@ -903,15 +964,11 @@ public final class StressTestRunner {
                 try {
 
                     TimeUnit.NANOSECONDS.sleep(
-
                             sleepNanos
-
                     );
 
                 } catch (
-
                         InterruptedException interrupted
-
                 ) {
 
                     Thread.currentThread().interrupt();
@@ -922,9 +979,6 @@ public final class StressTestRunner {
         }
 
 
-        /*
-         * Prevent theoretical elimination of calculations.
-         */
         if (value == Double.MIN_VALUE) {
 
             System.out.print("");
@@ -938,9 +992,7 @@ public final class StressTestRunner {
     // ============================================================
 
     private static Duration randomStepDuration(
-
             Random random
-
     ) {
 
 
@@ -948,10 +1000,7 @@ public final class StressTestRunner {
                 random.nextInt(100);
 
 
-        // --------------------------------------------------------
-        // 35% SHORT EVENTS
-        // 20-45 seconds
-        // --------------------------------------------------------
+        // 35% chance: 20-45 seconds
 
         if (category < 35) {
 
@@ -961,15 +1010,11 @@ public final class StressTestRunner {
                             20,
                             46
                     )
-
             );
         }
 
 
-        // --------------------------------------------------------
-        // 40% MEDIUM EVENTS
-        // 46-120 seconds
-        // --------------------------------------------------------
+        // 40% chance: 46-120 seconds
 
         if (category < 75) {
 
@@ -979,15 +1024,11 @@ public final class StressTestRunner {
                             46,
                             121
                     )
-
             );
         }
 
 
-        // --------------------------------------------------------
-        // 25% LONG EVENTS
-        // 121-240 seconds
-        // --------------------------------------------------------
+        // 25% chance: 121-240 seconds
 
         return Duration.ofSeconds(
 
@@ -995,7 +1036,6 @@ public final class StressTestRunner {
                         121,
                         241
                 )
-
         );
     }
 
@@ -1026,7 +1066,6 @@ public final class StressTestRunner {
             if (remaining <= 0) {
 
                 return;
-
             }
 
 
@@ -1038,21 +1077,21 @@ public final class StressTestRunner {
 
                             TimeUnit.MILLISECONDS
                                     .toNanos(250)
-
                     )
-
             );
         }
     }
 
 
     // ============================================================
-    // CURRENT STATE JSON
+    // LOG COMPLETED EVENT
     // ============================================================
 
-    private static void writeCurrentState(
+    private static synchronized void logCompletedEvent(
 
             String runId,
+
+            String eventType,
 
             String mode,
 
@@ -1060,69 +1099,13 @@ public final class StressTestRunner {
 
             int stepNumber,
 
-            String status
+            Instant startTime,
 
-    ) throws IOException {
+            Instant endTime,
 
+            long actualDurationSeconds,
 
-        String json = """
-
-                {
-                  "timestamp": "%s",
-                  "runId": "%s",
-                  "deviceId": "%s",
-                  "mode": "%s",
-                  "targetLoad": %d,
-                  "stepNumber": %d,
-                  "status": "%s",
-                  "seed": %d
-                }
-                """.formatted(
-
-                Instant.now(),
-
-                escapeJson(runId),
-
-                escapeJson(DEVICE_ID),
-
-                escapeJson(mode),
-
-                targetLoad,
-
-                stepNumber,
-
-                escapeJson(status),
-
-                SEED
-
-        );
-
-
-        atomicWrite(
-
-                CURRENT_STATE_FILE,
-
-                json
-
-        );
-    }
-
-
-    // ============================================================
-    // EVENT LOG
-    // ============================================================
-
-    private static synchronized void logEvent(
-
-            String runId,
-
-            String mode,
-
-            int targetLoad,
-
-            int stepNumber,
-
-            long durationSeconds
+            String message
 
     ) throws IOException {
 
@@ -1131,8 +1114,8 @@ public final class StressTestRunner {
 
                 "{"
 
-                        + "\"timestamp\":\""
-                        + Instant.now()
+                        + "\"eventType\":\""
+                        + escapeJson(eventType)
                         + "\","
 
                         + "\"runId\":\""
@@ -1155,41 +1138,98 @@ public final class StressTestRunner {
                         + stepNumber
                         + ","
 
-                        + "\"durationSeconds\":"
-                        + durationSeconds
+                        + "\"startTime\":\""
+                        + startTime
+                        + "\","
+
+                        + "\"endTime\":\""
+                        + endTime
+                        + "\","
+
+                        + "\"actualDurationSeconds\":"
+                        + actualDurationSeconds
                         + ","
 
                         + "\"seed\":"
                         + SEED
+                        + ","
+
+                        + "\"message\":\""
+                        + escapeJson(message)
+                        + "\""
 
                         + "}"
+
                         + System.lineSeparator();
 
 
         Files.writeString(
 
-                EVENT_LOG_FILE,
+                eventLogFile,
 
                 jsonLine,
 
                 StandardCharsets.UTF_8,
 
-                StandardOpenOption.CREATE,
-
                 StandardOpenOption.APPEND
-
         );
     }
 
 
     // ============================================================
-    // RUN METADATA JSON
+    // LOG INSTANT EVENT
+    // ============================================================
+
+    private static synchronized void logInstantEvent(
+
+            String runId,
+
+            String eventType,
+
+            String mode,
+
+            int targetLoad,
+
+            int stepNumber,
+
+            String message
+
+    ) throws IOException {
+
+
+        Instant timestamp =
+                Instant.now();
+
+
+        logCompletedEvent(
+
+                runId,
+
+                eventType,
+
+                mode,
+
+                targetLoad,
+
+                stepNumber,
+
+                timestamp,
+
+                timestamp,
+
+                0,
+
+                message
+        );
+    }
+
+
+    // ============================================================
+    // RUN METADATA
     // ============================================================
 
     private static void writeRunMetadata(
-
             String runId
-
     ) throws IOException {
 
 
@@ -1219,14 +1259,9 @@ public final class StressTestRunner {
                   "seed": %d,
                   "processors": %d,
 
-                  "recommendedTelemetryIntervalSeconds": 2,
+                  "purpose": "Independent CPU stress verification log",
 
-                  "modelExperiment": {
-                    "lookbackRows": 60,
-                    "historySeconds": 120,
-                    "predictionHorizonRows": 30,
-                    "predictionHorizonSeconds": 60
-                  },
+                  "usedAsModelFeature": false,
 
                   "durationDistribution": {
                     "short": {
@@ -1256,7 +1291,7 @@ public final class StressTestRunner {
                       "durationMinutes": %d
                     },
                     {
-                      "mode": "COOLING",
+                      "mode": "COOLING_AFTER_RAMP",
                       "durationMinutes": %d
                     },
                     {
@@ -1264,7 +1299,7 @@ public final class StressTestRunner {
                       "durationMinutes": %d
                     },
                     {
-                      "mode": "COOLING",
+                      "mode": "COOLING_AFTER_CHAOS",
                       "durationMinutes": %d
                     },
                     {
@@ -1272,7 +1307,7 @@ public final class StressTestRunner {
                       "durationMinutes": %d
                     },
                     {
-                      "mode": "COOLING",
+                      "mode": "COOLING_AFTER_TRANSITION",
                       "durationMinutes": %d
                     },
                     {
@@ -1318,124 +1353,19 @@ public final class StressTestRunner {
                 FINAL_COOLING_DURATION.toMinutes(),
 
                 totalMinutes
-
         );
-
-
-        atomicWrite(
-
-                RUN_METADATA_FILE,
-
-                json
-
-        );
-    }
-
-
-    // ============================================================
-    // INITIALISE EVENT LOG
-    // ============================================================
-
-    private static void initialiseEventLog()
-
-            throws IOException {
-
-
-        /*
-         * Delete the previous event file.
-         *
-         * This ensures every run gets a clean event history.
-         */
-        Files.deleteIfExists(
-
-                EVENT_LOG_FILE
-
-        );
-    }
-
-
-    // ============================================================
-    // ATOMIC FILE WRITE
-    // ============================================================
-
-    private static void atomicWrite(
-
-            Path target,
-
-            String content
-
-    ) throws IOException {
-
-
-        Path absoluteTarget =
-                target.toAbsolutePath();
-
-
-        Path parent =
-                absoluteTarget.getParent();
-
-
-        if (parent != null) {
-
-            Files.createDirectories(parent);
-
-        }
-
-
-        Path temporary =
-
-                Files.createTempFile(
-
-                        parent,
-
-                        "stress-state-",
-
-                        ".tmp"
-
-                );
 
 
         Files.writeString(
 
-                temporary,
+                metadataFile,
 
-                content,
+                json,
 
-                StandardCharsets.UTF_8
+                StandardCharsets.UTF_8,
 
+                StandardOpenOption.CREATE_NEW
         );
-
-
-        try {
-
-            Files.move(
-
-                    temporary,
-
-                    absoluteTarget,
-
-                    StandardCopyOption.REPLACE_EXISTING,
-
-                    StandardCopyOption.ATOMIC_MOVE
-
-            );
-
-        } catch (
-
-                java.nio.file.AtomicMoveNotSupportedException unsupported
-
-        ) {
-
-            Files.move(
-
-                    temporary,
-
-                    absoluteTarget,
-
-                    StandardCopyOption.REPLACE_EXISTING
-
-            );
-        }
     }
 
 
@@ -1452,7 +1382,6 @@ public final class StressTestRunner {
         TRANSITION,
 
         MIXED
-
     }
 
 
@@ -1471,13 +1400,7 @@ public final class StressTestRunner {
         private int previousChaosLoad = -1;
 
 
-        /*
-         * Mixed mode uses blocks.
-         *
-         * The block order is shuffled every cycle.
-         */
         private List<WorkloadMode> mixedBlockOrder =
-
                 new ArrayList<>();
 
 
@@ -1508,31 +1431,22 @@ public final class StressTestRunner {
 
 
         private int next(
-
                 int stepNumber
-
         ) {
 
 
             return switch (mode) {
 
                 case RAMP ->
-
                         rampLoad(stepNumber);
 
-
                 case CHAOS ->
-
                         chaosLoad();
 
-
                 case TRANSITION ->
-
                         transitionLoad(stepNumber);
 
-
                 case MIXED ->
-
                         mixedLoad();
             };
         }
@@ -1543,9 +1457,7 @@ public final class StressTestRunner {
         // --------------------------------------------------------
 
         private int rampLoad(
-
                 int stepNumber
-
         ) {
 
 
@@ -1554,7 +1466,6 @@ public final class StressTestRunner {
                     stepNumber
 
                             % RAMP_PROFILE.size()
-
             );
         }
 
@@ -1578,13 +1489,12 @@ public final class StressTestRunner {
                                 * 10;
 
             } while (
-
                     load == previousChaosLoad
-
             );
 
 
-            previousChaosLoad = load;
+            previousChaosLoad =
+                    load;
 
 
             return load;
@@ -1596,9 +1506,7 @@ public final class StressTestRunner {
         // --------------------------------------------------------
 
         private int transitionLoad(
-
                 int stepNumber
-
         ) {
 
 
@@ -1610,14 +1518,11 @@ public final class StressTestRunner {
 
 
             int pairPosition =
-
                     stepNumber % 2;
 
 
             return TRANSITION_PAIRS
-
                     [pairIndex]
-
                     [pairPosition];
         }
 
@@ -1632,9 +1537,7 @@ public final class StressTestRunner {
             WorkloadMode activeBlock =
 
                     mixedBlockOrder.get(
-
                             mixedBlockIndex
-
                     );
 
 
@@ -1665,10 +1568,8 @@ public final class StressTestRunner {
                 default ->
 
                         throw new IllegalStateException(
-
                                 "Invalid mixed block: "
                                         + activeBlock
-
                         );
             }
 
@@ -1681,32 +1582,20 @@ public final class StressTestRunner {
                     switch (activeBlock) {
 
                         case RAMP ->
-
                                 MIXED_RAMP_STEPS;
 
-
                         case CHAOS ->
-
                                 MIXED_CHAOS_STEPS;
 
-
                         case TRANSITION ->
-
                                 MIXED_TRANSITION_STEPS;
 
-
                         default ->
-
                                 throw new IllegalStateException();
-
                     };
 
 
-            if (
-
-                    mixedStepInBlock >= blockLength
-
-            ) {
+            if (mixedStepInBlock >= blockLength) {
 
 
                 mixedStepInBlock = 0;
@@ -1715,14 +1604,11 @@ public final class StressTestRunner {
 
 
                 if (
-
                         mixedBlockIndex
                                 >= mixedBlockOrder.size()
-
                 ) {
 
                     createNewMixedCycle();
-
                 }
             }
 
@@ -1745,9 +1631,7 @@ public final class StressTestRunner {
                                     WorkloadMode.CHAOS,
 
                                     WorkloadMode.TRANSITION
-
                             )
-
                     );
 
 
@@ -1756,7 +1640,6 @@ public final class StressTestRunner {
                     mixedBlockOrder,
 
                     random
-
             );
 
 
@@ -1775,11 +1658,9 @@ public final class StressTestRunner {
 
 
         if (
-
                 DEVICE_ID.equals(
                         "CHANGE_THIS_DEVICE_NAME"
                 )
-
         ) {
 
             throw new IllegalStateException(
@@ -1799,28 +1680,34 @@ public final class StressTestRunner {
                             "PRABHSIMRAT";
 
                     """
-
             );
         }
     }
 
 
     // ============================================================
-    // RUN ID
+    // CREATE RUN ID
     // ============================================================
 
     private static String createRunId() {
+
+
+        String safeTimestamp =
+
+                Instant.now()
+
+                        .toString()
+
+                        .replace(":", "-")
+
+                        .replace(".", "-");
 
 
         return DEVICE_ID
 
                 + "_"
 
-                + Instant.now()
-
-                .toString()
-
-                .replace(":", "-");
+                + safeTimestamp;
     }
 
 
@@ -1829,9 +1716,7 @@ public final class StressTestRunner {
     // ============================================================
 
     private static String escapeJson(
-
             String value
-
     ) {
 
 
@@ -1852,20 +1737,15 @@ public final class StressTestRunner {
     // ============================================================
 
     private static String formatDuration(
-
             Duration duration
-
     ) {
 
 
         long seconds =
 
                 Math.max(
-
                         0,
-
                         duration.toSeconds()
-
                 );
 
 
@@ -1876,7 +1756,6 @@ public final class StressTestRunner {
                 seconds % 3600 / 60,
 
                 seconds % 60
-
         );
     }
 
@@ -1886,9 +1765,7 @@ public final class StressTestRunner {
     // ============================================================
 
     private static void printExperimentPlan(
-
             String runId
-
     ) {
 
 
@@ -1915,50 +1792,68 @@ public final class StressTestRunner {
 
         System.out.println();
 
+        System.out.println("Schedule:");
+
         System.out.println(
-                "Schedule:"
+                "1. Initial idle:    2 minutes"
         );
 
         System.out.println(
-                "1. Initial idle:   2 minutes"
+                "2. Ramp:           90 minutes"
         );
 
         System.out.println(
-                "2. Ramp:          90 minutes"
+                "3. Cooling:         5 minutes"
         );
 
         System.out.println(
-                "3. Cooling:        5 minutes"
+                "4. Chaos:          90 minutes"
         );
 
         System.out.println(
-                "4. Chaos:         90 minutes"
+                "5. Cooling:         5 minutes"
         );
 
         System.out.println(
-                "5. Cooling:        5 minutes"
+                "6. Transitions:    90 minutes"
         );
 
         System.out.println(
-                "6. Transitions:   90 minutes"
+                "7. Cooling:         5 minutes"
         );
 
         System.out.println(
-                "7. Cooling:        5 minutes"
+                "8. Mixed:         180 minutes"
         );
 
         System.out.println(
-                "8. Mixed:        180 minutes"
-        );
-
-        System.out.println(
-                "9. Final cooling: 10 minutes"
+                "9. Final cooling:  10 minutes"
         );
 
         System.out.println();
 
         System.out.println(
-                "Start the telemetry collector BEFORE this program."
+                "Total planned time: 7 hours 57 minutes"
+        );
+
+        System.out.println();
+
+        System.out.println(
+                "Start the thermal telemetry collector first."
+        );
+
+        System.out.println(
+                "This stress generator does NOT communicate with the collector."
+        );
+
+        System.out.println();
+
+        System.out.println(
+                "Stress logs will be saved in:"
+        );
+
+        System.out.println(
+                runDirectory.toAbsolutePath()
         );
 
         System.out.println("======================================");
