@@ -1,27 +1,27 @@
-🌡️ Thermal-Aware Load Balancer
+# 🌡️ Thermal-Aware Load Balancer
 
-A distributed Thermal-Aware Load Balancer that demonstrates how intelligent request scheduling based on real-time hardware telemetry can reduce server temperatures and improve energy efficiency.
+A distributed **Thermal-Aware Load Balancer** that demonstrates how intelligent request scheduling based on real-time hardware telemetry can reduce server temperatures and improve energy efficiency.
 
-The project collects live system telemetry from multiple backend servers, relays it through a centralized WebSocket-based load balancer, and visualizes the data in a modern React dashboard. Multiple backend servers can be monitored simultaneously over a Tailscale network.
+The project collects live system telemetry from backend servers, relays it through a centralized WebSocket-based load balancer, visualizes the data in a modern React dashboard, and prepares datasets for LSTM-based thermal prediction.
 
-⸻
+---
 
- Features
+# ✨ Features
 
-* 🌡️ Real-time CPU, GPU, RAM and network telemetry
-* 🔌 Distributed architecture using WebSockets
-* 🌍 Remote monitoring across cities using Tailscale
-* 📊 Modern React + Tailwind dashboard
-* 📑 Live telemetry stream with historical logs
-* 🔄 Multiple backend server connections
-* 📡 Connection event monitoring
-* 🎛️ Foundation for intelligent request routing
-* 🌬️ Future support for dynamic fan speed regulation
-* ⚡ Designed to demonstrate energy-efficient load balancing
+- 🌡️ Real-time CPU, GPU, RAM, and network telemetry
+- 🔌 Distributed architecture using WebSockets
+- 🌍 Remote monitoring across multiple systems using Tailscale
+- 📊 Modern React dashboard built with Vite
+- 📑 Live telemetry streaming with JSON logging
+- 🔄 Multiple backend server support
+- 📡 Connection event monitoring
+- 🤖 LSTM-ready telemetry dataset generation
+- 🌬️ Foundation for thermal-aware request scheduling
+- ⚡ Demonstrates energy-efficient load balancing concepts
 
-⸻
+---
 
-## 🏗️ Architecture
+# 🏗️ Architecture
 
 ```text
                          React Frontend
@@ -44,43 +44,49 @@ Telemetry Server      Telemetry Server     Telemetry Server
           │
           ▼
  LibreHardwareMonitor
-
-⸻
 ```
-Technology Stack
 
-Frontend
+---
 
-* React
-* Tailwind CSS
-* Vite
+# 🛠 Technology Stack
 
-Backend
+## Frontend
 
-* Spring Boot
-* Java WebSocket
-* Java HttpClient WebSocket
+- React
+- Vite
 
-Monitoring
+## Backend
 
-* LibreHardwareMonitor
-* JSON Logging
+- Spring Boot
+- Java WebSocket
+- Java HttpClient WebSocket
 
-Networking
+## Monitoring
 
-* WebSockets
-* Tailscale VPN
+- LibreHardwareMonitor
+- JSON Logging
 
-⸻
+## Machine Learning
 
-📂 Project Structure
+- Python
+- Jupyter Notebook
+- LSTM (TensorFlow/Keras)
 
+## Networking
+
+- WebSockets
+- Tailscale VPN
+
+---
+
+# 📂 Project Structure
+
+```text
 ThermalAwareLoadBalancer/
 
 ├── Load Balancer Frontend/
-│   ├── React
-│   ├── Tailwind
-│   └── Dashboard
+│   ├── React Dashboard
+│   └── Vite
 │
 ├── WebSocketForLoadBalancer/
 │   ├── Spring Boot
@@ -92,150 +98,267 @@ ThermalAwareLoadBalancer/
 │   ├── Hardware Monitor Client
 │   └── WebSocket Server
 │
+├── Stress Generator/
+│   └── Generates CPU stress events
+│
+├── LSTM/
+│   ├── after_stress_generator.ipynb
+│   └── cross_hardware_lstm.ipynb
+│
 └── README.md
+```
 
-⸻
+---
 
-⚙️ How It Works
+# ⚙️ How It Works
 
 1. Every backend server continuously monitors its hardware statistics.
-2. The ThermalTelemetryCollector gathers metrics such as:
+2. The **ThermalTelemetryCollector** gathers:
 
-* CPU Usage
-* CPU Temperature
-* GPU Temperature
-* GPU Memory Usage
-* RAM Usage
-* Network Connections
-* Running Processes
+- CPU Usage
+- CPU Temperature
+- GPU Usage
+- GPU Temperature
+- RAM Usage
+- Network Connections
+- Running Processes
 
-3. Every 2 seconds, the telemetry collector:
+3. Every **2 seconds**, the collector:
 
-* Collects the latest hardware statistics
-* Saves them to JSON logs
-* Broadcasts them through a WebSocket server
+- Reads hardware telemetry from LibreHardwareMonitor
+- Stores telemetry in JSON logs
+- Broadcasts telemetry over WebSockets
 
-4. The Spring Boot Load Balancer acts as a WebSocket client for each backend server.
-5. The Load Balancer forwards telemetry to the React dashboard.
-6. The dashboard displays:
+4. The Spring Boot Load Balancer receives telemetry from all connected backend servers.
 
-* Live telemetry
-* Connection events
-* Telemetry history
-* Multiple backend servers simultaneously
+5. The React dashboard displays:
 
-⸻
+- Live telemetry
+- Connection events
+- Historical telemetry
+- Multiple backend servers simultaneously
 
-▶️ Running the Project
+6. The collected telemetry is later processed to generate datasets for LSTM-based temperature prediction.
 
-Step 1 — Start the Load Balancer
+---
 
-Run the Spring Boot project:
+# ▶️ Running the Project
 
-WebSocketForLoadBalancer
+## Step 1 — Start LibreHardwareMonitor
 
-Default Port:
-
-8080
-
-⸻
-
-Step 2 — Start the Frontend
-
-Navigate to:
-
-Load Balancer Frontend
-
-Install dependencies:
-
-npm install
-
-Run:
-
-npm run dev
-
-Default URL:
-
-http://localhost:5173
-
-⸻
-
-Step 3 — Prepare a Backend Server
-
-On each backend server:
-
-1. Start LibreHardwareMonitor
+Open **LibreHardwareMonitor**.
 
 Enable:
 
+```
 Options
     → Remote Web Server
+```
 
-2. Run
+This exposes the hardware telemetry required by the telemetry collector.
 
-ThermalTelemetryCollector
+---
 
-The collector connects to LibreHardwareMonitor, gathers telemetry every two seconds, and exposes a WebSocket server on:
+## Step 2 — Run ThermalTelemetryCollector
 
+Start the **ThermalTelemetryCollector** application.
+
+The collector:
+
+- Reads hardware telemetry
+- Stores telemetry in `system_logs.jsonl`
+- Starts a WebSocket server
+
+Default endpoint:
+
+```
 ws://<server-ip>:8086/telemetry
+```
 
-⸻
+---
 
-Step 4 — Connect Through Tailscale
+## Step 3 — Run StressTestRunner
 
-Copy the backend server’s Tailscale IP address.
+Navigate to the **Stress Generator** project and execute:
 
-Inside the React dashboard:
+```
+StressTestRunner
+```
 
-* Create a server tab
-* Enter the backend server’s Tailscale IP
-* Connect
+The stress generator creates controlled CPU load while generating corresponding event logs.
 
-The Spring Boot Load Balancer automatically establishes a WebSocket connection to that backend and begins streaming telemetry.
+---
 
-⸻
+## Step 4 — Merge Telemetry and Event Logs
 
-📊 Live Dashboard
+Navigate to the **LSTM** folder.
 
-The dashboard currently supports:
+Run:
 
-* Live telemetry cards
-* Connection status
-* Connection events
-* Telemetry history
-* Multiple server tabs
-* Remote server monitoring
+```
+after_stress_generator.ipynb
+```
 
-⸻
+This notebook:
 
-🔮 Future Enhancements
+- Reads `system_logs.jsonl`
+- Reads the generated event logs
+- Synchronizes timestamps
+- Merges both datasets into a single training dataset
 
-* 🤖 AI-based fan speed prediction
-* 🧠 Temperature-aware request scheduling
-* ⚖️ Dynamic load balancing algorithm
-* 📈 Historical charts and analytics
-* 🔔 Thermal alerts
-* 🧮 Power consumption estimation
-* 🌬️ Remote fan speed regulation
-* 📊 Server comparison dashboard
-* ☁️ Cloud deployment
+---
 
-⸻
+## Step 5 — Train the LSTM Model
 
-Project Goal
+After the merged dataset has been generated, run:
 
-Traditional load balancers distribute requests primarily based on server load. This project explores a different approach by incorporating real-time thermal telemetry into routing decisions.
+```
+cross_hardware_lstm.ipynb
+```
 
-The long-term objective is to demonstrate that intelligent thermal-aware scheduling can:
+This notebook:
 
-* Reduce server temperatures
-* Lower cooling requirements
-* Improve energy efficiency
-* Extend hardware lifespan
-* Optimize overall data center performance
+- Loads the merged telemetry dataset
+- Performs preprocessing and feature engineering
+- Trains an LSTM model for CPU temperature prediction
+- Evaluates prediction accuracy across hardware configurations
 
-⸻
+---
 
-📜 License
+# 🌍 Running the Distributed Dashboard
 
-This project was developed as part of a Computer Science capstone project for educational and research purposes.
+## Start the Load Balancer
+
+Run:
+
+```
+WebSocketForLoadBalancer
+```
+
+Default Port:
+
+```
+8080
+```
+
+---
+
+## Start the Frontend
+
+Navigate to:
+
+```
+Load Balancer Frontend
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run:
+
+```bash
+npm run dev
+```
+
+Frontend:
+
+```
+http://localhost:5173
+```
+
+---
+
+## Connect Remote Servers
+
+1. Install and configure **Tailscale** on all backend systems.
+2. Copy the backend server's Tailscale IP.
+3. Open the dashboard.
+4. Create a new server tab.
+5. Enter the Tailscale IP.
+6. Connect.
+
+The Load Balancer automatically establishes a WebSocket connection and begins streaming telemetry.
+
+---
+
+# 📊 Dashboard Features
+
+- Live telemetry cards
+- CPU & GPU monitoring
+- Connection status
+- Connection event logs
+- Historical telemetry
+- Multiple backend monitoring
+
+---
+
+# 🤖 Machine Learning Pipeline
+
+The project also provides a complete workflow for thermal prediction.
+
+```
+LibreHardwareMonitor
+        │
+        ▼
+ThermalTelemetryCollector
+        │
+        ▼
+system_logs.jsonl
+        │
+        ▼
+StressTestRunner
+        │
+        ▼
+events.json
+        │
+        ▼
+after_stress_generator.ipynb
+        │
+        ▼
+Merged Dataset
+        │
+        ▼
+cross_hardware_lstm.ipynb
+        │
+        ▼
+LSTM Temperature Prediction Model
+```
+
+---
+
+# 🔮 Future Enhancements
+
+- AI-based fan speed prediction
+- Thermal-aware request scheduling
+- Intelligent load balancing algorithms
+- Historical analytics dashboard
+- Thermal alerts
+- Power consumption estimation
+- Remote fan speed regulation
+- Server comparison dashboard
+- Cloud deployment
+
+---
+
+# 🎯 Project Goal
+
+Traditional load balancers distribute requests primarily based on CPU utilization or request count.
+
+This project explores a **thermal-aware approach**, where real-time hardware telemetry is used to make smarter routing decisions and generate predictive models for future thermal behavior.
+
+The long-term objectives are to:
+
+- Reduce server temperatures
+- Improve energy efficiency
+- Lower cooling requirements
+- Extend hardware lifespan
+- Enable predictive thermal management using LSTM models
+
+---
+
+# 📜 License
+
+Developed as part of a Computer Science Capstone Project for educational and research purposes.
