@@ -98,3 +98,6 @@ wheel==0.47.0
 wrapt==2.2.2
 fastapi==0.139.0
 uvicorn==0.50.2
+onnx==1.22.0
+onnxruntime==1.27.0
+tf2onnx==1.17.0
