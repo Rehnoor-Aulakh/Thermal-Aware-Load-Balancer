@@ -12,6 +12,10 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -20,17 +24,19 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import jakarta.annotation.PreDestroy;
-import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 @Component
 public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
 
     private static final int DEFAULT_BACKEND_PORT = 8086;
+    private static final long NO_DATA_WARNING_DELAY_SECONDS = 10;
 
     private final ObjectMapper objectMapper;
     private final HttpClient httpClient;
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private final Map<String, WebSocket> upstreamConnections = new ConcurrentHashMap<>();
+    private final Map<String, ScheduledFuture<?>> noDataWarnings = new ConcurrentHashMap<>();
 
     public LoadBalancerWebSocketHandler(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
@@ -62,11 +68,13 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
+        cancelNoTelemetryWarning(session.getId());
         closeBackendConnection(session.getId());
     }
 
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) {
+        cancelNoTelemetryWarning(session.getId());
         closeBackendConnection(session.getId());
         closeQuietly(session);
     }
@@ -100,6 +108,7 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
 
                     @Override
                     public void onOpen(WebSocket webSocket) {
+                        scheduleNoTelemetryWarning(frontendSession, backendIp);
                         webSocket.request(1);
                     }
 
@@ -107,6 +116,7 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
                     public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
                         messageBuffer.append(data);
                         if (last) {
+                            resetNoTelemetryWarning(frontendSession, backendIp);
                             forwardBackendMessage(frontendSession, messageBuffer.toString());
                             messageBuffer.setLength(0);
                         }
@@ -116,6 +126,7 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
 
                     @Override
                     public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
+                        cancelNoTelemetryWarning(frontendSession.getId());
                         upstreamConnections.remove(frontendSession.getId(), webSocket);
                         sendJson(frontendSession, Map.of(
                                 "type", "backendDisconnected",
@@ -127,21 +138,23 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
 
                     @Override
                     public void onError(WebSocket webSocket, Throwable error) {
+                        cancelNoTelemetryWarning(frontendSession.getId());
                         upstreamConnections.remove(frontendSession.getId(), webSocket);
                         sendJson(frontendSession, Map.of(
                                 "type", "error",
                                 "timestamp", Instant.now().toString(),
-                                "message", "Backend connection failed: " + error.getMessage()
+                                "message", buildConnectionErrorMessage(backendIp, backendUriText, error)
                         ));
                     }
                 });
 
         connectionFuture.whenComplete((webSocket, error) -> {
             if (error != null) {
+                cancelNoTelemetryWarning(frontendSession.getId());
                 sendJson(frontendSession, Map.of(
                         "type", "error",
                         "timestamp", Instant.now().toString(),
-                        "message", "Unable to connect to backend telemetry server at " + backendUriText
+                        "message", buildConnectionErrorMessage(backendIp, backendUriText, error)
                 ));
                 return;
             }
@@ -201,6 +214,45 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
     public void closeAllBackendConnections() {
         upstreamConnections.values().forEach(this::closeBackendConnection);
         upstreamConnections.clear();
+        noDataWarnings.values().forEach(task -> task.cancel(false));
+        noDataWarnings.clear();
+        scheduler.shutdownNow();
+    }
+
+    String buildConnectionErrorMessage(String backendIp, String backendUriText, Throwable error) {
+        String cause = error == null || error.getMessage() == null || error.getMessage().isBlank()
+                ? "the backend server did not respond"
+                : error.getMessage();
+
+        return "Unable to connect to backend IP " + backendIp + " at " + backendUriText + ". "
+                + "Please verify the backend is reachable and that the telemetry connector and Libre Hardware Monitor are running. "
+                + "Details: " + cause;
+    }
+
+    private void scheduleNoTelemetryWarning(WebSocketSession frontendSession, String backendIp) {
+        cancelNoTelemetryWarning(frontendSession.getId());
+        ScheduledFuture<?> future = scheduler.schedule(() -> {
+            if (frontendSession.isOpen()) {
+                sendJson(frontendSession, Map.of(
+                        "type", "warning",
+                        "timestamp", Instant.now().toString(),
+                        "message", "No telemetry data received from " + backendIp + ". Please make sure your telemetry connector and Libre Hardware Monitor are running."
+                ));
+            }
+            noDataWarnings.remove(frontendSession.getId());
+        }, NO_DATA_WARNING_DELAY_SECONDS, TimeUnit.SECONDS);
+        noDataWarnings.put(frontendSession.getId(), future);
+    }
+
+    private void resetNoTelemetryWarning(WebSocketSession frontendSession, String backendIp) {
+        scheduleNoTelemetryWarning(frontendSession, backendIp);
+    }
+
+    private void cancelNoTelemetryWarning(String sessionId) {
+        ScheduledFuture<?> future = noDataWarnings.remove(sessionId);
+        if (future != null) {
+            future.cancel(false);
+        }
     }
 
     private String getQueryParameter(URI uri, String key) {
