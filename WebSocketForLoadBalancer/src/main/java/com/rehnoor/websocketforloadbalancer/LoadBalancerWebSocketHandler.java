@@ -38,11 +38,8 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private final Map<String, WebSocket> upstreamConnections = new ConcurrentHashMap<>();
     private final Map<String, ScheduledFuture<?>> noDataWarnings = new ConcurrentHashMap<>();
-<<<<<<< HEAD
-=======
     private final TelemetryPredictionManager predictionManager;
     private PredictionEvaluationService evaluationService = null;
->>>>>>> 33696ffe8c3de42c97d58c76c9f2f5a9aaf6eead
 
     public LoadBalancerWebSocketHandler(ObjectMapper objectMapper, TelemetryPredictionManager predictionManager, PredictionEvaluationService evaluationService) {
         this.objectMapper = objectMapper;
@@ -127,14 +124,9 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
                     public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
                         messageBuffer.append(data);
                         if (last) {
-<<<<<<< HEAD
-                            resetNoTelemetryWarning(frontendSession, backendIp);
-                            forwardBackendMessage(frontendSession, messageBuffer.toString());
-=======
                             String telemetryJson = messageBuffer.toString();
                             processTelemetryMessage(frontendSession, backendIp, telemetryJson);
 
->>>>>>> 33696ffe8c3de42c97d58c76c9f2f5a9aaf6eead
                             messageBuffer.setLength(0);
                         }
                         webSocket.request(1);
