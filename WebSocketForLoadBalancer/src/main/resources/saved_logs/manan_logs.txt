@@ -1,0 +1,2845 @@
+/usr/lib/jvm/default-java/bin/java -XX:TieredStopAtLevel=1 -Dspring.output.ansi.enabled=always -Dcom.sun.management.jmxremote -Dspring.jmx.enabled=true -Dspring.liveBeansView.mbeanDomain -Dspring.application.admin.enabled=true -Dmanagement.endpoints.jmx.exposure.include=* -javaagent:/opt/intellij/lib/idea_rt.jar=37011 -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 -classpath /media/rehnoor/48984F97984F8284/Capstone Project LSTM Branch/WebSocketForLoadBalancer/target/classes:/home/rehnoor/.m2/repository/org/springframework/boot/spring-boot-starter-websocket/4.1.0/spring-boot-starter-websocket-4.1.0.jar:/home/rehnoor/.m2/repository/org/springframework/boot/spring-boot-starter/4.1.0/spring-boot-starter-4.1.0.jar:/home/rehnoor/.m2/repository/org/springframework/boot/spring-boot-starter-logging/4.1.0/spring-boot-starter-logging-4.1.0.jar:/home/rehnoor/.m2/repository/ch/qos/logback/logback-classic/1.5.34/logback-classic-1.5.34.jar:/home/rehnoor/.m2/repository/ch/qos/logback/logback-core/1.5.34/logback-core-1.5.34.jar:/home/rehnoor/.m2/repository/org/apache/logging/log4j/log4j-to-slf4j/2.25.4/log4j-to-slf4j-2.25.4.jar:/home/rehnoor/.m2/repository/org/apache/logging/log4j/log4j-api/2.25.4/log4j-api-2.25.4.jar:/home/rehnoor/.m2/repository/org/slf4j/jul-to-slf4j/2.0.18/jul-to-slf4j-2.0.18.jar:/home/rehnoor/.m2/repository/org/springframework/boot/spring-boot-autoconfigure/4.1.0/spring-boot-autoconfigure-4.1.0.jar:/home/rehnoor/.m2/repository/jakarta/annotation/jakarta.annotation-api/3.0.0/jakarta.annotation-api-3.0.0.jar:/home/rehnoor/.m2/repository/org/yaml/snakeyaml/2.6/snakeyaml-2.6.jar:/home/rehnoor/.m2/repository/org/springframework/boot/spring-boot-starter-webmvc/4.1.0/spring-boot-starter-webmvc-4.1.0.jar:/home/rehnoor/.m2/repository/org/springframework/boot/spring-boot-starter-jackson/4.1.0/spring-boot-starter-jackson-4.1.0.jar:/home/rehnoor/.m2/repository/org/springframework/boot/spring-boot-jackson/4.1.0/spring-boot-jackson-4.1.0.jar:/home/rehnoor/.m2/repository/tools/jackson/core/jackson-databind/3.1.4/jackson-databind-3.1.4.jar:/home/rehnoor/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.21/jackson-annotations-2.21.jar:/home/rehnoor/.m2/repository/tools/jackson/core/jackson-core/3.1.4/jackson-core-3.1.4.jar:/home/rehnoor/.m2/repository/org/springframework/boot/spring-boot-starter-tomcat/4.1.0/spring-boot-starter-tomcat-4.1.0.jar:/home/rehnoor/.m2/repository/org/springframework/boot/spring-boot-starter-tomcat-runtime/4.1.0/spring-boot-starter-tomcat-runtime-4.1.0.jar:/home/rehnoor/.m2/repository/org/apache/tomcat/embed/tomcat-embed-core/11.0.22/tomcat-embed-core-11.0.22.jar:/home/rehnoor/.m2/repository/org/apache/tomcat/embed/tomcat-embed-el/11.0.22/tomcat-embed-el-11.0.22.jar:/home/rehnoor/.m2/repository/org/apache/tomcat/embed/tomcat-embed-websocket/11.0.22/tomcat-embed-websocket-11.0.22.jar:/home/rehnoor/.m2/repository/org/springframework/boot/spring-boot-tomcat/4.1.0/spring-boot-tomcat-4.1.0.jar:/home/rehnoor/.m2/repository/org/springframework/boot/spring-boot-http-converter/4.1.0/spring-boot-http-converter-4.1.0.jar:/home/rehnoor/.m2/repository/org/springframework/spring-web/7.0.8/spring-web-7.0.8.jar:/home/rehnoor/.m2/repository/io/micrometer/micrometer-observation/1.17.0/micrometer-observation-1.17.0.jar:/home/rehnoor/.m2/repository/io/micrometer/micrometer-commons/1.17.0/micrometer-commons-1.17.0.jar:/home/rehnoor/.m2/repository/org/springframework/boot/spring-boot-webmvc/4.1.0/spring-boot-webmvc-4.1.0.jar:/home/rehnoor/.m2/repository/org/springframework/boot/spring-boot-servlet/4.1.0/spring-boot-servlet-4.1.0.jar:/home/rehnoor/.m2/repository/org/springframework/spring-webmvc/7.0.8/spring-webmvc-7.0.8.jar:/home/rehnoor/.m2/repository/org/springframework/spring-aop/7.0.8/spring-aop-7.0.8.jar:/home/rehnoor/.m2/repository/org/springframework/spring-expression/7.0.8/spring-expression-7.0.8.jar:/home/rehnoor/.m2/repository/org/springframework/boot/spring-boot-websocket/4.1.0/spring-boot-websocket-4.1.0.jar:/home/rehnoor/.m2/repository/org/springframework/boot/spring-boot/4.1.0/spring-boot-4.1.0.jar:/home/rehnoor/.m2/repository/org/springframework/spring-context/7.0.8/spring-context-7.0.8.jar:/home/rehnoor/.m2/repository/org/springframework/spring-messaging/7.0.8/spring-messaging-7.0.8.jar:/home/rehnoor/.m2/repository/org/springframework/spring-beans/7.0.8/spring-beans-7.0.8.jar:/home/rehnoor/.m2/repository/org/springframework/spring-websocket/7.0.8/spring-websocket-7.0.8.jar:/home/rehnoor/.m2/repository/com/microsoft/onnxruntime/onnxruntime/1.27.0/onnxruntime-1.27.0.jar:/home/rehnoor/.m2/repository/org/slf4j/slf4j-api/2.0.18/slf4j-api-2.0.18.jar:/home/rehnoor/.m2/repository/org/springframework/spring-core/7.0.8/spring-core-7.0.8.jar:/home/rehnoor/.m2/repository/commons-logging/commons-logging/1.3.6/commons-logging-1.3.6.jar:/home/rehnoor/.m2/repository/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar:/home/rehnoor/.m2/repository/org/springframework/boot/spring-boot-web-server/4.1.0/spring-boot-web-server-4.1.0.jar com.rehnoor.websocketforloadbalancer.WebSocketForLoadBalancerApplication
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.0)
+
+2026-07-08T13:56:15.936+05:30  INFO 61404 --- [WebSocketForLoadBalancer] [           main] .r.w.WebSocketForLoadBalancerApplication : Starting WebSocketForLoadBalancerApplication using Java 21.0.10 with PID 61404 (/media/rehnoor/48984F97984F8284/Capstone Project LSTM Branch/WebSocketForLoadBalancer/target/classes started by rehnoor in /media/rehnoor/48984F97984F8284/Capstone Project LSTM Branch/WebSocketForLoadBalancer)
+2026-07-08T13:56:15.940+05:30  INFO 61404 --- [WebSocketForLoadBalancer] [           main] .r.w.WebSocketForLoadBalancerApplication : No active profile set, falling back to 1 default profile: "default"
+2026-07-08T13:56:17.045+05:30  INFO 61404 --- [WebSocketForLoadBalancer] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-07-08T13:56:17.064+05:30  INFO 61404 --- [WebSocketForLoadBalancer] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-07-08T13:56:17.065+05:30  INFO 61404 --- [WebSocketForLoadBalancer] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-07-08T13:56:17.111+05:30  INFO 61404 --- [WebSocketForLoadBalancer] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 1095 ms
+Loading CPU Temperature Prediction Model...
+ONNX Model Loaded Successfully!!!
+Model inputs: [telemetry_input]
+Model outputs: [predicted_delta_t]
+2026-07-08T13:56:17.686+05:30  INFO 61404 --- [WebSocketForLoadBalancer] [           main] o.s.b.w.a.WelcomePageHandlerMapping      : Adding welcome page: class path resource [static/index.html]
+2026-07-08T13:56:17.945+05:30  INFO 61404 --- [WebSocketForLoadBalancer] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-07-08T13:56:17.950+05:30  INFO 61404 --- [WebSocketForLoadBalancer] [           main] .r.w.WebSocketForLoadBalancerApplication : Started WebSocketForLoadBalancerApplication in 2.803 seconds (process running for 3.959)
+2026-07-08T13:56:53.830+05:30  INFO 61404 --- [WebSocketForLoadBalancer] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-07-08T13:56:53.831+05:30  INFO 61404 --- [WebSocketForLoadBalancer] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-07-08T13:56:53.833+05:30  INFO 61404 --- [WebSocketForLoadBalancer] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+Backend 100.94.91.14 | Buffer: 1/20
+Backend 100.94.91.14 | Buffer: 2/20
+Backend 100.94.91.14 | Buffer: 3/20
+Backend 100.94.91.14 | Buffer: 4/20
+Backend 100.94.91.14 | Buffer: 5/20
+Backend 100.94.91.14 | Buffer: 6/20
+Backend 100.94.91.14 | Buffer: 7/20
+Backend 100.94.91.14 | Buffer: 8/20
+Backend 100.94.91.14 | Buffer: 9/20
+Backend 100.94.91.14 | Buffer: 10/20
+Backend 100.94.91.14 | Buffer: 11/20
+Backend 100.94.91.14 | Buffer: 12/20
+Backend 100.94.91.14 | Buffer: 13/20
+Backend 100.94.91.14 | Buffer: 14/20
+Backend 100.94.91.14 | Buffer: 15/20
+Backend 100.94.91.14 | Buffer: 16/20
+Backend 100.94.91.14 | Buffer: 17/20
+Backend 100.94.91.14 | Buffer: 18/20
+Backend 100.94.91.14 | Buffer: 19/20
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 6.017379°C | Predicted Temp: 71.01737880706787°C
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 6.1567974°C | Predicted Temp: 71.15679740905762°C
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 6.326385°C | Predicted Temp: 71.32638502120972°C
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 6.282705°C | Predicted Temp: 71.28270483016968°C
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 6.2271376°C | Predicted Temp: 71.2271375656128°C
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.486663°C | Predicted Temp: 70.48666286468506°C
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.604807°C | Predicted Temp: 70.60480690002441°C
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.8311963°C | Predicted Temp: 70.83119630813599°C
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.6832113°C | Predicted Temp: 70.68321132659912°C
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.7780485°C | Predicted Temp: 70.77804851531982°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:57:31.471077
+Target Time: 2026-07-08T13:57:51.471077
+Actual Reading Time: 2026-07-08T13:57:52.576132500
+Target Timing Difference: 1105 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 6.017378807067871°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 71.01737880706787°C
+Actual Temperature: 65.0°C
+Error: 6.017378807067871°C
+Absolute Error: 6.017378807067871°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.480258°C | Predicted Temp: 70.48025798797607°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:57:33.523940
+Target Time: 2026-07-08T13:57:53.523940
+Actual Reading Time: 2026-07-08T13:57:54.677131600
+Target Timing Difference: 1153 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 6.156797409057617°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 71.15679740905762°C
+Actual Temperature: 65.0°C
+Error: 6.156797409057617°C
+Absolute Error: 6.156797409057617°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.445337°C | Predicted Temp: 70.44533681869507°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:57:35.567296200
+Target Time: 2026-07-08T13:57:55.567296200
+Actual Reading Time: 2026-07-08T13:57:56.747439500
+Target Timing Difference: 1180 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 6.326385021209717°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 71.32638502120972°C
+Actual Temperature: 65.0°C
+Error: 6.326385021209717°C
+Absolute Error: 6.326385021209717°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.241262°C | Predicted Temp: 70.24126195907593°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:57:37.665435800
+Target Time: 2026-07-08T13:57:57.665435800
+Actual Reading Time: 2026-07-08T13:57:58.810857
+Target Timing Difference: 1145 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 6.282704830169678°C
+Actual Delta T: -3.0°C
+Predicted Temperature: 71.28270483016968°C
+Actual Temperature: 62.0°C
+Error: 9.282704830169678°C
+Absolute Error: 9.282704830169678°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 62.0°C | Predicted Delta T: 6.585033°C | Predicted Temp: 68.58503293991089°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:57:39.707402300
+Target Time: 2026-07-08T13:57:59.707402300
+Actual Reading Time: 2026-07-08T13:58:00.948708900
+Target Timing Difference: 1241 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 6.227137565612793°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 71.2271375656128°C
+Actual Temperature: 65.0°C
+Error: 6.227137565612793°C
+Absolute Error: 6.227137565612793°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.618995°C | Predicted Temp: 70.61899518966675°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:57:41.747487300
+Target Time: 2026-07-08T13:58:01.747487300
+Actual Reading Time: 2026-07-08T13:58:03.048210600
+Target Timing Difference: 1300 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.486662864685059°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.48666286468506°C
+Actual Temperature: 65.0°C
+Error: 5.486662864685059°C
+Absolute Error: 5.486662864685059°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.48496°C | Predicted Temp: 70.48496007919312°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:57:43.797770300
+Target Time: 2026-07-08T13:58:03.797770300
+Actual Reading Time: 2026-07-08T13:58:05.106201100
+Target Timing Difference: 1308 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.604806900024414°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.60480690002441°C
+Actual Temperature: 65.0°C
+Error: 5.604806900024414°C
+Absolute Error: 5.604806900024414°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.365926°C | Predicted Temp: 70.3659257888794°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:57:45.888143300
+Target Time: 2026-07-08T13:58:05.888143300
+Actual Reading Time: 2026-07-08T13:58:07.184527300
+Target Timing Difference: 1296 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.831196308135986°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.83119630813599°C
+Actual Temperature: 65.0°C
+Error: 5.831196308135986°C
+Absolute Error: 5.831196308135986°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.997973°C | Predicted Temp: 70.99797296524048°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:57:48.112958300
+Target Time: 2026-07-08T13:58:08.112958300
+Actual Reading Time: 2026-07-08T13:58:09.245306100
+Target Timing Difference: 1132 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.683211326599121°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.68321132659912°C
+Actual Temperature: 65.0°C
+Error: 5.683211326599121°C
+Absolute Error: 5.683211326599121°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.71379°C | Predicted Temp: 70.71378993988037°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:57:50.339815300
+Target Time: 2026-07-08T13:58:10.339815300
+Actual Reading Time: 2026-07-08T13:58:11.307005700
+Target Timing Difference: 967 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.778048515319824°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.77804851531982°C
+Actual Temperature: 65.0°C
+Error: 5.778048515319824°C
+Absolute Error: 5.778048515319824°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.735105°C | Predicted Temp: 70.73510503768921°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:57:52.576132500
+Target Time: 2026-07-08T13:58:12.576132500
+Actual Reading Time: 2026-07-08T13:58:13.382939400
+Target Timing Difference: 806 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.480257987976074°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.48025798797607°C
+Actual Temperature: 65.0°C
+Error: 5.480257987976074°C
+Absolute Error: 5.480257987976074°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.6563735°C | Predicted Temp: 70.65637350082397°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:57:54.677131600
+Target Time: 2026-07-08T13:58:14.677131600
+Actual Reading Time: 2026-07-08T13:58:15.438549
+Target Timing Difference: 761 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.445336818695068°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.44533681869507°C
+Actual Temperature: 65.0°C
+Error: 5.445336818695068°C
+Absolute Error: 5.445336818695068°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.5196633°C | Predicted Temp: 70.51966333389282°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:57:56.747439500
+Target Time: 2026-07-08T13:58:16.747439500
+Actual Reading Time: 2026-07-08T13:58:17.540012100
+Target Timing Difference: 792 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.241261959075928°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.24126195907593°C
+Actual Temperature: 65.0°C
+Error: 5.241261959075928°C
+Absolute Error: 5.241261959075928°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.858788°C | Predicted Temp: 70.85878801345825°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:57:58.810857
+Target Time: 2026-07-08T13:58:18.810857
+Actual Reading Time: 2026-07-08T13:58:19.615444400
+Target Timing Difference: 804 ms
+Temperature at Prediction: 62.0°C
+Predicted Delta T: 6.585032939910889°C
+Actual Delta T: 3.0°C
+Predicted Temperature: 68.58503293991089°C
+Actual Temperature: 65.0°C
+Error: 3.5850329399108887°C
+Absolute Error: 3.5850329399108887°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.971011°C | Predicted Temp: 70.9710111618042°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:00.948708900
+Target Time: 2026-07-08T13:58:20.948708900
+Actual Reading Time: 2026-07-08T13:58:21.692423800
+Target Timing Difference: 743 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.618995189666748°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.61899518966675°C
+Actual Temperature: 65.0°C
+Error: 5.618995189666748°C
+Absolute Error: 5.618995189666748°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.6542687°C | Predicted Temp: 70.65426874160767°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:03.048210600
+Target Time: 2026-07-08T13:58:23.048210600
+Actual Reading Time: 2026-07-08T13:58:23.770430700
+Target Timing Difference: 722 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.484960079193115°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.48496007919312°C
+Actual Temperature: 65.0°C
+Error: 5.484960079193115°C
+Absolute Error: 5.484960079193115°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.780039°C | Predicted Temp: 70.78003883361816°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:05.106201100
+Target Time: 2026-07-08T13:58:25.106201100
+Actual Reading Time: 2026-07-08T13:58:25.847850500
+Target Timing Difference: 741 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.3659257888793945°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.3659257888794°C
+Actual Temperature: 65.0°C
+Error: 5.3659257888793945°C
+Absolute Error: 5.3659257888793945°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.4934726°C | Predicted Temp: 70.49347257614136°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:07.184527300
+Target Time: 2026-07-08T13:58:27.184527300
+Actual Reading Time: 2026-07-08T13:58:27.916274700
+Target Timing Difference: 731 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.9979729652404785°C
+Actual Delta T: 1.0°C
+Predicted Temperature: 70.99797296524048°C
+Actual Temperature: 66.0°C
+Error: 4.9979729652404785°C
+Absolute Error: 4.9979729652404785°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 66.0°C | Predicted Delta T: 5.654317°C | Predicted Temp: 71.65431690216064°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:09.245306100
+Target Time: 2026-07-08T13:58:29.245306100
+Actual Reading Time: 2026-07-08T13:58:30.145569400
+Target Timing Difference: 900 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.713789939880371°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.71378993988037°C
+Actual Temperature: 65.0°C
+Error: 5.713789939880371°C
+Absolute Error: 5.713789939880371°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.5276804°C | Predicted Temp: 70.52768039703369°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:11.307005700
+Target Time: 2026-07-08T13:58:31.307005700
+Actual Reading Time: 2026-07-08T13:58:32.211703600
+Target Timing Difference: 904 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.735105037689209°C
+Actual Delta T: 1.0°C
+Predicted Temperature: 70.73510503768921°C
+Actual Temperature: 66.0°C
+Error: 4.735105037689209°C
+Absolute Error: 4.735105037689209°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 66.0°C | Predicted Delta T: 5.7792463°C | Predicted Temp: 71.77924633026123°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:13.382939400
+Target Time: 2026-07-08T13:58:33.382939400
+Actual Reading Time: 2026-07-08T13:58:34.275930800
+Target Timing Difference: 892 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.656373500823975°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.65637350082397°C
+Actual Temperature: 65.0°C
+Error: 5.656373500823975°C
+Absolute Error: 5.656373500823975°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.4496055°C | Predicted Temp: 70.4496054649353°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:15.438549
+Target Time: 2026-07-08T13:58:35.438549
+Actual Reading Time: 2026-07-08T13:58:36.352765800
+Target Timing Difference: 914 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.519663333892822°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.51966333389282°C
+Actual Temperature: 65.0°C
+Error: 5.519663333892822°C
+Absolute Error: 5.519663333892822°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.7287393°C | Predicted Temp: 70.7287392616272°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:17.540012100
+Target Time: 2026-07-08T13:58:37.540012100
+Actual Reading Time: 2026-07-08T13:58:38.431812900
+Target Timing Difference: 891 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.858788013458252°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.85878801345825°C
+Actual Temperature: 65.0°C
+Error: 5.858788013458252°C
+Absolute Error: 5.858788013458252°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.808402°C | Predicted Temp: 70.8084020614624°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:19.615444400
+Target Time: 2026-07-08T13:58:39.615444400
+Actual Reading Time: 2026-07-08T13:58:40.515865900
+Target Timing Difference: 900 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.971011161804199°C
+Actual Delta T: 1.0°C
+Predicted Temperature: 70.9710111618042°C
+Actual Temperature: 66.0°C
+Error: 4.971011161804199°C
+Absolute Error: 4.971011161804199°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 66.0°C | Predicted Delta T: 5.2331066°C | Predicted Temp: 71.23310661315918°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:21.692423800
+Target Time: 2026-07-08T13:58:41.692423800
+Actual Reading Time: 2026-07-08T13:58:42.597778600
+Target Timing Difference: 905 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.654268741607666°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.65426874160767°C
+Actual Temperature: 65.0°C
+Error: 5.654268741607666°C
+Absolute Error: 5.654268741607666°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.318344°C | Predicted Temp: 70.31834411621094°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:23.770430700
+Target Time: 2026-07-08T13:58:43.770430700
+Actual Reading Time: 2026-07-08T13:58:44.680362700
+Target Timing Difference: 909 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.780038833618164°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.78003883361816°C
+Actual Temperature: 65.0°C
+Error: 5.780038833618164°C
+Absolute Error: 5.780038833618164°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.6807466°C | Predicted Temp: 70.68074655532837°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:25.847850500
+Target Time: 2026-07-08T13:58:45.847850500
+Actual Reading Time: 2026-07-08T13:58:46.754007600
+Target Timing Difference: 906 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.493472576141357°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.49347257614136°C
+Actual Temperature: 65.0°C
+Error: 5.493472576141357°C
+Absolute Error: 5.493472576141357°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.823505°C | Predicted Temp: 70.82350492477417°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:27.916274700
+Target Time: 2026-07-08T13:58:47.916274700
+Actual Reading Time: 2026-07-08T13:58:48.825961200
+Target Timing Difference: 909 ms
+Temperature at Prediction: 66.0°C
+Predicted Delta T: 5.6543169021606445°C
+Actual Delta T: -1.0°C
+Predicted Temperature: 71.65431690216064°C
+Actual Temperature: 65.0°C
+Error: 6.6543169021606445°C
+Absolute Error: 6.6543169021606445°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.497764°C | Predicted Temp: 70.49776411056519°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:30.145569400
+Target Time: 2026-07-08T13:58:50.145569400
+Actual Reading Time: 2026-07-08T13:58:50.914738500
+Target Timing Difference: 769 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.527680397033691°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.52768039703369°C
+Actual Temperature: 65.0°C
+Error: 5.527680397033691°C
+Absolute Error: 5.527680397033691°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.440795°C | Predicted Temp: 70.44079494476318°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:32.211703600
+Target Time: 2026-07-08T13:58:52.211703600
+Actual Reading Time: 2026-07-08T13:58:53.028993300
+Target Timing Difference: 817 ms
+Temperature at Prediction: 66.0°C
+Predicted Delta T: 5.7792463302612305°C
+Actual Delta T: -1.0°C
+Predicted Temperature: 71.77924633026123°C
+Actual Temperature: 65.0°C
+Error: 6.7792463302612305°C
+Absolute Error: 6.7792463302612305°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.6222725°C | Predicted Temp: 70.62227249145508°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:34.275930800
+Target Time: 2026-07-08T13:58:54.275930800
+Actual Reading Time: 2026-07-08T13:58:55.095934900
+Target Timing Difference: 820 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.449605464935303°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.4496054649353°C
+Actual Temperature: 65.0°C
+Error: 5.449605464935303°C
+Absolute Error: 5.449605464935303°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.6108665°C | Predicted Temp: 70.61086654663086°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:36.352765800
+Target Time: 2026-07-08T13:58:56.352765800
+Actual Reading Time: 2026-07-08T13:58:57.180033200
+Target Timing Difference: 827 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.728739261627197°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.7287392616272°C
+Actual Temperature: 65.0°C
+Error: 5.728739261627197°C
+Absolute Error: 5.728739261627197°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.8131714°C | Predicted Temp: 70.81317138671875°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:38.431812900
+Target Time: 2026-07-08T13:58:58.431812900
+Actual Reading Time: 2026-07-08T13:58:59.246695
+Target Timing Difference: 814 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.808402061462402°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.8084020614624°C
+Actual Temperature: 65.0°C
+Error: 5.808402061462402°C
+Absolute Error: 5.808402061462402°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.5900474°C | Predicted Temp: 70.59004735946655°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:40.515865900
+Target Time: 2026-07-08T13:59:00.515865900
+Actual Reading Time: 2026-07-08T13:59:01.320775600
+Target Timing Difference: 804 ms
+Temperature at Prediction: 66.0°C
+Predicted Delta T: 5.23310661315918°C
+Actual Delta T: -1.0°C
+Predicted Temperature: 71.23310661315918°C
+Actual Temperature: 65.0°C
+Error: 6.23310661315918°C
+Absolute Error: 6.23310661315918°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.443884°C | Predicted Temp: 70.44388389587402°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:42.597778600
+Target Time: 2026-07-08T13:59:02.597778600
+Actual Reading Time: 2026-07-08T13:59:03.553626600
+Target Timing Difference: 955 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.3183441162109375°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.31834411621094°C
+Actual Temperature: 65.0°C
+Error: 5.3183441162109375°C
+Absolute Error: 5.3183441162109375°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.9390535°C | Predicted Temp: 70.93905353546143°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:44.680362700
+Target Time: 2026-07-08T13:59:04.680362700
+Actual Reading Time: 2026-07-08T13:59:05.674744500
+Target Timing Difference: 994 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.680746555328369°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.68074655532837°C
+Actual Temperature: 65.0°C
+Error: 5.680746555328369°C
+Absolute Error: 5.680746555328369°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.7013426°C | Predicted Temp: 70.70134258270264°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:46.754007600
+Target Time: 2026-07-08T13:59:06.754007600
+Actual Reading Time: 2026-07-08T13:59:07.837543100
+Target Timing Difference: 1083 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.82350492477417°C
+Actual Delta T: 1.0°C
+Predicted Temperature: 70.82350492477417°C
+Actual Temperature: 66.0°C
+Error: 4.82350492477417°C
+Absolute Error: 4.82350492477417°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 66.0°C | Predicted Delta T: 5.940591°C | Predicted Temp: 71.94059085845947°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:48.825961200
+Target Time: 2026-07-08T13:59:08.825961200
+Actual Reading Time: 2026-07-08T13:59:09.908908500
+Target Timing Difference: 1082 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.4977641105651855°C
+Actual Delta T: 1.0°C
+Predicted Temperature: 70.49776411056519°C
+Actual Temperature: 66.0°C
+Error: 4.4977641105651855°C
+Absolute Error: 4.4977641105651855°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 66.0°C | Predicted Delta T: 5.4381557°C | Predicted Temp: 71.43815565109253°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:50.914738500
+Target Time: 2026-07-08T13:59:10.914738500
+Actual Reading Time: 2026-07-08T13:59:11.979078400
+Target Timing Difference: 1064 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.440794944763184°C
+Actual Delta T: 2.0°C
+Predicted Temperature: 70.44079494476318°C
+Actual Temperature: 67.0°C
+Error: 3.4407949447631836°C
+Absolute Error: 3.4407949447631836°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 67.0°C | Predicted Delta T: 5.360608°C | Predicted Temp: 72.36060810089111°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:53.028993300
+Target Time: 2026-07-08T13:59:13.028993300
+Actual Reading Time: 2026-07-08T13:59:14.048949600
+Target Timing Difference: 1019 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.622272491455078°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.62227249145508°C
+Actual Temperature: 65.0°C
+Error: 5.622272491455078°C
+Absolute Error: 5.622272491455078°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.6798167°C | Predicted Temp: 70.67981672286987°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:55.095934900
+Target Time: 2026-07-08T13:59:15.095934900
+Actual Reading Time: 2026-07-08T13:59:16.150575
+Target Timing Difference: 1054 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.610866546630859°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.61086654663086°C
+Actual Temperature: 65.0°C
+Error: 5.610866546630859°C
+Absolute Error: 5.610866546630859°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 6.004181°C | Predicted Temp: 71.00418090820312°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:57.180033200
+Target Time: 2026-07-08T13:59:17.180033200
+Actual Reading Time: 2026-07-08T13:59:18.313300300
+Target Timing Difference: 1133 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.81317138671875°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.81317138671875°C
+Actual Temperature: 65.0°C
+Error: 5.81317138671875°C
+Absolute Error: 5.81317138671875°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.8502674°C | Predicted Temp: 70.85026741027832°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:58:59.246695
+Target Time: 2026-07-08T13:59:19.246695
+Actual Reading Time: 2026-07-08T13:59:20.421654700
+Target Timing Difference: 1174 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.590047359466553°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.59004735946655°C
+Actual Temperature: 65.0°C
+Error: 5.590047359466553°C
+Absolute Error: 5.590047359466553°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.5467963°C | Predicted Temp: 70.5467963218689°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:01.320775600
+Target Time: 2026-07-08T13:59:21.320775600
+Actual Reading Time: 2026-07-08T13:59:22.494110200
+Target Timing Difference: 1173 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.443883895874023°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.44388389587402°C
+Actual Temperature: 65.0°C
+Error: 5.443883895874023°C
+Absolute Error: 5.443883895874023°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.8848324°C | Predicted Temp: 70.88483238220215°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:03.553626600
+Target Time: 2026-07-08T13:59:23.553626600
+Actual Reading Time: 2026-07-08T13:59:24.567663500
+Target Timing Difference: 1014 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.939053535461426°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.93905353546143°C
+Actual Temperature: 65.0°C
+Error: 5.939053535461426°C
+Absolute Error: 5.939053535461426°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.7459846°C | Predicted Temp: 70.74598455429077°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:05.674744500
+Target Time: 2026-07-08T13:59:25.674744500
+Actual Reading Time: 2026-07-08T13:59:26.638602100
+Target Timing Difference: 963 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.701342582702637°C
+Actual Delta T: 1.0°C
+Predicted Temperature: 70.70134258270264°C
+Actual Temperature: 66.0°C
+Error: 4.701342582702637°C
+Absolute Error: 4.701342582702637°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 66.0°C | Predicted Delta T: 5.4737782°C | Predicted Temp: 71.47377824783325°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:07.837543100
+Target Time: 2026-07-08T13:59:27.837543100
+Actual Reading Time: 2026-07-08T13:59:28.790857
+Target Timing Difference: 953 ms
+Temperature at Prediction: 66.0°C
+Predicted Delta T: 5.940590858459473°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 71.94059085845947°C
+Actual Temperature: 66.0°C
+Error: 5.940590858459473°C
+Absolute Error: 5.940590858459473°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 66.0°C | Predicted Delta T: 5.517222°C | Predicted Temp: 71.51722192764282°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:09.908908500
+Target Time: 2026-07-08T13:59:29.908908500
+Actual Reading Time: 2026-07-08T13:59:30.893492400
+Target Timing Difference: 984 ms
+Temperature at Prediction: 66.0°C
+Predicted Delta T: 5.438155651092529°C
+Actual Delta T: -1.0°C
+Predicted Temperature: 71.43815565109253°C
+Actual Temperature: 65.0°C
+Error: 6.438155651092529°C
+Absolute Error: 6.438155651092529°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.8322883°C | Predicted Temp: 70.83228826522827°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:11.979078400
+Target Time: 2026-07-08T13:59:31.979078400
+Actual Reading Time: 2026-07-08T13:59:32.960100300
+Target Timing Difference: 981 ms
+Temperature at Prediction: 67.0°C
+Predicted Delta T: 5.360608100891113°C
+Actual Delta T: -2.0°C
+Predicted Temperature: 72.36060810089111°C
+Actual Temperature: 65.0°C
+Error: 7.360608100891113°C
+Absolute Error: 7.360608100891113°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.9499087°C | Predicted Temp: 70.94990873336792°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:14.048949600
+Target Time: 2026-07-08T13:59:34.048949600
+Actual Reading Time: 2026-07-08T13:59:35.161895500
+Target Timing Difference: 1112 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.679816722869873°C
+Actual Delta T: 1.0°C
+Predicted Temperature: 70.67981672286987°C
+Actual Temperature: 66.0°C
+Error: 4.679816722869873°C
+Absolute Error: 4.679816722869873°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 66.0°C | Predicted Delta T: 5.4604325°C | Predicted Temp: 71.46043252944946°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:16.150575
+Target Time: 2026-07-08T13:59:36.150575
+Actual Reading Time: 2026-07-08T13:59:37.223481800
+Target Timing Difference: 1072 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 6.004180908203125°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 71.00418090820312°C
+Actual Temperature: 65.0°C
+Error: 6.004180908203125°C
+Absolute Error: 6.004180908203125°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 6.0065126°C | Predicted Temp: 71.00651264190674°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:18.313300300
+Target Time: 2026-07-08T13:59:38.313300300
+Actual Reading Time: 2026-07-08T13:59:39.478515500
+Target Timing Difference: 1165 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.85026741027832°C
+Actual Delta T: 1.0°C
+Predicted Temperature: 70.85026741027832°C
+Actual Temperature: 66.0°C
+Error: 4.85026741027832°C
+Absolute Error: 4.85026741027832°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 66.0°C | Predicted Delta T: 5.543534°C | Predicted Temp: 71.54353380203247°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:20.421654700
+Target Time: 2026-07-08T13:59:40.421654700
+Actual Reading Time: 2026-07-08T13:59:41.649212300
+Target Timing Difference: 1227 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.5467963218688965°C
+Actual Delta T: 1.0°C
+Predicted Temperature: 70.5467963218689°C
+Actual Temperature: 66.0°C
+Error: 4.5467963218688965°C
+Absolute Error: 4.5467963218688965°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 66.0°C | Predicted Delta T: 5.837799°C | Predicted Temp: 71.83779907226562°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:22.494110200
+Target Time: 2026-07-08T13:59:42.494110200
+Actual Reading Time: 2026-07-08T13:59:43.810149300
+Target Timing Difference: 1316 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.884832382202148°C
+Actual Delta T: 2.0°C
+Predicted Temperature: 70.88483238220215°C
+Actual Temperature: 67.0°C
+Error: 3.8848323822021484°C
+Absolute Error: 3.8848323822021484°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 67.0°C | Predicted Delta T: 5.118955°C | Predicted Temp: 72.11895513534546°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:24.567663500
+Target Time: 2026-07-08T13:59:44.567663500
+Actual Reading Time: 2026-07-08T13:59:45.987599700
+Target Timing Difference: 1419 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.7459845542907715°C
+Actual Delta T: 1.0°C
+Predicted Temperature: 70.74598455429077°C
+Actual Temperature: 66.0°C
+Error: 4.7459845542907715°C
+Absolute Error: 4.7459845542907715°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 66.0°C | Predicted Delta T: 5.7403064°C | Predicted Temp: 71.74030637741089°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:26.638602100
+Target Time: 2026-07-08T13:59:46.638602100
+Actual Reading Time: 2026-07-08T13:59:48.056530500
+Target Timing Difference: 1417 ms
+Temperature at Prediction: 66.0°C
+Predicted Delta T: 5.473778247833252°C
+Actual Delta T: 1.0°C
+Predicted Temperature: 71.47377824783325°C
+Actual Temperature: 67.0°C
+Error: 4.473778247833252°C
+Absolute Error: 4.473778247833252°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 67.0°C | Predicted Delta T: 5.043189°C | Predicted Temp: 72.04318904876709°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:28.790857
+Target Time: 2026-07-08T13:59:48.790857
+Actual Reading Time: 2026-07-08T13:59:50.189473300
+Target Timing Difference: 1398 ms
+Temperature at Prediction: 66.0°C
+Predicted Delta T: 5.517221927642822°C
+Actual Delta T: -1.0°C
+Predicted Temperature: 71.51722192764282°C
+Actual Temperature: 65.0°C
+Error: 6.517221927642822°C
+Absolute Error: 6.517221927642822°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 6.1034436°C | Predicted Temp: 71.10344362258911°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:30.893492400
+Target Time: 2026-07-08T13:59:50.893492400
+Actual Reading Time: 2026-07-08T13:59:52.256967800
+Target Timing Difference: 1363 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.8322882652282715°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 70.83228826522827°C
+Actual Temperature: 65.0°C
+Error: 5.8322882652282715°C
+Absolute Error: 5.8322882652282715°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 5.906072°C | Predicted Temp: 70.90607213973999°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:32.960100300
+Target Time: 2026-07-08T13:59:52.960100300
+Actual Reading Time: 2026-07-08T13:59:54.327219500
+Target Timing Difference: 1367 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.94990873336792°C
+Actual Delta T: 2.0°C
+Predicted Temperature: 70.94990873336792°C
+Actual Temperature: 67.0°C
+Error: 3.94990873336792°C
+Absolute Error: 3.94990873336792°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 67.0°C | Predicted Delta T: 5.2945924°C | Predicted Temp: 72.29459238052368°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:35.161895500
+Target Time: 2026-07-08T13:59:55.161895500
+Actual Reading Time: 2026-07-08T13:59:56.394710200
+Target Timing Difference: 1232 ms
+Temperature at Prediction: 66.0°C
+Predicted Delta T: 5.460432529449463°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 71.46043252944946°C
+Actual Temperature: 66.0°C
+Error: 5.460432529449463°C
+Absolute Error: 5.460432529449463°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 66.0°C | Predicted Delta T: 5.65054°C | Predicted Temp: 71.65053987503052°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:37.223481800
+Target Time: 2026-07-08T13:59:57.223481800
+Actual Reading Time: 2026-07-08T13:59:58.448463400
+Target Timing Difference: 1224 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 6.006512641906738°C
+Actual Delta T: 1.0°C
+Predicted Temperature: 71.00651264190674°C
+Actual Temperature: 66.0°C
+Error: 5.006512641906738°C
+Absolute Error: 5.006512641906738°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 66.0°C | Predicted Delta T: 5.75248°C | Predicted Temp: 71.75248003005981°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:39.478515500
+Target Time: 2026-07-08T13:59:59.478515500
+Actual Reading Time: 2026-07-08T14:00:00.641210100
+Target Timing Difference: 1162 ms
+Temperature at Prediction: 66.0°C
+Predicted Delta T: 5.543533802032471°C
+Actual Delta T: 1.0°C
+Predicted Temperature: 71.54353380203247°C
+Actual Temperature: 67.0°C
+Error: 4.543533802032471°C
+Absolute Error: 4.543533802032471°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 67.0°C | Predicted Delta T: 5.2619543°C | Predicted Temp: 72.26195430755615°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:41.649212300
+Target Time: 2026-07-08T14:00:01.649212300
+Actual Reading Time: 2026-07-08T14:00:02.716812100
+Target Timing Difference: 1067 ms
+Temperature at Prediction: 66.0°C
+Predicted Delta T: 5.837799072265625°C
+Actual Delta T: 1.0°C
+Predicted Temperature: 71.83779907226562°C
+Actual Temperature: 67.0°C
+Error: 4.837799072265625°C
+Absolute Error: 4.837799072265625°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 67.0°C | Predicted Delta T: 5.489108°C | Predicted Temp: 72.48910808563232°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:43.810149300
+Target Time: 2026-07-08T14:00:03.810149300
+Actual Reading Time: 2026-07-08T14:00:04.787679200
+Target Timing Difference: 977 ms
+Temperature at Prediction: 67.0°C
+Predicted Delta T: 5.118955135345459°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 72.11895513534546°C
+Actual Temperature: 67.0°C
+Error: 5.118955135345459°C
+Absolute Error: 5.118955135345459°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 67.0°C | Predicted Delta T: 5.3626328°C | Predicted Temp: 72.36263275146484°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:45.987599700
+Target Time: 2026-07-08T14:00:05.987599700
+Actual Reading Time: 2026-07-08T14:00:06.863860500
+Target Timing Difference: 876 ms
+Temperature at Prediction: 66.0°C
+Predicted Delta T: 5.740306377410889°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 71.74030637741089°C
+Actual Temperature: 66.0°C
+Error: 5.740306377410889°C
+Absolute Error: 5.740306377410889°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 66.0°C | Predicted Delta T: 5.789577°C | Predicted Temp: 71.7895770072937°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:48.056530500
+Target Time: 2026-07-08T14:00:08.056530500
+Actual Reading Time: 2026-07-08T14:00:09.042912100
+Target Timing Difference: 986 ms
+Temperature at Prediction: 67.0°C
+Predicted Delta T: 5.04318904876709°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 72.04318904876709°C
+Actual Temperature: 67.0°C
+Error: 5.04318904876709°C
+Absolute Error: 5.04318904876709°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 67.0°C | Predicted Delta T: 5.4161253°C | Predicted Temp: 72.41612529754639°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:50.189473300
+Target Time: 2026-07-08T14:00:10.189473300
+Actual Reading Time: 2026-07-08T14:00:11.226069800
+Target Timing Difference: 1036 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 6.103443622589111°C
+Actual Delta T: 2.0°C
+Predicted Temperature: 71.10344362258911°C
+Actual Temperature: 67.0°C
+Error: 4.103443622589111°C
+Absolute Error: 4.103443622589111°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 67.0°C | Predicted Delta T: 5.6193614°C | Predicted Temp: 72.61936140060425°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:52.256967800
+Target Time: 2026-07-08T14:00:12.256967800
+Actual Reading Time: 2026-07-08T14:00:13.291434
+Target Timing Difference: 1034 ms
+Temperature at Prediction: 65.0°C
+Predicted Delta T: 5.90607213973999°C
+Actual Delta T: 2.0°C
+Predicted Temperature: 70.90607213973999°C
+Actual Temperature: 67.0°C
+Error: 3.9060721397399902°C
+Absolute Error: 3.9060721397399902°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 67.0°C | Predicted Delta T: 5.613844°C | Predicted Temp: 72.61384391784668°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:54.327219500
+Target Time: 2026-07-08T14:00:14.327219500
+Actual Reading Time: 2026-07-08T14:00:15.457181300
+Target Timing Difference: 1129 ms
+Temperature at Prediction: 67.0°C
+Predicted Delta T: 5.294592380523682°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 72.29459238052368°C
+Actual Temperature: 67.0°C
+Error: 5.294592380523682°C
+Absolute Error: 5.294592380523682°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 67.0°C | Predicted Delta T: 5.471032°C | Predicted Temp: 72.47103214263916°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:56.394710200
+Target Time: 2026-07-08T14:00:16.394710200
+Actual Reading Time: 2026-07-08T14:00:17.515319500
+Target Timing Difference: 1120 ms
+Temperature at Prediction: 66.0°C
+Predicted Delta T: 5.650539875030518°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 71.65053987503052°C
+Actual Temperature: 66.0°C
+Error: 5.650539875030518°C
+Absolute Error: 5.650539875030518°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 66.0°C | Predicted Delta T: 5.687291°C | Predicted Temp: 71.6872911453247°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T13:59:58.448463400
+Target Time: 2026-07-08T14:00:18.448463400
+Actual Reading Time: 2026-07-08T14:00:19.599665700
+Target Timing Difference: 1151 ms
+Temperature at Prediction: 66.0°C
+Predicted Delta T: 5.7524800300598145°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 71.75248003005981°C
+Actual Temperature: 66.0°C
+Error: 5.7524800300598145°C
+Absolute Error: 5.7524800300598145°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 66.0°C | Predicted Delta T: 5.5700655°C | Predicted Temp: 71.57006549835205°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T14:00:00.641210100
+Target Time: 2026-07-08T14:00:20.641210100
+Actual Reading Time: 2026-07-08T14:00:21.827800300
+Target Timing Difference: 1186 ms
+Temperature at Prediction: 67.0°C
+Predicted Delta T: 5.261954307556152°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 72.26195430755615°C
+Actual Temperature: 67.0°C
+Error: 5.261954307556152°C
+Absolute Error: 5.261954307556152°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 67.0°C | Predicted Delta T: 5.5009727°C | Predicted Temp: 72.50097274780273°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T14:00:02.716812100
+Target Time: 2026-07-08T14:00:22.716812100
+Actual Reading Time: 2026-07-08T14:00:23.923968100
+Target Timing Difference: 1207 ms
+Temperature at Prediction: 67.0°C
+Predicted Delta T: 5.489108085632324°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 72.48910808563232°C
+Actual Temperature: 67.0°C
+Error: 5.489108085632324°C
+Absolute Error: 5.489108085632324°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 67.0°C | Predicted Delta T: 5.2798095°C | Predicted Temp: 72.27980947494507°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T14:00:04.787679200
+Target Time: 2026-07-08T14:00:24.787679200
+Actual Reading Time: 2026-07-08T14:00:26.173640200
+Target Timing Difference: 1385 ms
+Temperature at Prediction: 67.0°C
+Predicted Delta T: 5.362632751464844°C
+Actual Delta T: -1.0°C
+Predicted Temperature: 72.36263275146484°C
+Actual Temperature: 66.0°C
+Error: 6.362632751464844°C
+Absolute Error: 6.362632751464844°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 66.0°C | Predicted Delta T: 5.649504°C | Predicted Temp: 71.6495041847229°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T14:00:06.863860500
+Target Time: 2026-07-08T14:00:26.863860500
+Actual Reading Time: 2026-07-08T14:00:28.327438500
+Target Timing Difference: 1463 ms
+Temperature at Prediction: 66.0°C
+Predicted Delta T: 5.789577007293701°C
+Actual Delta T: 1.0°C
+Predicted Temperature: 71.7895770072937°C
+Actual Temperature: 67.0°C
+Error: 4.789577007293701°C
+Absolute Error: 4.789577007293701°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 67.0°C | Predicted Delta T: 5.35416°C | Predicted Temp: 72.35415983200073°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T14:00:09.042912100
+Target Time: 2026-07-08T14:00:29.042912100
+Actual Reading Time: 2026-07-08T14:00:30.434578700
+Target Timing Difference: 1391 ms
+Temperature at Prediction: 67.0°C
+Predicted Delta T: 5.416125297546387°C
+Actual Delta T: -1.0°C
+Predicted Temperature: 72.41612529754639°C
+Actual Temperature: 66.0°C
+Error: 6.416125297546387°C
+Absolute Error: 6.416125297546387°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 66.0°C | Predicted Delta T: 5.869791°C | Predicted Temp: 71.86979103088379°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T14:00:11.226069800
+Target Time: 2026-07-08T14:00:31.226069800
+Actual Reading Time: 2026-07-08T14:00:32.511904500
+Target Timing Difference: 1285 ms
+Temperature at Prediction: 67.0°C
+Predicted Delta T: 5.619361400604248°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 72.61936140060425°C
+Actual Temperature: 67.0°C
+Error: 5.619361400604248°C
+Absolute Error: 5.619361400604248°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 67.0°C | Predicted Delta T: 5.424111°C | Predicted Temp: 72.42411088943481°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T14:00:13.291434
+Target Time: 2026-07-08T14:00:33.291434
+Actual Reading Time: 2026-07-08T14:00:34.584687500
+Target Timing Difference: 1293 ms
+Temperature at Prediction: 67.0°C
+Predicted Delta T: 5.61384391784668°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 72.61384391784668°C
+Actual Temperature: 67.0°C
+Error: 5.61384391784668°C
+Absolute Error: 5.61384391784668°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 67.0°C | Predicted Delta T: 5.5269547°C | Predicted Temp: 72.5269546508789°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T14:00:15.457181300
+Target Time: 2026-07-08T14:00:35.457181300
+Actual Reading Time: 2026-07-08T14:00:36.666253
+Target Timing Difference: 1209 ms
+Temperature at Prediction: 67.0°C
+Predicted Delta T: 5.47103214263916°C
+Actual Delta T: -1.0°C
+Predicted Temperature: 72.47103214263916°C
+Actual Temperature: 66.0°C
+Error: 6.47103214263916°C
+Absolute Error: 6.47103214263916°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 66.0°C | Predicted Delta T: 5.8979764°C | Predicted Temp: 71.89797639846802°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T14:00:17.515319500
+Target Time: 2026-07-08T14:00:37.515319500
+Actual Reading Time: 2026-07-08T14:00:38.796424700
+Target Timing Difference: 1281 ms
+Temperature at Prediction: 66.0°C
+Predicted Delta T: 5.687291145324707°C
+Actual Delta T: -1.0°C
+Predicted Temperature: 71.6872911453247°C
+Actual Temperature: 65.0°C
+Error: 6.687291145324707°C
+Absolute Error: 6.687291145324707°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 65.0°C | Predicted Delta T: 6.1235595°C | Predicted Temp: 71.12355947494507°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T14:00:19.599665700
+Target Time: 2026-07-08T14:00:39.599665700
+Actual Reading Time: 2026-07-08T14:00:40.887262600
+Target Timing Difference: 1287 ms
+Temperature at Prediction: 66.0°C
+Predicted Delta T: 5.570065498352051°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 71.57006549835205°C
+Actual Temperature: 66.0°C
+Error: 5.570065498352051°C
+Absolute Error: 5.570065498352051°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 66.0°C | Predicted Delta T: 5.853233°C | Predicted Temp: 71.85323286056519°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T14:00:21.827800300
+Target Time: 2026-07-08T14:00:41.827800300
+Actual Reading Time: 2026-07-08T14:00:42.975311
+Target Timing Difference: 1147 ms
+Temperature at Prediction: 67.0°C
+Predicted Delta T: 5.500972747802734°C
+Actual Delta T: -1.0°C
+Predicted Temperature: 72.50097274780273°C
+Actual Temperature: 66.0°C
+Error: 6.500972747802734°C
+Absolute Error: 6.500972747802734°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 66.0°C | Predicted Delta T: 5.7637405°C | Predicted Temp: 71.76374053955078°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.94.91.14
+Prediction Time: 2026-07-08T14:00:23.923968100
+Target Time: 2026-07-08T14:00:43.923968100
+Actual Reading Time: 2026-07-08T14:00:45.323222700
+Target Timing Difference: 1399 ms
+Temperature at Prediction: 67.0°C
+Predicted Delta T: 5.279809474945068°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 72.27980947494507°C
+Actual Temperature: 67.0°C
+Error: 5.279809474945068°C
+Absolute Error: 5.279809474945068°C
+===========================================
+
+Backend 100.94.91.14 | Current Temp: 67.0°C | Predicted Delta T: 5.4710965°C | Predicted Temp: 72.47109651565552°C
+Backend 100.104.137.30 | Buffer: 1/20
+Backend 100.104.137.30 | Buffer: 2/20
+Backend 100.104.137.30 | Buffer: 3/20
+Backend 100.104.137.30 | Buffer: 4/20
+Backend 100.104.137.30 | Buffer: 5/20
+Backend 100.104.137.30 | Buffer: 6/20
+Backend 100.104.137.30 | Buffer: 7/20
+Backend 100.104.137.30 | Buffer: 8/20
+Backend 100.104.137.30 | Buffer: 9/20
+Backend 100.104.137.30 | Buffer: 10/20
+Backend 100.104.137.30 | Buffer: 11/20
+Backend 100.104.137.30 | Buffer: 12/20
+Backend 100.104.137.30 | Buffer: 13/20
+Backend 100.104.137.30 | Buffer: 14/20
+Backend 100.104.137.30 | Buffer: 15/20
+Backend 100.104.137.30 | Buffer: 16/20
+Backend 100.104.137.30 | Buffer: 17/20
+Backend 100.104.137.30 | Buffer: 18/20
+Backend 100.104.137.30 | Buffer: 19/20
+Backend 100.104.137.30 | Current Temp: 76.8°C | Predicted Delta T: 4.2413435°C | Predicted Temp: 81.04134349822998°C
+Backend 100.104.137.30 | Current Temp: 76.3°C | Predicted Delta T: 4.6890087°C | Predicted Temp: 80.98900871276855°C
+Backend 100.104.137.30 | Current Temp: 75.1°C | Predicted Delta T: 4.9035845°C | Predicted Temp: 80.00358448028564°C
+Backend 100.104.137.30 | Current Temp: 75.1°C | Predicted Delta T: 5.130882°C | Predicted Temp: 80.23088178634643°C
+Backend 100.104.137.30 | Current Temp: 76.0°C | Predicted Delta T: 6.777229°C | Predicted Temp: 82.77722883224487°C
+Backend 100.104.137.30 | Current Temp: 76.3°C | Predicted Delta T: 5.605113°C | Predicted Temp: 81.90511302947998°C
+Backend 100.104.137.30 | Current Temp: 79.1°C | Predicted Delta T: 4.419289°C | Predicted Temp: 83.51928911209106°C
+Backend 100.104.137.30 | Current Temp: 80.4°C | Predicted Delta T: 2.7035332°C | Predicted Temp: 83.10353317260743°C
+Backend 100.104.137.30 | Current Temp: 79.4°C | Predicted Delta T: 4.305344°C | Predicted Temp: 83.70534410476685°C
+Backend 100.104.137.30 | Current Temp: 78.1°C | Predicted Delta T: 3.5989816°C | Predicted Temp: 81.69898161888122°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:01:29.313944
+Target Time: 2026-07-08T14:01:49.313944
+Actual Reading Time: 2026-07-08T14:01:50.023565300
+Target Timing Difference: 709 ms
+Temperature at Prediction: 76.8°C
+Predicted Delta T: 4.2413434982299805°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 81.04134349822998°C
+Actual Temperature: 76.8°C
+Error: 4.2413434982299805°C
+Absolute Error: 4.2413434982299805°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 76.8°C | Predicted Delta T: 4.169447°C | Predicted Temp: 80.96944694519043°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:01:31.361165600
+Target Time: 2026-07-08T14:01:51.361165600
+Actual Reading Time: 2026-07-08T14:01:52.071206500
+Target Timing Difference: 710 ms
+Temperature at Prediction: 76.3°C
+Predicted Delta T: 4.689008712768555°C
+Actual Delta T: 1.0°C
+Predicted Temperature: 80.98900871276855°C
+Actual Temperature: 77.3°C
+Error: 3.6890087127685547°C
+Absolute Error: 3.6890087127685547°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.3°C | Predicted Delta T: 6.061269°C | Predicted Temp: 83.36126880645752°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:01:33.401144600
+Target Time: 2026-07-08T14:01:53.401144600
+Actual Reading Time: 2026-07-08T14:01:54.145623600
+Target Timing Difference: 744 ms
+Temperature at Prediction: 75.1°C
+Predicted Delta T: 4.9035844802856445°C
+Actual Delta T: 1.7000000000000028°C
+Predicted Temperature: 80.00358448028564°C
+Actual Temperature: 76.8°C
+Error: 3.2035844802856417°C
+Absolute Error: 3.2035844802856417°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 76.8°C | Predicted Delta T: 5.277407°C | Predicted Temp: 82.07740716934204°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:01:35.460347200
+Target Time: 2026-07-08T14:01:55.460347200
+Actual Reading Time: 2026-07-08T14:01:56.214395200
+Target Timing Difference: 754 ms
+Temperature at Prediction: 75.1°C
+Predicted Delta T: 5.1308817863464355°C
+Actual Delta T: 5.0°C
+Predicted Temperature: 80.23088178634643°C
+Actual Temperature: 80.1°C
+Error: 0.13088178634643555°C
+Absolute Error: 0.13088178634643555°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 80.1°C | Predicted Delta T: 3.7833757°C | Predicted Temp: 83.88337574005126°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:01:37.507299900
+Target Time: 2026-07-08T14:01:57.507299900
+Actual Reading Time: 2026-07-08T14:01:58.266095600
+Target Timing Difference: 758 ms
+Temperature at Prediction: 76.0°C
+Predicted Delta T: 6.777228832244873°C
+Actual Delta T: 2.5999999999999943°C
+Predicted Temperature: 82.77722883224487°C
+Actual Temperature: 78.6°C
+Error: 4.177228832244879°C
+Absolute Error: 4.177228832244879°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 78.6°C | Predicted Delta T: 4.0084734°C | Predicted Temp: 82.60847339630126°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:01:39.577860700
+Target Time: 2026-07-08T14:01:59.577860700
+Actual Reading Time: 2026-07-08T14:02:00.321955200
+Target Timing Difference: 744 ms
+Temperature at Prediction: 76.3°C
+Predicted Delta T: 5.6051130294799805°C
+Actual Delta T: 0.7999999999999972°C
+Predicted Temperature: 81.90511302947998°C
+Actual Temperature: 77.1°C
+Error: 4.805113029479983°C
+Absolute Error: 4.805113029479983°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.1°C | Predicted Delta T: 4.4519954°C | Predicted Temp: 81.55199537277221°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:01:41.655583800
+Target Time: 2026-07-08T14:02:01.655583800
+Actual Reading Time: 2026-07-08T14:02:02.384260900
+Target Timing Difference: 728 ms
+Temperature at Prediction: 79.1°C
+Predicted Delta T: 4.4192891120910645°C
+Actual Delta T: -3.0°C
+Predicted Temperature: 83.51928911209106°C
+Actual Temperature: 76.1°C
+Error: 7.4192891120910645°C
+Absolute Error: 7.4192891120910645°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 76.1°C | Predicted Delta T: 4.6827946°C | Predicted Temp: 80.78279457092285°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:01:43.697569500
+Target Time: 2026-07-08T14:02:03.697569500
+Actual Reading Time: 2026-07-08T14:02:04.434304200
+Target Timing Difference: 736 ms
+Temperature at Prediction: 80.4°C
+Predicted Delta T: 2.703533172607422°C
+Actual Delta T: -4.6000000000000085°C
+Predicted Temperature: 83.10353317260743°C
+Actual Temperature: 75.8°C
+Error: 7.30353317260743°C
+Absolute Error: 7.30353317260743°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 75.8°C | Predicted Delta T: 5.145269°C | Predicted Temp: 80.94526891708374°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:01:45.745434800
+Target Time: 2026-07-08T14:02:05.745434800
+Actual Reading Time: 2026-07-08T14:02:06.500477400
+Target Timing Difference: 755 ms
+Temperature at Prediction: 79.4°C
+Predicted Delta T: 4.305344104766846°C
+Actual Delta T: -2.4000000000000057°C
+Predicted Temperature: 83.70534410476685°C
+Actual Temperature: 77.0°C
+Error: 6.705344104766851°C
+Absolute Error: 6.705344104766851°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.0°C | Predicted Delta T: 5.7503195°C | Predicted Temp: 82.750319480896°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:01:47.968252
+Target Time: 2026-07-08T14:02:07.968252
+Actual Reading Time: 2026-07-08T14:02:08.749942700
+Target Timing Difference: 781 ms
+Temperature at Prediction: 78.1°C
+Predicted Delta T: 3.5989816188812256°C
+Actual Delta T: -2.0999999999999943°C
+Predicted Temperature: 81.69898161888122°C
+Actual Temperature: 76.0°C
+Error: 5.69898161888122°C
+Absolute Error: 5.69898161888122°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 76.0°C | Predicted Delta T: 5.764721°C | Predicted Temp: 81.76472091674805°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:01:50.023565300
+Target Time: 2026-07-08T14:02:10.023565300
+Actual Reading Time: 2026-07-08T14:02:10.811946500
+Target Timing Difference: 788 ms
+Temperature at Prediction: 76.8°C
+Predicted Delta T: 4.16944694519043°C
+Actual Delta T: -0.7000000000000028°C
+Predicted Temperature: 80.96944694519043°C
+Actual Temperature: 76.1°C
+Error: 4.8694469451904325°C
+Absolute Error: 4.8694469451904325°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 76.1°C | Predicted Delta T: 5.6086516°C | Predicted Temp: 81.708651638031°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:01:52.071206500
+Target Time: 2026-07-08T14:02:12.071206500
+Actual Reading Time: 2026-07-08T14:02:12.869116600
+Target Timing Difference: 797 ms
+Temperature at Prediction: 77.3°C
+Predicted Delta T: 6.0612688064575195°C
+Actual Delta T: 3.5°C
+Predicted Temperature: 83.36126880645752°C
+Actual Temperature: 80.8°C
+Error: 2.5612688064575195°C
+Absolute Error: 2.5612688064575195°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 80.8°C | Predicted Delta T: 3.5206716°C | Predicted Temp: 84.32067160606384°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:01:54.145623600
+Target Time: 2026-07-08T14:02:14.145623600
+Actual Reading Time: 2026-07-08T14:02:14.940305400
+Target Timing Difference: 794 ms
+Temperature at Prediction: 76.8°C
+Predicted Delta T: 5.277407169342041°C
+Actual Delta T: 1.5°C
+Predicted Temperature: 82.07740716934204°C
+Actual Temperature: 78.3°C
+Error: 3.777407169342041°C
+Absolute Error: 3.777407169342041°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 78.3°C | Predicted Delta T: 3.9385817°C | Predicted Temp: 82.23858170509338°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:01:56.214395200
+Target Time: 2026-07-08T14:02:16.214395200
+Actual Reading Time: 2026-07-08T14:02:16.995872700
+Target Timing Difference: 781 ms
+Temperature at Prediction: 80.1°C
+Predicted Delta T: 3.7833757400512695°C
+Actual Delta T: -2.5999999999999943°C
+Predicted Temperature: 83.88337574005126°C
+Actual Temperature: 77.5°C
+Error: 6.383375740051264°C
+Absolute Error: 6.383375740051264°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.5°C | Predicted Delta T: 4.1452785°C | Predicted Temp: 81.6452784538269°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:01:58.266095600
+Target Time: 2026-07-08T14:02:18.266095600
+Actual Reading Time: 2026-07-08T14:02:19.041074300
+Target Timing Difference: 774 ms
+Temperature at Prediction: 78.6°C
+Predicted Delta T: 4.0084733963012695°C
+Actual Delta T: -2.0°C
+Predicted Temperature: 82.60847339630126°C
+Actual Temperature: 76.6°C
+Error: 6.0084733963012695°C
+Absolute Error: 6.0084733963012695°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 76.6°C | Predicted Delta T: 4.5815144°C | Predicted Temp: 81.1815143585205°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:00.321955200
+Target Time: 2026-07-08T14:02:20.321955200
+Actual Reading Time: 2026-07-08T14:02:21.096636900
+Target Timing Difference: 774 ms
+Temperature at Prediction: 77.1°C
+Predicted Delta T: 4.451995372772217°C
+Actual Delta T: -0.09999999999999432°C
+Predicted Temperature: 81.55199537277221°C
+Actual Temperature: 77.0°C
+Error: 4.551995372772211°C
+Absolute Error: 4.551995372772211°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.0°C | Predicted Delta T: 6.024603°C | Predicted Temp: 83.02460289001465°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:02.384260900
+Target Time: 2026-07-08T14:02:22.384260900
+Actual Reading Time: 2026-07-08T14:02:23.276901800
+Target Timing Difference: 892 ms
+Temperature at Prediction: 76.1°C
+Predicted Delta T: 4.682794570922852°C
+Actual Delta T: 0.4000000000000057°C
+Predicted Temperature: 80.78279457092285°C
+Actual Temperature: 76.5°C
+Error: 4.282794570922846°C
+Absolute Error: 4.282794570922846°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 76.5°C | Predicted Delta T: 5.633201°C | Predicted Temp: 82.13320112228394°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:04.434304200
+Target Time: 2026-07-08T14:02:24.434304200
+Actual Reading Time: 2026-07-08T14:02:25.334512
+Target Timing Difference: 900 ms
+Temperature at Prediction: 75.8°C
+Predicted Delta T: 5.14526891708374°C
+Actual Delta T: 0.7999999999999972°C
+Predicted Temperature: 80.94526891708374°C
+Actual Temperature: 76.6°C
+Error: 4.345268917083743°C
+Absolute Error: 4.345268917083743°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 76.6°C | Predicted Delta T: 5.473875°C | Predicted Temp: 82.07387504577636°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:06.500477400
+Target Time: 2026-07-08T14:02:26.500477400
+Actual Reading Time: 2026-07-08T14:02:27.393157600
+Target Timing Difference: 892 ms
+Temperature at Prediction: 77.0°C
+Predicted Delta T: 5.750319480895996°C
+Actual Delta T: 3.299999999999997°C
+Predicted Temperature: 82.750319480896°C
+Actual Temperature: 80.3°C
+Error: 2.450319480895999°C
+Absolute Error: 2.450319480895999°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 80.3°C | Predicted Delta T: 3.573196°C | Predicted Temp: 83.87319593429565°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:08.749942700
+Target Time: 2026-07-08T14:02:28.749942700
+Actual Reading Time: 2026-07-08T14:02:29.441857500
+Target Timing Difference: 691 ms
+Temperature at Prediction: 76.0°C
+Predicted Delta T: 5.764720916748047°C
+Actual Delta T: 2.5999999999999943°C
+Predicted Temperature: 81.76472091674805°C
+Actual Temperature: 78.6°C
+Error: 3.1647209167480526°C
+Absolute Error: 3.1647209167480526°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 78.6°C | Predicted Delta T: 3.7113423°C | Predicted Temp: 82.31134233474731°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:10.811946500
+Target Time: 2026-07-08T14:02:30.811946500
+Actual Reading Time: 2026-07-08T14:02:31.490495900
+Target Timing Difference: 678 ms
+Temperature at Prediction: 76.1°C
+Predicted Delta T: 5.608651638031006°C
+Actual Delta T: 1.4000000000000057°C
+Predicted Temperature: 81.708651638031°C
+Actual Temperature: 77.5°C
+Error: 4.208651638031°C
+Absolute Error: 4.208651638031°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.5°C | Predicted Delta T: 4.0441523°C | Predicted Temp: 81.54415225982666°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:12.869116600
+Target Time: 2026-07-08T14:02:32.869116600
+Actual Reading Time: 2026-07-08T14:02:33.537614900
+Target Timing Difference: 668 ms
+Temperature at Prediction: 80.8°C
+Predicted Delta T: 3.5206716060638428°C
+Actual Delta T: -4.5°C
+Predicted Temperature: 84.32067160606384°C
+Actual Temperature: 76.3°C
+Error: 8.020671606063843°C
+Absolute Error: 8.020671606063843°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 76.3°C | Predicted Delta T: 4.568828°C | Predicted Temp: 80.86882810592651°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:14.940305400
+Target Time: 2026-07-08T14:02:34.940305400
+Actual Reading Time: 2026-07-08T14:02:35.583275300
+Target Timing Difference: 642 ms
+Temperature at Prediction: 78.3°C
+Predicted Delta T: 3.938581705093384°C
+Actual Delta T: -2.5°C
+Predicted Temperature: 82.23858170509338°C
+Actual Temperature: 75.8°C
+Error: 6.438581705093384°C
+Absolute Error: 6.438581705093384°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 75.8°C | Predicted Delta T: 4.978935°C | Predicted Temp: 80.77893476486206°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:16.995872700
+Target Time: 2026-07-08T14:02:36.995872700
+Actual Reading Time: 2026-07-08T14:02:37.654515100
+Target Timing Difference: 658 ms
+Temperature at Prediction: 77.5°C
+Predicted Delta T: 4.145278453826904°C
+Actual Delta T: -1.0°C
+Predicted Temperature: 81.6452784538269°C
+Actual Temperature: 76.5°C
+Error: 5.145278453826904°C
+Absolute Error: 5.145278453826904°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 76.5°C | Predicted Delta T: 6.0804935°C | Predicted Temp: 82.5804934501648°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:19.041074300
+Target Time: 2026-07-08T14:02:39.041074300
+Actual Reading Time: 2026-07-08T14:02:39.747620900
+Target Timing Difference: 706 ms
+Temperature at Prediction: 76.6°C
+Predicted Delta T: 4.581514358520508°C
+Actual Delta T: -0.5°C
+Predicted Temperature: 81.1815143585205°C
+Actual Temperature: 76.1°C
+Error: 5.081514358520508°C
+Absolute Error: 5.081514358520508°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 76.1°C | Predicted Delta T: 5.7652736°C | Predicted Temp: 81.8652735710144°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:21.096636900
+Target Time: 2026-07-08T14:02:41.096636900
+Actual Reading Time: 2026-07-08T14:02:41.805966300
+Target Timing Difference: 709 ms
+Temperature at Prediction: 77.0°C
+Predicted Delta T: 6.024602890014648°C
+Actual Delta T: -0.4000000000000057°C
+Predicted Temperature: 83.02460289001465°C
+Actual Temperature: 76.6°C
+Error: 6.424602890014654°C
+Absolute Error: 6.424602890014654°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 76.6°C | Predicted Delta T: 5.570196°C | Predicted Temp: 82.17019615173339°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:23.276901800
+Target Time: 2026-07-08T14:02:43.276901800
+Actual Reading Time: 2026-07-08T14:02:43.857611200
+Target Timing Difference: 580 ms
+Temperature at Prediction: 76.5°C
+Predicted Delta T: 5.6332011222839355°C
+Actual Delta T: 3.5°C
+Predicted Temperature: 82.13320112228394°C
+Actual Temperature: 80.0°C
+Error: 2.1332011222839355°C
+Absolute Error: 2.1332011222839355°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 80.0°C | Predicted Delta T: 3.774281°C | Predicted Temp: 83.77428102493286°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:25.334512
+Target Time: 2026-07-08T14:02:45.334512
+Actual Reading Time: 2026-07-08T14:02:45.900036100
+Target Timing Difference: 565 ms
+Temperature at Prediction: 76.6°C
+Predicted Delta T: 5.473875045776367°C
+Actual Delta T: 2.200000000000003°C
+Predicted Temperature: 82.07387504577636°C
+Actual Temperature: 78.8°C
+Error: 3.2738750457763643°C
+Absolute Error: 3.2738750457763643°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 78.8°C | Predicted Delta T: 4.031256°C | Predicted Temp: 82.83125619888305°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:27.393157600
+Target Time: 2026-07-08T14:02:47.393157600
+Actual Reading Time: 2026-07-08T14:02:47.956740100
+Target Timing Difference: 563 ms
+Temperature at Prediction: 80.3°C
+Predicted Delta T: 3.5731959342956543°C
+Actual Delta T: -2.700000000000003°C
+Predicted Temperature: 83.87319593429565°C
+Actual Temperature: 77.6°C
+Error: 6.273195934295657°C
+Absolute Error: 6.273195934295657°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.6°C | Predicted Delta T: 4.266631°C | Predicted Temp: 81.8666311264038°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:29.441857500
+Target Time: 2026-07-08T14:02:49.441857500
+Actual Reading Time: 2026-07-08T14:02:50.003832900
+Target Timing Difference: 561 ms
+Temperature at Prediction: 78.6°C
+Predicted Delta T: 3.7113423347473145°C
+Actual Delta T: -2.1999999999999886°C
+Predicted Temperature: 82.31134233474731°C
+Actual Temperature: 76.4°C
+Error: 5.911342334747303°C
+Absolute Error: 5.911342334747303°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 76.4°C | Predicted Delta T: 4.811168°C | Predicted Temp: 81.21116819381714°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:31.490495900
+Target Time: 2026-07-08T14:02:51.490495900
+Actual Reading Time: 2026-07-08T14:02:52.055562500
+Target Timing Difference: 565 ms
+Temperature at Prediction: 77.5°C
+Predicted Delta T: 4.04415225982666°C
+Actual Delta T: -1.4000000000000057°C
+Predicted Temperature: 81.54415225982666°C
+Actual Temperature: 76.1°C
+Error: 5.444152259826666°C
+Absolute Error: 5.444152259826666°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 76.1°C | Predicted Delta T: 6.647047°C | Predicted Temp: 82.74704704284667°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:33.537614900
+Target Time: 2026-07-08T14:02:53.537614900
+Actual Reading Time: 2026-07-08T14:02:54.146749200
+Target Timing Difference: 609 ms
+Temperature at Prediction: 76.3°C
+Predicted Delta T: 4.568828105926514°C
+Actual Delta T: -0.3999999999999915°C
+Predicted Temperature: 80.86882810592651°C
+Actual Temperature: 75.9°C
+Error: 4.968828105926505°C
+Absolute Error: 4.968828105926505°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 75.9°C | Predicted Delta T: 5.579568°C | Predicted Temp: 81.47956790924073°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:35.583275300
+Target Time: 2026-07-08T14:02:55.583275300
+Actual Reading Time: 2026-07-08T14:02:56.216820200
+Target Timing Difference: 633 ms
+Temperature at Prediction: 75.8°C
+Predicted Delta T: 4.9789347648620605°C
+Actual Delta T: 2.1000000000000085°C
+Predicted Temperature: 80.77893476486206°C
+Actual Temperature: 77.9°C
+Error: 2.878934764862052°C
+Absolute Error: 2.878934764862052°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.9°C | Predicted Delta T: 4.6578937°C | Predicted Temp: 82.55789365768433°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:37.654515100
+Target Time: 2026-07-08T14:02:57.654515100
+Actual Reading Time: 2026-07-08T14:02:58.274055700
+Target Timing Difference: 619 ms
+Temperature at Prediction: 76.5°C
+Predicted Delta T: 6.080493450164795°C
+Actual Delta T: 0.9000000000000057°C
+Predicted Temperature: 82.5804934501648°C
+Actual Temperature: 77.4°C
+Error: 5.180493450164789°C
+Absolute Error: 5.180493450164789°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.4°C | Predicted Delta T: 4.1652308°C | Predicted Temp: 81.5652307510376°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:39.747620900
+Target Time: 2026-07-08T14:02:59.747620900
+Actual Reading Time: 2026-07-08T14:03:00.319063600
+Target Timing Difference: 571 ms
+Temperature at Prediction: 76.1°C
+Predicted Delta T: 5.765273571014404°C
+Actual Delta T: 0.30000000000001137°C
+Predicted Temperature: 81.8652735710144°C
+Actual Temperature: 76.4°C
+Error: 5.465273571014393°C
+Absolute Error: 5.465273571014393°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 76.4°C | Predicted Delta T: 4.5588064°C | Predicted Temp: 80.95880641937256°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:41.805966300
+Target Time: 2026-07-08T14:03:01.805966300
+Actual Reading Time: 2026-07-08T14:03:02.364917800
+Target Timing Difference: 558 ms
+Temperature at Prediction: 76.6°C
+Predicted Delta T: 5.570196151733398°C
+Actual Delta T: -1.2999999999999972°C
+Predicted Temperature: 82.17019615173339°C
+Actual Temperature: 75.3°C
+Error: 6.870196151733396°C
+Absolute Error: 6.870196151733396°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 75.3°C | Predicted Delta T: 4.991376°C | Predicted Temp: 80.29137592315674°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:43.857611200
+Target Time: 2026-07-08T14:03:03.857611200
+Actual Reading Time: 2026-07-08T14:03:04.439580700
+Target Timing Difference: 581 ms
+Temperature at Prediction: 80.0°C
+Predicted Delta T: 3.7742810249328613°C
+Actual Delta T: -5.400000000000006°C
+Predicted Temperature: 83.77428102493286°C
+Actual Temperature: 74.6°C
+Error: 9.174281024932867°C
+Absolute Error: 9.174281024932867°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 74.6°C | Predicted Delta T: 5.2472534°C | Predicted Temp: 79.84725341796874°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:45.900036100
+Target Time: 2026-07-08T14:03:05.900036100
+Actual Reading Time: 2026-07-08T14:03:06.484515700
+Target Timing Difference: 584 ms
+Temperature at Prediction: 78.8°C
+Predicted Delta T: 4.031256198883057°C
+Actual Delta T: -0.8999999999999915°C
+Predicted Temperature: 82.83125619888305°C
+Actual Temperature: 77.9°C
+Error: 4.931256198883048°C
+Absolute Error: 4.931256198883048°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.9°C | Predicted Delta T: 5.9001923°C | Predicted Temp: 83.8001922607422°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:47.956740100
+Target Time: 2026-07-08T14:03:07.956740100
+Actual Reading Time: 2026-07-08T14:03:08.594831600
+Target Timing Difference: 638 ms
+Temperature at Prediction: 77.6°C
+Predicted Delta T: 4.266631126403809°C
+Actual Delta T: -0.09999999999999432°C
+Predicted Temperature: 81.8666311264038°C
+Actual Temperature: 77.5°C
+Error: 4.366631126403803°C
+Absolute Error: 4.366631126403803°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.5°C | Predicted Delta T: 5.378924°C | Predicted Temp: 82.87892389297485°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:50.003832900
+Target Time: 2026-07-08T14:03:10.003832900
+Actual Reading Time: 2026-07-08T14:03:10.657643800
+Target Timing Difference: 653 ms
+Temperature at Prediction: 76.4°C
+Predicted Delta T: 4.811168193817139°C
+Actual Delta T: 1.8999999999999915°C
+Predicted Temperature: 81.21116819381714°C
+Actual Temperature: 78.3°C
+Error: 2.911168193817147°C
+Absolute Error: 2.911168193817147°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 78.3°C | Predicted Delta T: 4.8986707°C | Predicted Temp: 83.19867067337036°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:52.055562500
+Target Time: 2026-07-08T14:03:12.055562500
+Actual Reading Time: 2026-07-08T14:03:12.711746600
+Target Timing Difference: 656 ms
+Temperature at Prediction: 76.1°C
+Predicted Delta T: 6.64704704284668°C
+Actual Delta T: 3.9000000000000057°C
+Predicted Temperature: 82.74704704284667°C
+Actual Temperature: 80.0°C
+Error: 2.747047042846674°C
+Absolute Error: 2.747047042846674°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 80.0°C | Predicted Delta T: 3.417547°C | Predicted Temp: 83.41754698753357°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:54.146749200
+Target Time: 2026-07-08T14:03:14.146749200
+Actual Reading Time: 2026-07-08T14:03:14.760141700
+Target Timing Difference: 613 ms
+Temperature at Prediction: 75.9°C
+Predicted Delta T: 5.579567909240723°C
+Actual Delta T: 2.5°C
+Predicted Temperature: 81.47956790924073°C
+Actual Temperature: 78.4°C
+Error: 3.0795679092407227°C
+Absolute Error: 3.0795679092407227°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 78.4°C | Predicted Delta T: 3.6038997°C | Predicted Temp: 82.00389971733094°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:56.216820200
+Target Time: 2026-07-08T14:03:16.216820200
+Actual Reading Time: 2026-07-08T14:03:16.812214
+Target Timing Difference: 595 ms
+Temperature at Prediction: 77.9°C
+Predicted Delta T: 4.657893657684326°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 82.55789365768433°C
+Actual Temperature: 77.9°C
+Error: 4.657893657684326°C
+Absolute Error: 4.657893657684326°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.9°C | Predicted Delta T: 3.879534°C | Predicted Temp: 81.77953400611878°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:02:58.274055700
+Target Time: 2026-07-08T14:03:18.274055700
+Actual Reading Time: 2026-07-08T14:03:18.856482800
+Target Timing Difference: 582 ms
+Temperature at Prediction: 77.4°C
+Predicted Delta T: 4.165230751037598°C
+Actual Delta T: -0.9000000000000057°C
+Predicted Temperature: 81.5652307510376°C
+Actual Temperature: 76.5°C
+Error: 5.065230751037603°C
+Absolute Error: 5.065230751037603°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 76.5°C | Predicted Delta T: 4.3521395°C | Predicted Temp: 80.85213947296143°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:00.319063600
+Target Time: 2026-07-08T14:03:20.319063600
+Actual Reading Time: 2026-07-08T14:03:20.902443700
+Target Timing Difference: 583 ms
+Temperature at Prediction: 76.4°C
+Predicted Delta T: 4.558806419372559°C
+Actual Delta T: 1.3999999999999915°C
+Predicted Temperature: 80.95880641937256°C
+Actual Temperature: 77.8°C
+Error: 3.158806419372567°C
+Absolute Error: 3.158806419372567°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.8°C | Predicted Delta T: 5.6702867°C | Predicted Temp: 83.47028665542602°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:02.364917800
+Target Time: 2026-07-08T14:03:22.364917800
+Actual Reading Time: 2026-07-08T14:03:23.268557700
+Target Timing Difference: 903 ms
+Temperature at Prediction: 75.3°C
+Predicted Delta T: 4.991375923156738°C
+Actual Delta T: 2.0°C
+Predicted Temperature: 80.29137592315674°C
+Actual Temperature: 77.3°C
+Error: 2.9913759231567383°C
+Absolute Error: 2.9913759231567383°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.3°C | Predicted Delta T: 5.2734947°C | Predicted Temp: 82.57349472045898°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:04.439580700
+Target Time: 2026-07-08T14:03:24.439580700
+Actual Reading Time: 2026-07-08T14:03:25.343803700
+Target Timing Difference: 904 ms
+Temperature at Prediction: 74.6°C
+Predicted Delta T: 5.24725341796875°C
+Actual Delta T: 2.9000000000000057°C
+Predicted Temperature: 79.84725341796874°C
+Actual Temperature: 77.5°C
+Error: 2.3472534179687443°C
+Absolute Error: 2.3472534179687443°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.5°C | Predicted Delta T: 5.2157874°C | Predicted Temp: 82.71578741073608°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:06.484515700
+Target Time: 2026-07-08T14:03:26.484515700
+Actual Reading Time: 2026-07-08T14:03:27.394479200
+Target Timing Difference: 909 ms
+Temperature at Prediction: 77.9°C
+Predicted Delta T: 5.9001922607421875°C
+Actual Delta T: 2.6999999999999886°C
+Predicted Temperature: 83.8001922607422°C
+Actual Temperature: 80.6°C
+Error: 3.200192260742199°C
+Absolute Error: 3.200192260742199°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 80.6°C | Predicted Delta T: 3.254897°C | Predicted Temp: 83.85489711761474°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:08.594831600
+Target Time: 2026-07-08T14:03:28.594831600
+Actual Reading Time: 2026-07-08T14:03:29.441459200
+Target Timing Difference: 846 ms
+Temperature at Prediction: 77.5°C
+Predicted Delta T: 5.3789238929748535°C
+Actual Delta T: 1.9000000000000057°C
+Predicted Temperature: 82.87892389297485°C
+Actual Temperature: 79.4°C
+Error: 3.478923892974848°C
+Absolute Error: 3.478923892974848°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 79.4°C | Predicted Delta T: 3.2687786°C | Predicted Temp: 82.66877856254578°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:10.657643800
+Target Time: 2026-07-08T14:03:30.657643800
+Actual Reading Time: 2026-07-08T14:03:31.489550300
+Target Timing Difference: 831 ms
+Temperature at Prediction: 78.3°C
+Predicted Delta T: 4.898670673370361°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 83.19867067337036°C
+Actual Temperature: 78.3°C
+Error: 4.898670673370361°C
+Absolute Error: 4.898670673370361°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 78.3°C | Predicted Delta T: 3.6903884°C | Predicted Temp: 81.99038844108581°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:12.711746600
+Target Time: 2026-07-08T14:03:32.711746600
+Actual Reading Time: 2026-07-08T14:03:33.558988
+Target Timing Difference: 847 ms
+Temperature at Prediction: 80.0°C
+Predicted Delta T: 3.4175469875335693°C
+Actual Delta T: -2.4000000000000057°C
+Predicted Temperature: 83.41754698753357°C
+Actual Temperature: 77.6°C
+Error: 5.817546987533575°C
+Absolute Error: 5.817546987533575°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.6°C | Predicted Delta T: 4.1006317°C | Predicted Temp: 81.70063171386718°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:14.760141700
+Target Time: 2026-07-08T14:03:34.760141700
+Actual Reading Time: 2026-07-08T14:03:35.609661300
+Target Timing Difference: 849 ms
+Temperature at Prediction: 78.4°C
+Predicted Delta T: 3.6038997173309326°C
+Actual Delta T: -1.9000000000000057°C
+Predicted Temperature: 82.00389971733094°C
+Actual Temperature: 76.5°C
+Error: 5.503899717330938°C
+Absolute Error: 5.503899717330938°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 76.5°C | Predicted Delta T: 4.3705726°C | Predicted Temp: 80.87057256698608°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:16.812214
+Target Time: 2026-07-08T14:03:36.812214
+Actual Reading Time: 2026-07-08T14:03:37.668753800
+Target Timing Difference: 856 ms
+Temperature at Prediction: 77.9°C
+Predicted Delta T: 3.8795340061187744°C
+Actual Delta T: -0.5°C
+Predicted Temperature: 81.77953400611878°C
+Actual Temperature: 77.4°C
+Error: 4.379534006118774°C
+Absolute Error: 4.379534006118774°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.4°C | Predicted Delta T: 6.0919313°C | Predicted Temp: 83.49193134307862°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:18.856482800
+Target Time: 2026-07-08T14:03:38.856482800
+Actual Reading Time: 2026-07-08T14:03:39.737409900
+Target Timing Difference: 880 ms
+Temperature at Prediction: 76.5°C
+Predicted Delta T: 4.352139472961426°C
+Actual Delta T: 1.5999999999999943°C
+Predicted Temperature: 80.85213947296143°C
+Actual Temperature: 78.1°C
+Error: 2.7521394729614315°C
+Absolute Error: 2.7521394729614315°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 78.1°C | Predicted Delta T: 5.0167933°C | Predicted Temp: 83.11679325103759°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:20.902443700
+Target Time: 2026-07-08T14:03:40.902443700
+Actual Reading Time: 2026-07-08T14:03:41.796735
+Target Timing Difference: 894 ms
+Temperature at Prediction: 77.8°C
+Predicted Delta T: 5.670286655426025°C
+Actual Delta T: 2.200000000000003°C
+Predicted Temperature: 83.47028665542602°C
+Actual Temperature: 80.0°C
+Error: 3.4702866554260225°C
+Absolute Error: 3.4702866554260225°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 80.0°C | Predicted Delta T: 3.895017°C | Predicted Temp: 83.89501690864563°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:23.268557700
+Target Time: 2026-07-08T14:03:43.268557700
+Actual Reading Time: 2026-07-08T14:03:43.848076900
+Target Timing Difference: 579 ms
+Temperature at Prediction: 77.3°C
+Predicted Delta T: 5.273494720458984°C
+Actual Delta T: 2.299999999999997°C
+Predicted Temperature: 82.57349472045898°C
+Actual Temperature: 79.6°C
+Error: 2.973494720458987°C
+Absolute Error: 2.973494720458987°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 79.6°C | Predicted Delta T: 3.1043499°C | Predicted Temp: 82.70434985160827°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:25.343803700
+Target Time: 2026-07-08T14:03:45.343803700
+Actual Reading Time: 2026-07-08T14:03:45.899948900
+Target Timing Difference: 556 ms
+Temperature at Prediction: 77.5°C
+Predicted Delta T: 5.215787410736084°C
+Actual Delta T: 0.5999999999999943°C
+Predicted Temperature: 82.71578741073608°C
+Actual Temperature: 78.1°C
+Error: 4.61578741073609°C
+Absolute Error: 4.61578741073609°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 78.1°C | Predicted Delta T: 3.7673619°C | Predicted Temp: 81.86736187934875°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:27.394479200
+Target Time: 2026-07-08T14:03:47.394479200
+Actual Reading Time: 2026-07-08T14:03:47.945540100
+Target Timing Difference: 551 ms
+Temperature at Prediction: 80.6°C
+Predicted Delta T: 3.254897117614746°C
+Actual Delta T: -3.299999999999997°C
+Predicted Temperature: 83.85489711761474°C
+Actual Temperature: 77.3°C
+Error: 6.554897117614743°C
+Absolute Error: 6.554897117614743°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.3°C | Predicted Delta T: 4.2720757°C | Predicted Temp: 81.57207565307617°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:29.441459200
+Target Time: 2026-07-08T14:03:49.441459200
+Actual Reading Time: 2026-07-08T14:03:49.989795100
+Target Timing Difference: 548 ms
+Temperature at Prediction: 79.4°C
+Predicted Delta T: 3.2687785625457764°C
+Actual Delta T: -3.1000000000000085°C
+Predicted Temperature: 82.66877856254578°C
+Actual Temperature: 76.3°C
+Error: 6.368778562545785°C
+Absolute Error: 6.368778562545785°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 76.3°C | Predicted Delta T: 4.630805°C | Predicted Temp: 80.93080501556396°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:31.489550300
+Target Time: 2026-07-08T14:03:51.489550300
+Actual Reading Time: 2026-07-08T14:03:52.040492600
+Target Timing Difference: 550 ms
+Temperature at Prediction: 78.3°C
+Predicted Delta T: 3.6903884410858154°C
+Actual Delta T: -1.5°C
+Predicted Temperature: 81.99038844108581°C
+Actual Temperature: 76.8°C
+Error: 5.190388441085815°C
+Absolute Error: 5.190388441085815°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 76.8°C | Predicted Delta T: 6.3959494°C | Predicted Temp: 83.1959493637085°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:33.558988
+Target Time: 2026-07-08T14:03:53.558988
+Actual Reading Time: 2026-07-08T14:03:54.148790900
+Target Timing Difference: 589 ms
+Temperature at Prediction: 77.6°C
+Predicted Delta T: 4.1006317138671875°C
+Actual Delta T: 0.30000000000001137°C
+Predicted Temperature: 81.70063171386718°C
+Actual Temperature: 77.9°C
+Error: 3.800631713867176°C
+Absolute Error: 3.800631713867176°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.9°C | Predicted Delta T: 5.047717°C | Predicted Temp: 82.94771709442139°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:35.609661300
+Target Time: 2026-07-08T14:03:55.609661300
+Actual Reading Time: 2026-07-08T14:03:56.246309500
+Target Timing Difference: 636 ms
+Temperature at Prediction: 76.5°C
+Predicted Delta T: 4.370572566986084°C
+Actual Delta T: 2.799999999999997°C
+Predicted Temperature: 80.87057256698608°C
+Actual Temperature: 79.3°C
+Error: 1.5705725669860868°C
+Absolute Error: 1.5705725669860868°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 79.3°C | Predicted Delta T: 4.091489°C | Predicted Temp: 83.3914888381958°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:37.668753800
+Target Time: 2026-07-08T14:03:57.668753800
+Actual Reading Time: 2026-07-08T14:03:58.299111400
+Target Timing Difference: 630 ms
+Temperature at Prediction: 77.4°C
+Predicted Delta T: 6.091931343078613°C
+Actual Delta T: 1.0999999999999943°C
+Predicted Temperature: 83.49193134307862°C
+Actual Temperature: 78.5°C
+Error: 4.991931343078619°C
+Absolute Error: 4.991931343078619°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 78.5°C | Predicted Delta T: 3.6377058°C | Predicted Temp: 82.13770580291748°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:39.737409900
+Target Time: 2026-07-08T14:03:59.737409900
+Actual Reading Time: 2026-07-08T14:04:00.342034900
+Target Timing Difference: 604 ms
+Temperature at Prediction: 78.1°C
+Predicted Delta T: 5.016793251037598°C
+Actual Delta T: -0.6999999999999886°C
+Predicted Temperature: 83.11679325103759°C
+Actual Temperature: 77.4°C
+Error: 5.716793251037586°C
+Absolute Error: 5.716793251037586°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.4°C | Predicted Delta T: 4.0078936°C | Predicted Temp: 81.4078935623169°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:41.796735
+Target Time: 2026-07-08T14:04:01.796735
+Actual Reading Time: 2026-07-08T14:04:02.397354300
+Target Timing Difference: 600 ms
+Temperature at Prediction: 80.0°C
+Predicted Delta T: 3.89501690864563°C
+Actual Delta T: -3.200000000000003°C
+Predicted Temperature: 83.89501690864563°C
+Actual Temperature: 76.8°C
+Error: 7.095016908645633°C
+Absolute Error: 7.095016908645633°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 76.8°C | Predicted Delta T: 4.3077326°C | Predicted Temp: 81.10773258209228°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:43.848076900
+Target Time: 2026-07-08T14:04:03.848076900
+Actual Reading Time: 2026-07-08T14:04:04.462359300
+Target Timing Difference: 614 ms
+Temperature at Prediction: 79.6°C
+Predicted Delta T: 3.1043498516082764°C
+Actual Delta T: -3.6999999999999886°C
+Predicted Temperature: 82.70434985160827°C
+Actual Temperature: 75.9°C
+Error: 6.804349851608265°C
+Absolute Error: 6.804349851608265°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 75.9°C | Predicted Delta T: 4.67542°C | Predicted Temp: 80.57541980743409°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:45.899948900
+Target Time: 2026-07-08T14:04:05.899948900
+Actual Reading Time: 2026-07-08T14:04:06.516299300
+Target Timing Difference: 616 ms
+Temperature at Prediction: 78.1°C
+Predicted Delta T: 3.767361879348755°C
+Actual Delta T: -0.5°C
+Predicted Temperature: 81.86736187934875°C
+Actual Temperature: 77.6°C
+Error: 4.267361879348755°C
+Absolute Error: 4.267361879348755°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.6°C | Predicted Delta T: 5.65822°C | Predicted Temp: 83.25821981430053°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:47.945540100
+Target Time: 2026-07-08T14:04:07.945540100
+Actual Reading Time: 2026-07-08T14:04:08.646743700
+Target Timing Difference: 701 ms
+Temperature at Prediction: 77.3°C
+Predicted Delta T: 4.272075653076172°C
+Actual Delta T: 1.0°C
+Predicted Temperature: 81.57207565307617°C
+Actual Temperature: 78.3°C
+Error: 3.272075653076172°C
+Absolute Error: 3.272075653076172°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 78.3°C | Predicted Delta T: 5.148093°C | Predicted Temp: 83.44809322357177°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:49.989795100
+Target Time: 2026-07-08T14:04:09.989795100
+Actual Reading Time: 2026-07-08T14:04:10.708257700
+Target Timing Difference: 718 ms
+Temperature at Prediction: 76.3°C
+Predicted Delta T: 4.630805015563965°C
+Actual Delta T: 2.799999999999997°C
+Predicted Temperature: 80.93080501556396°C
+Actual Temperature: 79.1°C
+Error: 1.8308050155639677°C
+Absolute Error: 1.8308050155639677°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 79.1°C | Predicted Delta T: 4.5937643°C | Predicted Temp: 83.69376430511474°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:52.040492600
+Target Time: 2026-07-08T14:04:12.040492600
+Actual Reading Time: 2026-07-08T14:04:12.766690
+Target Timing Difference: 726 ms
+Temperature at Prediction: 76.8°C
+Predicted Delta T: 6.395949363708496°C
+Actual Delta T: 5.799999999999997°C
+Predicted Temperature: 83.1959493637085°C
+Actual Temperature: 82.6°C
+Error: 0.5959493637084989°C
+Absolute Error: 0.5959493637084989°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 82.6°C | Predicted Delta T: 2.0653071°C | Predicted Temp: 84.66530714035034°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:54.148790900
+Target Time: 2026-07-08T14:04:14.148790900
+Actual Reading Time: 2026-07-08T14:04:14.809613400
+Target Timing Difference: 660 ms
+Temperature at Prediction: 77.9°C
+Predicted Delta T: 5.047717094421387°C
+Actual Delta T: 2.5999999999999943°C
+Predicted Temperature: 82.94771709442139°C
+Actual Temperature: 80.5°C
+Error: 2.4477170944213924°C
+Absolute Error: 2.4477170944213924°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 80.5°C | Predicted Delta T: 2.3123298°C | Predicted Temp: 82.81232976913452°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:56.246309500
+Target Time: 2026-07-08T14:04:16.246309500
+Actual Reading Time: 2026-07-08T14:04:16.850087600
+Target Timing Difference: 603 ms
+Temperature at Prediction: 79.3°C
+Predicted Delta T: 4.091488838195801°C
+Actual Delta T: -0.7999999999999972°C
+Predicted Temperature: 83.3914888381958°C
+Actual Temperature: 78.5°C
+Error: 4.891488838195798°C
+Absolute Error: 4.891488838195798°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 78.5°C | Predicted Delta T: 3.383154°C | Predicted Temp: 81.88315391540527°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:03:58.299111400
+Target Time: 2026-07-08T14:04:18.299111400
+Actual Reading Time: 2026-07-08T14:04:18.907003900
+Target Timing Difference: 607 ms
+Temperature at Prediction: 78.5°C
+Predicted Delta T: 3.6377058029174805°C
+Actual Delta T: -1.5°C
+Predicted Temperature: 82.13770580291748°C
+Actual Temperature: 77.0°C
+Error: 5.1377058029174805°C
+Absolute Error: 5.1377058029174805°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.0°C | Predicted Delta T: 4.180223°C | Predicted Temp: 81.18022298812866°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:04:00.342034900
+Target Time: 2026-07-08T14:04:20.342034900
+Actual Reading Time: 2026-07-08T14:04:20.965868900
+Target Timing Difference: 623 ms
+Temperature at Prediction: 77.4°C
+Predicted Delta T: 4.0078935623168945°C
+Actual Delta T: 0.0°C
+Predicted Temperature: 81.4078935623169°C
+Actual Temperature: 77.4°C
+Error: 4.0078935623168945°C
+Absolute Error: 4.0078935623168945°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.4°C | Predicted Delta T: 5.377477°C | Predicted Temp: 82.77747716903687°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:04:02.397354300
+Target Time: 2026-07-08T14:04:22.397354300
+Actual Reading Time: 2026-07-08T14:04:23.227704800
+Target Timing Difference: 830 ms
+Temperature at Prediction: 76.8°C
+Predicted Delta T: 4.307732582092285°C
+Actual Delta T: 0.5°C
+Predicted Temperature: 81.10773258209228°C
+Actual Temperature: 77.3°C
+Error: 3.807732582092285°C
+Absolute Error: 3.807732582092285°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.3°C | Predicted Delta T: 5.3737097°C | Predicted Temp: 82.6737096786499°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:04:04.462359300
+Target Time: 2026-07-08T14:04:24.462359300
+Actual Reading Time: 2026-07-08T14:04:25.277287600
+Target Timing Difference: 814 ms
+Temperature at Prediction: 75.9°C
+Predicted Delta T: 4.675419807434082°C
+Actual Delta T: 2.5999999999999943°C
+Predicted Temperature: 80.57541980743409°C
+Actual Temperature: 78.5°C
+Error: 2.0754198074340877°C
+Absolute Error: 2.0754198074340877°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 78.5°C | Predicted Delta T: 4.806789°C | Predicted Temp: 83.3067889213562°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:04:06.516299300
+Target Time: 2026-07-08T14:04:26.516299300
+Actual Reading Time: 2026-07-08T14:04:27.334374
+Target Timing Difference: 818 ms
+Temperature at Prediction: 77.6°C
+Predicted Delta T: 5.658219814300537°C
+Actual Delta T: 2.9000000000000057°C
+Predicted Temperature: 83.25821981430053°C
+Actual Temperature: 80.5°C
+Error: 2.7582198143005314°C
+Absolute Error: 2.7582198143005314°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 80.5°C | Predicted Delta T: 3.2291236°C | Predicted Temp: 83.72912359237671°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:04:08.646743700
+Target Time: 2026-07-08T14:04:28.646743700
+Actual Reading Time: 2026-07-08T14:04:29.380388900
+Target Timing Difference: 733 ms
+Temperature at Prediction: 78.3°C
+Predicted Delta T: 5.148093223571777°C
+Actual Delta T: 0.29999999999999716°C
+Predicted Temperature: 83.44809322357177°C
+Actual Temperature: 78.6°C
+Error: 4.84809322357178°C
+Absolute Error: 4.84809322357178°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 78.6°C | Predicted Delta T: 3.4874926°C | Predicted Temp: 82.08749256134033°C
+
+========== PREDICTION EVALUATION ==========
+Backend: 100.104.137.30
+Prediction Time: 2026-07-08T14:04:10.708257700
+Target Time: 2026-07-08T14:04:30.708257700
+Actual Reading Time: 2026-07-08T14:04:31.424365800
+Target Timing Difference: 716 ms
+Temperature at Prediction: 79.1°C
+Predicted Delta T: 4.593764305114746°C
+Actual Delta T: -2.0999999999999943°C
+Predicted Temperature: 83.69376430511474°C
+Actual Temperature: 77.0°C
+Error: 6.69376430511474°C
+Absolute Error: 6.69376430511474°C
+===========================================
+
+Backend 100.104.137.30 | Current Temp: 77.0°C | Predicted Delta T: 4.133374°C | Predicted Temp: 81.13337421417236°C
+2026-07-08T14:04:36.176+05:30  INFO 61404 --- [WebSocketForLoadBalancer] [ionShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-07-08T14:04:36.178+05:30  INFO 61404 --- [WebSocketForLoadBalancer] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+ONNX prediction service closed.
+
+Process finished with exit code 130 (interrupted by signal 2:SIGINT)
+

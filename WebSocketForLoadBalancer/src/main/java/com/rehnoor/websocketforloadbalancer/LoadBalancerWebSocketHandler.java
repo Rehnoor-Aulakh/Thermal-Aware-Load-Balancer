@@ -29,6 +29,7 @@ import tools.jackson.databind.ObjectMapper;
 @Component
 public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
 
+    // WebSocket Server port which will send the logs to this (client)
     private static final int DEFAULT_BACKEND_PORT = 8086;
     private static final long NO_DATA_WARNING_DELAY_SECONDS = 10;
 
@@ -37,12 +38,20 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private final Map<String, WebSocket> upstreamConnections = new ConcurrentHashMap<>();
     private final Map<String, ScheduledFuture<?>> noDataWarnings = new ConcurrentHashMap<>();
+<<<<<<< HEAD
+=======
+    private final TelemetryPredictionManager predictionManager;
+    private PredictionEvaluationService evaluationService = null;
+>>>>>>> 33696ffe8c3de42c97d58c76c9f2f5a9aaf6eead
 
-    public LoadBalancerWebSocketHandler(ObjectMapper objectMapper) {
+    public LoadBalancerWebSocketHandler(ObjectMapper objectMapper, TelemetryPredictionManager predictionManager, PredictionEvaluationService evaluationService) {
         this.objectMapper = objectMapper;
         this.httpClient = HttpClient.newHttpClient();
+        this.predictionManager = predictionManager;
+        this.evaluationService = evaluationService;
     }
 
+    // Frontend's session and it has backendIp of the request as a query parameter
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         String backendIp = getQueryParameter(session.getUri(), "backendIp");
@@ -56,6 +65,8 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
             return;
         }
 
+        // send json to the frontend via WebSocketConnection only that connection is now established
+        // so most probably the IP will be of tailscale and on that IP's port 8086, we will make a websocket connection using connectUpstream function
         sendJson(session, Map.of(
                 "type", "connectionEstablished",
                 "timestamp", Instant.now().toString(),
@@ -116,8 +127,14 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
                     public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
                         messageBuffer.append(data);
                         if (last) {
+<<<<<<< HEAD
                             resetNoTelemetryWarning(frontendSession, backendIp);
                             forwardBackendMessage(frontendSession, messageBuffer.toString());
+=======
+                            String telemetryJson = messageBuffer.toString();
+                            processTelemetryMessage(frontendSession, backendIp, telemetryJson);
+
+>>>>>>> 33696ffe8c3de42c97d58c76c9f2f5a9aaf6eead
                             messageBuffer.setLength(0);
                         }
                         webSocket.request(1);
@@ -133,6 +150,8 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
                                 "timestamp", Instant.now().toString(),
                                 "message", reason == null || reason.isBlank() ? "Backend telemetry stream closed" : reason
                         ));
+                        predictionManager.removeBackend(backendIp);
+                        evaluationService.removeBackend(backendIp);
                         return CompletableFuture.completedFuture(null);
                     }
 
@@ -140,6 +159,7 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
                     public void onError(WebSocket webSocket, Throwable error) {
                         cancelNoTelemetryWarning(frontendSession.getId());
                         upstreamConnections.remove(frontendSession.getId(), webSocket);
+                        predictionManager.removeBackend(backendIp);
                         sendJson(frontendSession, Map.of(
                                 "type", "error",
                                 "timestamp", Instant.now().toString(),
@@ -287,4 +307,117 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
             // ignore close failures
         }
     }
-}
+
+    private void processTelemetryMessage(
+            WebSocketSession frontendSession,
+            String backendId,
+            String telemetryJson
+    ) {
+
+        try {
+
+            // Convert incoming JSON into Java object
+            TelemetrySample sample =
+                    objectMapper.readValue(
+                            telemetryJson,
+                            TelemetrySample.class
+                    );
+
+            /*
+             * First, use this new real telemetry reading
+             * to evaluate predictions made about 20 seconds ago.
+             */
+            evaluationService.evaluateReadyPredictions(
+                    backendId,
+                    sample
+            );
+
+            /*
+             * Add the current sample to the rolling LSTM buffer.
+             *
+             * Returns null until 20 samples are available.
+             */
+            Float predictedDeltaT =
+                    predictionManager.addSampleAndPredict(
+                            backendId,
+                            sample
+                    );
+
+            /*
+             * The model is still warming up.
+             *
+             * IMPORTANT:
+             * Do not call addPrediction() here because
+             * predictedDeltaT is null.
+             */
+            if (predictedDeltaT == null) {
+
+                System.out.println(
+                        "Backend "
+                                + backendId
+                                + " | Buffer: "
+                                + predictionManager
+                                .getBufferSize(backendId)
+                                + "/20"
+                );
+
+                forwardBackendMessage(
+                        frontendSession,
+                        telemetryJson
+                );
+
+                return;
+            }
+
+            /*
+             * Only store a future prediction when the model
+             * actually produced one.
+             */
+            evaluationService.addPrediction(
+                    backendId,
+                    sample,
+                    predictedDeltaT
+            );
+
+            double predictedTemperature =
+                    sample.cpuTemperature()
+                            + predictedDeltaT;
+
+            System.out.println(
+                    "Backend "
+                            + backendId
+                            + " | Current Temp: "
+                            + sample.cpuTemperature()
+                            + "°C"
+                            + " | Predicted Delta T: "
+                            + predictedDeltaT
+                            + "°C"
+                            + " | Predicted Temp: "
+                            + predictedTemperature
+                            + "°C"
+            );
+
+            forwardBackendMessage(
+                    frontendSession,
+                    telemetryJson
+            );
+
+        } catch (Exception exception) {
+
+            System.err.println(
+                    "Failed to process telemetry from "
+                            + backendId
+                            + ": "
+                            + exception.getMessage()
+            );
+
+            /*
+             * Prediction problems should never stop the
+             * original telemetry stream.
+             */
+            forwardBackendMessage(
+                    frontendSession,
+                    telemetryJson
+            );
+        }
+    }}
