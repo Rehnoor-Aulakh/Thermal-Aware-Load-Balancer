@@ -15,7 +15,7 @@ import java.util.Map;
 
 @Service
 public class TemperaturePredictionService {
-    private static final String MODEL_PATH = "models/cross_device_lstm.onnx";
+    private static final String MODEL_PATH = "models/cross_device_gru.onnx";
     private static final String INPUT_NAME = "telemetry_input";
 
     private final OrtEnvironment environment;
@@ -25,21 +25,21 @@ public class TemperaturePredictionService {
     private static final int FEATURE_COUNT = 6;
 
     private static final double[] FEATURE_MEANS = {
-            54.30486526,
-            69.35910699,
-            186.81479667,
-            277.07422832,
-            34.97542381,
-            87.12889270
+            49.90860017,   // cpuUsage
+            67.04419704,   // ramUsage
+            239.32640031,  // networkConnections
+            270.53884106,  // processCount
+            29.92128277,   // cpuPackagePower
+            88.16480604    // cpuTemperature
     };
 
     private static final double[] FEATURE_SCALES = {
-            33.47473048,
-            3.97927094,
-            71.08608066,
-            10.80642228,
-            14.65841708,
-            11.04398318
+            34.53671595,   // cpuUsage
+            5.21190025,    // ramUsage
+            52.38110057,   // networkConnections
+            12.59192245,   // processCount
+            10.86249407,   // cpuPackagePower
+            10.05314470    // cpuTemperature
     };
 
     public TemperaturePredictionService() throws IOException, OrtException {
