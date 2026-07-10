@@ -4,8 +4,8 @@ import tf2onnx
 import onnxruntime as ort
 
 
-KERAS_MODEL_PATH = "latest_cross_device_lstm.keras"
-ONNX_MODEL_PATH = "latest_cross_device_lstm.onnx"
+KERAS_MODEL_PATH = "best_cross_device_lstm.keras"
+ONNX_MODEL_PATH = "with_arshnoor_cross_device_lstm.onnx"
 
 
 # ---------------------------------------------------------
