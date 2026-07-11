@@ -4,43 +4,7 @@ A deep learning project for forecasting CPU temperature from real-time hardware 
 
 ---
 
-# 📊 Prediction Results
 
-<table>
-<tr>
-<td align="center">
-
-### Master Test Set
-<img src="masterTestSet.png" width="430">
-
-</td>
-
-<td align="center">
-
-### Prabhsimrat Logs
-<img src="prabh_logs.png" width="430">
-
-</td>
-</tr>
-
-<tr>
-<td align="center">
-
-### Sushant Logs
-<img src="sushant_logs.png" width="430">
-
-</td>
-
-<td align="center">
-
-### Manan Logs
-<img src="manan_logs.png" width="430">
-
-</td>
-</tr>
-</table>
-
----
 
 # 📑 Model Summary
 
@@ -58,26 +22,75 @@ A deep learning project for forecasting CPU temperature from real-time hardware 
 | Hardware Used | NVIDIA RTX 4060 Laptop GPU |
 
 ---
+# 📑 Models Implemented
 
-# 📂 Dataset
+The repository contains multiple deep learning architectures for CPU temperature prediction. Each model has been evaluated on different combinations of hardware telemetry datasets to study cross-device generalization.
 
-The model was trained using telemetry collected from **three different laptops**, improving hardware diversity and evaluating cross-device generalization.
+| Model | Description |
+|--------|-------------|
+| LSTM | Baseline recurrent neural network for sequence modeling |
+| GRU | Gated Recurrent Unit network with fewer parameters than LSTM |
+| CNN + LSTM | Convolutional feature extraction followed by an LSTM |
+| CNN + GRU | Convolutional feature extraction followed by a GRU |
+| LSTM + Multi-Head Attention | LSTM enhanced with Multi-Head Attention to capture long-range temporal dependencies |
 
-| Dataset | Train | Validation | Test |
-|---------|-------|------------|------|
-| Prabhsimrat Logs | 13,088 | 1,636 | 1,637 |
-| Sushant Logs | 12,874 | 1,609 | 1,610 |
-| Manan Logs | 16,191 | 2,024 | 2,024 |
+# 📂 Datasets
 
-Combined master dataset:
+The experiments were conducted using hardware telemetry collected from **five different laptops**, enabling evaluation of cross-device generalization across multiple hardware configurations.
 
-| Split | Samples |
-|-------|---------|
-| Train | 42,006 |
-| Validation | 5,122 |
-| Test | 5,124 |
+| Dataset | Samples | Features |
+|---------|--------:|---------:|
+| Manan | 14,803 | 13 |
+| Mukul | 18,890 | 13 |
+| Prabhsimrat | 15,365 | 13 |
+| Prabh2 | 14,513 | 13 |
+| Arshnoor | 14,257 | 13 |
+
+**Total telemetry samples:** **77,828**
+
+The notebooks in this repository evaluate different combinations of these datasets to study how increasing hardware diversity impacts model generalization and prediction performance.
+
+
+# 📊 Model Comparison
+
+The following table summarizes all experiments conducted across different dataset combinations.
+
+| Model | Datasets Used | MAE (°C) | RMSE (°C) | R² Score |
+|--------|---------------|---------:|----------:|---------:|
+| **LSTM** | Manan, Mukul, Prabh | **2.492** | **4.940** | **0.8844** |
+| **LSTM** | Manan, Mukul, Prabh2 | **2.283** | **4.828** | **0.8868** |
+| **LSTM** | Manan, Mukul, Prabh2, Arshnoor | **2.600** | **5.162** | **0.8677** |
+| **GRU** | Manan, Mukul, Prabhsimrat | **2.457** | **4.873** | **0.8875** |
+| **GRU** | Manan, Mukul, Prabh2 | **2.259** | **4.812** | **0.8875** |
+| **GRU** | Manan, Mukul, Prabh2, Arshnoor | **2.547** | **5.101** | **0.8708** |
+| **CNN + GRU** | Manan, Mukul, Prabh2 | **2.231** | **4.774** | **0.8893** |
+| **CNN + GRU** | Manan, Mukul, Prabh2, Arshnoor | **2.481** | **5.034** | **0.8742** |
+| **CNN + LSTM** | Manan, Mukul, Prabh2 | **2.256** | **4.806** | **0.8878** |
+| **LSTM + Multi-Head Attention** | Manan, Mukul, Prabh2 | **2.398** | **4.984** | **0.8793** |
+
+# 📈 Persistence Baseline Comparison
+
+The persistence baseline predicts the next CPU temperature by assuming that the next reading is equal to the current temperature. The table below summarizes the baseline performance for each experimental setup.
+
+| Model | Datasets Used | MAE (°C) | RMSE (°C) | R² Score |
+|--------|---------------|---------:|----------:|---------:|
+| **LSTM** | Manan, Mukul, Prabh | 2.576 | 5.120 | 0.8759 |
+| **LSTM** | Manan, Mukul, Prabh2 | 2.402 | 5.045 | 0.8764 |
+| **LSTM** | Manan, Mukul, Prabh2, Arshnoor | 2.797 | 5.533 | 0.8480 |
+| **GRU** | Manan, Mukul, Prabhsimrat | 2.576 | 5.120 | 0.8759 |
+| **GRU** | Manan, Mukul, Prabh2 | 2.402 | 5.045 | 0.8764 |
+| **GRU** | Manan, Mukul, Prabh2, Arshnoor | 2.797 | 5.533 | 0.8480 |
+| **CNN + GRU** | Manan, Mukul, Prabh2 | 2.402 | 5.045 | 0.8764 |
+| **CNN + GRU** | Manan, Mukul, Prabh2, Arshnoor | 2.797 | 5.533 | 0.8480 |
+| **CNN + LSTM** | Manan, Mukul, Prabh2 | 2.402 | 5.045 | 0.8764 |
+| **LSTM + Multi-Head Attention** | Manan, Mukul, Prabh2 | 2.402 | 5.045 | 0.8764 |
 
 ---
+
+### 📌 Observation
+
+Across all experiments, the persistence baseline remains a strong benchmark for short-term (one-step) CPU temperature prediction due to the high temporal correlation between consecutive telemetry samples. While several deep learning models outperform the baseline, comparing against persistence provides a consistent reference for evaluating improvements across different architectures and dataset combinations.
+
 
 # 📊 Features Used
 
@@ -165,67 +178,17 @@ This indicates only **mild overfitting**, suggesting that the model generalizes 
 
 ---
 
-# 📊 Test Performance
 
-| Test Dataset | MAE (°C) | RMSE (°C) | R² Score |
-|--------------|---------:|----------:|---------:|
-| **Sushant Logs** | **2.36** | **2.67** | **-4.3402** |
-| **Prabhsimrat Logs** | **8.40** | **10.89** | **0.0975** |
-| **Manan Logs** | **5.19** | **7.51** | **0.3642** |
 
----
----
+# 🏆 Best Performing Models
 
-# 📊 Model Comparison
-
-The following table summarizes the performance of all models evaluated in this project across different dataset combinations.
-
-| Model | Datasets Used | MAE (°C) | RMSE (°C) | R² Score |
-|--------|---------------|---------:|----------:|---------:|
-| **LSTM** | Manan, Mukul, Prabh | **2.492** | **4.940** | **0.8844** |
-| **LSTM** | Manan, Mukul, Prabh2 | **2.283** | **4.828** | **0.8868** |
-| **LSTM** | Manan, Mukul, Prabh2, Arshnoor | **2.600** | **5.162** | **0.8677** |
-| **GRU** | Manan, Mukul, Prabhsimrat | **2.457** | **4.873** | **0.8875** |
-| **GRU** | Manan, Mukul, Prabh2, Arshnoor | **2.547** | **5.101** | **0.8708** |
-| **CNN + GRU** | Manan, Mukul, Prabh2 | **2.231** | **4.774** | **0.8893** |
-
----
-
-# 📈 Persistence Baseline Comparison
-
-The persistence baseline predicts the next CPU temperature using the current temperature.
-
-| Experiment | MAE (°C) | RMSE (°C) | R² Score |
-|------------|---------:|----------:|---------:|
-| **LSTM** (Manan, Mukul, Prabh) | 2.576 | 5.120 | 0.8759 |
-| **LSTM** (Manan, Mukul, Prabh2) | 2.402 | 5.045 | 0.8764 |
-| **LSTM** (Manan, Mukul, Prabh2, Arshnoor) | 2.797 | 5.533 | 0.8480 |
-| **GRU** (Manan, Mukul, Prabhsimrat) | 2.576 | 5.120 | 0.8759 |
-| **GRU** (Manan, Mukul, Prabh2, Arshnoor) | 2.797 | 5.533 | 0.8480 |
-| **CNN + GRU** (Manan, Mukul, Prabh2) | 2.402 | 5.045 | 0.8764 |
-
----
-
-# 📌 Key Observations
-
-- **Best overall performing model:** **CNN + GRU**
-  - MAE: **2.231 °C**
-  - RMSE: **4.774 °C**
-  - R²: **0.8893**
-
-- **Best GRU model:**
-  - Trained on **Manan, Mukul and Prabhsimrat**
-  - MAE: **2.457 °C**
-  - RMSE: **4.873 °C**
-  - R²: **0.8875**
-
-- **Best LSTM model:**
-  - Trained on **Manan, Mukul and Prabh2**
-  - MAE: **2.283 °C**
-  - RMSE: **4.828 °C**
-  - R²: **0.8868**
-
-These experiments demonstrate that increasing dataset diversity improves cross-device generalization, while the CNN + GRU architecture consistently achieves the best overall prediction performance among the evaluated models.
+| Category | Model | MAE (°C) | RMSE (°C) | R² Score |
+|----------|-------|---------:|----------:|---------:|
+| **Best Overall** | CNN + GRU (Manan, Mukul, Prabh2) | **2.231** | **4.774** | **0.8893** |
+| **Best LSTM** | LSTM (Manan, Mukul, Prabh2) | **2.283** | **4.828** | **0.8868** |
+| **Best GRU** | GRU (Manan, Mukul, Prabh2) | **2.259** | **4.812** | **0.8875** |
+| **Best CNN + LSTM** | CNN + LSTM (Manan, Mukul, Prabh2) | **2.256** | **4.806** | **0.8878** |
+| **Best Attention Model** | LSTM + Multi-Head Attention (Manan, Mukul, Prabh2) | **2.398** | **4.984** | **0.8793** |
 
 ---
 
@@ -245,8 +208,14 @@ Future improvements include:
 
 # 📌 Conclusion
 
-This repository evaluates multiple deep learning architectures for CPU temperature prediction using hardware telemetry collected from different laptop configurations.
+This repository presents a comprehensive evaluation of multiple deep learning architectures for CPU temperature prediction using cross-device hardware telemetry.
 
-Across all experiments, the **CNN + GRU** architecture achieved the strongest overall performance, while both **LSTM** and **GRU** models demonstrated strong predictive capability and good cross-device generalization.
+The implemented models include **LSTM, GRU, CNN + LSTM, CNN + GRU, and LSTM with Multi-Head Attention**, each trained and evaluated on different combinations of telemetry collected from multiple laptops.
 
-Future work will focus on long-horizon forecasting and tighter integration with thermal-aware scheduling systems for intelligent load balancing.
+Among all evaluated architectures, the **CNN + GRU model trained on the Manan, Mukul, and Prabh2 datasets achieved the best overall performance**, with:
+
+- **MAE:** 2.231 °C
+- **RMSE:** 4.774 °C
+- **R² Score:** 0.8893
+
+These experiments demonstrate the effectiveness of hybrid deep learning architectures and diverse training datasets for CPU temperature prediction, providing a strong foundation for future thermal-aware scheduling and intelligent load balancing systems.
