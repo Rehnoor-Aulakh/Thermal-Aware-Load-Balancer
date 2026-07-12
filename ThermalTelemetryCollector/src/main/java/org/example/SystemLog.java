@@ -12,7 +12,6 @@ public class SystemLog {
     public double cpuPackagePower;
     public double cpuVoltageCore1;
     public double cpuAverageClock;
-    public double cpuAverageEffectiveClock;
     public List<Double> cpuFactors = new ArrayList<>();
 
     public double virtualMemoryUsage;
@@ -21,10 +20,7 @@ public class SystemLog {
     public double ramUsage;
 
     public double gpuTemperature;
-    public double gpuCoreVoltage;
-    public double gpuCoreClock;
     public double gpuMemoryClock;
-    public double gpuPackagePower;
     public double gpuMemoryLoad;
 
     public double ssdCompositeTemperature;

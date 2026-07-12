@@ -72,15 +72,11 @@ public class TelemetryCollector {
                 log.cpuPackagePower = -1;
                 log.cpuVoltageCore1 = -1;
                 log.cpuAverageClock = -1;
-                log.cpuAverageEffectiveClock = -1;
                 log.cpuFactors = new ArrayList<>();
                 log.virtualMemoryUsage = -1;
                 log.totalMemoryUsage = -1;
                 log.gpuTemperature = -1;
-                log.gpuCoreVoltage = -1;
-                log.gpuCoreClock = -1;
                 log.gpuMemoryClock = -1;
-                log.gpuPackagePower = -1;
                 log.gpuMemoryLoad = -1;
                 log.ssdCompositeTemperature = -1;
         }
@@ -152,25 +148,19 @@ public class TelemetryCollector {
                                 if (text.equals("CPU Package") || text.equals("Package")) {
                                         log.cpuPackagePower = round2(value);
                                 }
-                                if (text.equals("GPU Package") || text.equals("GPU Power")) {
-                                        log.gpuPackagePower = round2(value);
-                                }
+                                
                         }
 
                         if (type.equals("Voltage")) {
                                 if (text.equals("CPU Core") || text.equals("Core #1 VID") || text.equals("Core #1")) {
                                         log.cpuVoltageCore1 = round2(value);
                                 }
-                                if (text.equals("GPU Core") || text.equals("GPU Core Voltage")) {
-                                        log.gpuCoreVoltage = round2(value);
-                                }
+                                
                         }
 
                         if (type.equals("Clock")) {
                                 if (text.equals("Cores (Average)")) {
                                         log.cpuAverageClock = round2(value);
-                                } else if (text.equals("Cores (Average Effective)")) {
-                                        log.cpuAverageEffectiveClock = round2(value);
                                 }
 
                                 if (text.startsWith("P-Core") || text.startsWith("E-Core")) {
@@ -182,9 +172,7 @@ public class TelemetryCollector {
                                         }
                                 }
 
-                                if (text.equals("GPU Core")) {
-                                        log.gpuCoreClock = round2(value);
-                                } else if (text.equals("GPU Memory")) {
+                                  if (text.equals("GPU Memory")) {
                                         log.gpuMemoryClock = round2(value);
                                 }
                         }
