@@ -24,6 +24,9 @@ public class SystemLog {
     public double gpuCoreTemperature;
     public double gpuHotspotTemperature;
     public double gpuCoreLoad;
+    public double gpuCoreVoltage;
+    public double gpuPackagePower;
+    public double gpuCoreClock;
     public double gpuMemoryClock;
     public double gpuMemoryLoad;
 

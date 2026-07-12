@@ -65,6 +65,9 @@ public class Main {
                             "GPU Core Temp          : " + log.gpuCoreTemperature + " °C\n" +
                             "GPU Hot Spot Temp      : " + log.gpuHotspotTemperature + " °C\n" +
                             "GPU Core Load          : " + log.gpuCoreLoad + " %\n" +
+                            "GPU Core Voltage       : " + log.gpuCoreVoltage + " V\n" +
+                            "GPU Package Power      : " + log.gpuPackagePower + " W\n" +
+                            "GPU Core Clock         : " + log.gpuCoreClock + " MHz\n" +
                             "GPU Memory Clock       : " + log.gpuMemoryClock + " MHz\n" +
                             "GPU Memory Load        : " + log.gpuMemoryLoad + " %\n" +
                             "SSD Composite Temp     : " + log.ssdCompositeTemperature + " °C\n" +

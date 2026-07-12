@@ -88,6 +88,9 @@ public class TelemetryCollector {
                 log.gpuCoreTemperature = -1;
                 log.gpuHotspotTemperature = -1;
                 log.gpuCoreLoad = -1;
+                log.gpuCoreVoltage = -1;
+                log.gpuPackagePower = -1;
+                log.gpuCoreClock = -1;
                 log.gpuMemoryClock = -1;
                 log.gpuMemoryLoad = -1;
                 log.ssdCompositeTemperature = -1;
@@ -162,6 +165,8 @@ public class TelemetryCollector {
                         if (type.equals("Power")) {
                                 if (text.equals("CPU Package") || text.equals("Package")) {
                                         log.cpuPackagePower = round2(value);
+                                } else if (text.equals("GPU Package")) {
+                                        log.gpuPackagePower = round2(value);
                                 }
                                 
                         }
@@ -169,6 +174,8 @@ public class TelemetryCollector {
                         if (type.equals("Voltage")) {
                                 if (text.equals("CPU Core") || text.equals("Core #1 VID") || text.equals("Core #1")) {
                                         log.cpuVoltageCore1 = round2(value);
+                                } else if (text.equals("GPU Core Voltage")) {
+                                        log.gpuCoreVoltage = round2(value);
                                 }
                                 
                         }
@@ -218,6 +225,10 @@ public class TelemetryCollector {
                                         if (!hasExposedEfficiencyAverageClock) {
                                                 log.cpuEfficiencyAverageClock = round2(efficiencyClockSum / efficiencyClockCount);
                                         }
+                                }
+
+                                if (text.equals("GPU Core")) {
+                                        log.gpuCoreClock = round2(value);
                                 }
 
                                   if (text.equals("GPU Memory")) {
