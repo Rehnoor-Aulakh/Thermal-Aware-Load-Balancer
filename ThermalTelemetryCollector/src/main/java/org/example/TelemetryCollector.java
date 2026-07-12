@@ -155,9 +155,11 @@ public class TelemetryCollector {
                                 }
 
                                 if (text.equals("GPU Core")) {
-                                        log.gpuCoreTemperature = round2(value);
-                                        log.gpuTemperature = log.gpuCoreTemperature;
-                                } else if (text.equals("GPU Hot Spot")) {
+                                        if (log.gpuCoreTemperature == -1) {
+                                                log.gpuCoreTemperature = round2(value);
+                                                log.gpuTemperature = log.gpuCoreTemperature;
+                                        }
+                                } else if (text.equals("GPU Hot Spot") && log.gpuHotspotTemperature == -1) {
                                         log.gpuHotspotTemperature = round2(value);
                                 }
                         }
@@ -165,7 +167,7 @@ public class TelemetryCollector {
                         if (type.equals("Power")) {
                                 if (text.equals("CPU Package") || text.equals("Package")) {
                                         log.cpuPackagePower = round2(value);
-                                } else if (text.equals("GPU Package")) {
+                                } else if (text.equals("GPU Package") && log.gpuPackagePower == -1) {
                                         log.gpuPackagePower = round2(value);
                                 }
                                 
@@ -174,7 +176,7 @@ public class TelemetryCollector {
                         if (type.equals("Voltage")) {
                                 if (text.equals("CPU Core") || text.equals("Core #1 VID") || text.equals("Core #1")) {
                                         log.cpuVoltageCore1 = round2(value);
-                                } else if (text.equals("GPU Core Voltage")) {
+                                } else if (text.equals("GPU Core Voltage") && log.gpuCoreVoltage == -1) {
                                         log.gpuCoreVoltage = round2(value);
                                 }
                                 
@@ -227,11 +229,11 @@ public class TelemetryCollector {
                                         }
                                 }
 
-                                if (text.equals("GPU Core")) {
+                                if (text.equals("GPU Core") && log.gpuCoreClock == -1) {
                                         log.gpuCoreClock = round2(value);
                                 }
 
-                                  if (text.equals("GPU Memory")) {
+                                  if (text.equals("GPU Memory") && log.gpuMemoryClock == -1) {
                                         log.gpuMemoryClock = round2(value);
                                 }
                         }
@@ -241,9 +243,9 @@ public class TelemetryCollector {
                                         log.virtualMemoryUsage = round2(value);
                                 } else if (text.equals("Memory") && sensorId.startsWith("/ram/")) {
                                         log.totalMemoryUsage = round2(value);
-                                } else if (text.equals("GPU Core")) {
+                                } else if (text.equals("GPU Core") && log.gpuCoreLoad == -1) {
                                         log.gpuCoreLoad = round2(value);
-                                } else if (text.equals("GPU Memory")) {
+                                } else if (text.equals("GPU Memory") && log.gpuMemoryLoad == -1) {
                                         log.gpuMemoryLoad = round2(value);
                                 }
                         }
