@@ -26,6 +26,10 @@ public class TelemetryCollector {
 
         private double cpuClockSum = 0;
         private int cpuClockCount = 0;
+        private double efficiencyClockSum = 0;
+        private int efficiencyClockCount = 0;
+        private boolean hasExposedAverageClock = false;
+        private boolean hasExposedEfficiencyAverageClock = false;
         private int cpuTemperaturePriority = -1;
 
         public SystemLog collect() {
@@ -40,6 +44,10 @@ public class TelemetryCollector {
                         initializeLibreHardwareMonitorMetrics(log);
                         cpuClockSum = 0;
                         cpuClockCount = 0;
+                        efficiencyClockSum = 0;
+                        efficiencyClockCount = 0;
+                        hasExposedAverageClock = false;
+                        hasExposedEfficiencyAverageClock = false;
                         cpuTemperaturePriority = -1;
 
                         readLibreHardwareMonitor(log);
@@ -72,10 +80,14 @@ public class TelemetryCollector {
                 log.cpuPackagePower = -1;
                 log.cpuVoltageCore1 = -1;
                 log.cpuAverageClock = -1;
+                log.cpuEfficiencyAverageClock = -1;
                 log.cpuFactors = new ArrayList<>();
                 log.virtualMemoryUsage = -1;
                 log.totalMemoryUsage = -1;
                 log.gpuTemperature = -1;
+                log.gpuCoreTemperature = -1;
+                log.gpuHotspotTemperature = -1;
+                log.gpuCoreLoad = -1;
                 log.gpuMemoryClock = -1;
                 log.gpuMemoryLoad = -1;
                 log.ssdCompositeTemperature = -1;
@@ -139,8 +151,11 @@ public class TelemetryCollector {
                                         log.ssdCompositeTemperature = round2(value);
                                 }
 
-                                if (text.equals("GPU Core") || (text.equals("GPU Hot Spot") && log.gpuTemperature < 0)) {
-                                        log.gpuTemperature = round2(value);
+                                if (text.equals("GPU Core")) {
+                                        log.gpuCoreTemperature = round2(value);
+                                        log.gpuTemperature = log.gpuCoreTemperature;
+                                } else if (text.equals("GPU Hot Spot")) {
+                                        log.gpuHotspotTemperature = round2(value);
                                 }
                         }
 
@@ -160,15 +175,48 @@ public class TelemetryCollector {
 
                         if (type.equals("Clock")) {
                                 if (text.equals("Cores (Average)")) {
+                                        hasExposedAverageClock = true;
                                         log.cpuAverageClock = round2(value);
                                 }
 
-                                if (text.startsWith("P-Core") || text.startsWith("E-Core")) {
+                                if (text.equals("Cores (Average Effective)")) {
+                                        hasExposedEfficiencyAverageClock = true;
+                                        log.cpuEfficiencyAverageClock = round2(value);
+                                }
+
+                                if (text.startsWith("P-Core")) {
                                         cpuClockSum += value;
                                         cpuClockCount++;
 
-                                        if (log.cpuAverageClock < 0) {
+                                        if (!hasExposedAverageClock) {
                                                 log.cpuAverageClock = round2(cpuClockSum / cpuClockCount);
+                                        }
+                                }
+
+                                if (text.startsWith("E-Core")) {
+                                        efficiencyClockSum += value;
+                                        efficiencyClockCount++;
+
+                                        if (!hasExposedEfficiencyAverageClock) {
+                                                log.cpuEfficiencyAverageClock = round2(efficiencyClockSum / efficiencyClockCount);
+                                        }
+                                }
+
+                                if (text.matches("Core #\\d+")) {
+                                        cpuClockSum += value;
+                                        cpuClockCount++;
+
+                                        if (!hasExposedAverageClock) {
+                                                log.cpuAverageClock = round2(cpuClockSum / cpuClockCount);
+                                        }
+                                }
+
+                                if (text.matches("Core #\\d+ \\(Effective\\)")) {
+                                        efficiencyClockSum += value;
+                                        efficiencyClockCount++;
+
+                                        if (!hasExposedEfficiencyAverageClock) {
+                                                log.cpuEfficiencyAverageClock = round2(efficiencyClockSum / efficiencyClockCount);
                                         }
                                 }
 
@@ -182,6 +230,8 @@ public class TelemetryCollector {
                                         log.virtualMemoryUsage = round2(value);
                                 } else if (text.equals("Memory") && sensorId.startsWith("/ram/")) {
                                         log.totalMemoryUsage = round2(value);
+                                } else if (text.equals("GPU Core")) {
+                                        log.gpuCoreLoad = round2(value);
                                 } else if (text.equals("GPU Memory")) {
                                         log.gpuMemoryLoad = round2(value);
                                 }
