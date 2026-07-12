@@ -53,10 +53,19 @@ public class Main {
                             "CPU Usage              : " + log.cpuUsage + " %\n" +
                             "CPU Temperature        : " + log.cpuTemperature + " °C\n" +
                             "CPU Package Power      : " + log.cpuPackagePower + " W\n" +
-                            "CPU Average Clock      : " + log.cpuAverageClock + " MHz\n\n" +
+                            "CPU Voltage Core #1    : " + log.cpuVoltageCore1 + " V\n" +
+                            "CPU Average Clock      : " + log.cpuAverageClock + " MHz\n" +
+                            "CPU Avg Effective Clk   : " + log.cpuAverageEffectiveClock + " MHz\n\n" +
 
 
+                            "Virtual Memory Load    : " + log.virtualMemoryUsage + " %\n" +
+                            "Total Memory Load      : " + log.totalMemoryUsage + " %\n" +
                             "RAM Usage              : " + log.ramUsage + " %\n" +
+                            "GPU Voltage            : " + log.gpuCoreVoltage + " V\n" +
+                            "GPU Clock              : " + log.gpuCoreClock + " MHz\n" +
+                            "GPU Memory Clock       : " + log.gpuMemoryClock + " MHz\n" +
+                            "GPU Package Power      : " + log.gpuPackagePower + " W\n" +
+                            "SSD Composite Temp     : " + log.ssdCompositeTemperature + " °C\n" +
                             "Processes              : " + log.processCount + "\n" +
                             "Network Connections    : " + log.networkConnections + "\n" +
 
