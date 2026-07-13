@@ -5,19 +5,18 @@ public record TelemetrySample(
         double cpuUsage,
         double cpuTemperature,
         double cpuPackagePower,
-        double cpuAverageClock,
-        double ramUsage,
-        int networkConnections,
-        int processCount
+        double gpuCoreTemperature,
+        double gpuHotspotTemperature,
+        double cpuEfficiencyAverageClock
 ) {
 
     public double[] toModelFeatures() {
         return new double[]{
                 cpuUsage,
-                ramUsage,
-                networkConnections,
-                processCount,
                 cpuPackagePower,
+                gpuCoreTemperature,
+                gpuHotspotTemperature,
+                cpuEfficiencyAverageClock,
                 cpuTemperature
         };
     }

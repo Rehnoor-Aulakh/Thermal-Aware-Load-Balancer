@@ -1,9 +1,5 @@
 package org.example;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import oshi.SystemInfo;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -11,6 +7,11 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import oshi.SystemInfo;
 
 public class TelemetryCollector {
 
@@ -227,11 +228,11 @@ public class TelemetryCollector {
                                         }
                                 }
 
-                                if (text.equals("GPU Core")) {
+                                if (text.equals("GPU Core") && log.gpuCoreClock==-1) {
                                         log.gpuCoreClock = round2(value);
                                 }
 
-                                  if (text.equals("GPU Memory")) {
+                                  if (text.equals("GPU Memory") && log.gpuMemoryClock==-1) {
                                         log.gpuMemoryClock = round2(value);
                                 }
                         }
