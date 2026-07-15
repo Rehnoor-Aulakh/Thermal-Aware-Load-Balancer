@@ -1,0 +1,31 @@
+package com.rehnoor.backendserveragent.controller;
+
+import com.rehnoor.backendserveragent.dto.TargetLoadRequest;
+import com.rehnoor.backendserveragent.service.StressService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping("/stress")
+public class StressController {
+
+    private final StressService stressService;
+
+    public StressController(StressService stressService){
+        this.stressService = stressService;
+    }
+
+    @PostMapping("/target-load")
+    public ResponseEntity<?> setTargetLoad(@RequestBody TargetLoadRequest request){
+        stressService.setTargetLoad(request.targetLoad());
+        return ResponseEntity.ok(Map.of("status", "success", "targetLoad", request.targetLoad()));
+    }
+
+    @GetMapping("/target-load")
+    public ResponseEntity<?> getTargetLoad(){
+        return ResponseEntity.ok(Map.of("targetLoad", stressService.getTargetLoad()));
+    }
+
+}

@@ -18,49 +18,36 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Automatic CPU + GPU stress dataset generator for LSTM temperature forecasting.
+ * Automatic CPU + GPU stress dataset generator for LSTM temperature
+ * forecasting.
  *
  * This program is completely independent of the thermal telemetry collector.
  *
  * It generates CPU and GPU workload and stores its own verification logs only.
  *
  * CPU load is created via duty-cycle spinning across all available processors.
- * GPU load is created via OpenCL tensor (matrix) multiplications.
- * Both run in parallel for every workload step.
+ * GPU load is created via OpenCL tensor (matrix) multiplications. Both run in
+ * parallel for every workload step.
  *
- * If no OpenCL-capable GPU is detected, the program falls back to
- * CPU-only mode with a warning.
+ * If no OpenCL-capable GPU is detected, the program falls back to CPU-only mode
+ * with a warning.
  *
  * One execution automatically performs:
  *
- * 1. Initial idle
- * 2. Ramp workload                          (CPU only)
- * 3. Cooling
- * 4. GPU_CPU_COMBINED workload (30 minutes) (CPU + GPU)
- * 5. Cooling
- * 6. Chaos workload                         (CPU only)
- * 7. Cooling
- * 8. GPU_CPU_COMBINED workload (15 minutes) (CPU + GPU)
- * 9. Cooling
- * 10. Transition workload                   (CPU only)
- * 11. Cooling
- * 12. GPU_CPU_COMBINED workload (15 minutes) (CPU + GPU)
- * 13. Cooling
- * 14. Mixed workload                        (CPU only)
- * 15. Cooling
- * 16. GPU_CPU_COMBINED workload (15 minutes) (CPU + GPU)
- * 17. Final cooling
+ * 1. Initial idle 2. Ramp workload (CPU only) 3. Cooling 4. GPU_CPU_COMBINED
+ * workload (30 minutes) (CPU + GPU) 5. Cooling 6. Chaos workload (CPU only) 7.
+ * Cooling 8. GPU_CPU_COMBINED workload (15 minutes) (CPU + GPU) 9. Cooling 10.
+ * Transition workload (CPU only) 11. Cooling 12. GPU_CPU_COMBINED workload (15
+ * minutes) (CPU + GPU) 13. Cooling 14. Mixed workload (CPU only) 15. Cooling
+ * 16. GPU_CPU_COMBINED workload (15 minutes) (CPU + GPU) 17. Final cooling
  *
- * GPU load is ONLY ever generated during GPU_CPU_COMBINED. In that
- * mode CPU behaviour is unconstrained while GPU always cycles
- * through: ramping GPU -> chaos GPU -> transition GPU -> repeat.
+ * GPU load is ONLY ever generated during GPU_CPU_COMBINED. In that mode CPU
+ * behaviour is unconstrained while GPU always cycles through: ramping GPU ->
+ * chaos GPU -> transition GPU -> repeat.
  *
  * Every run creates:
  *
- * stress_logs/
- * └── <RUN_ID>/
- *     ├── stress_events.jsonl
- *     └── run_metadata.json
+ * stress_logs/ └── <RUN_ID>/ ├── stress_events.jsonl └── run_metadata.json
  *
  * Nothing from this program is used as an LSTM input feature.
  */
@@ -69,9 +56,8 @@ public final class StressTestRunner {
     // ============================================================
     // DEVICE CONFIGURATION
     // ============================================================
-
-    private static final String DEVICE_ID =
-            "PRABHSIMRAT";
+    private static final String DEVICE_ID
+            = "PRABHSIMRAT";
 
     /*
      * Suggested values:
@@ -82,24 +68,20 @@ public final class StressTestRunner {
      */
     private static final long SEED = 101L;
 
-
     // ============================================================
     // CPU CONFIGURATION
     // ============================================================
-
-    private static final int PROCESSORS =
-            Math.max(
+    private static final int PROCESSORS
+            = Math.max(
                     1,
                     Runtime.getRuntime().availableProcessors()
             );
 
-
     // ============================================================
     // OUTPUT DIRECTORY
     // ============================================================
-
-    private static final Path BASE_LOG_DIRECTORY =
-            Path.of("stress_logs");
+    private static final Path BASE_LOG_DIRECTORY
+            = Path.of("stress_logs");
 
 
     /*
@@ -111,55 +93,51 @@ public final class StressTestRunner {
 
     private static Path metadataFile;
 
-
     // ============================================================
     // SESSION DURATIONS
     // ============================================================
+    private static final Duration INITIAL_IDLE
+            = Duration.ofMinutes(2);
 
-    private static final Duration INITIAL_IDLE =
-            Duration.ofMinutes(2);
+    private static final Duration RAMP_DURATION
+            = Duration.ofMinutes(74);
 
-    private static final Duration RAMP_DURATION =
-            Duration.ofMinutes(74);
+    private static final Duration CHAOS_DURATION
+            = Duration.ofMinutes(74);
 
-    private static final Duration CHAOS_DURATION =
-            Duration.ofMinutes(74);
+    private static final Duration TRANSITION_DURATION
+            = Duration.ofMinutes(74);
 
-    private static final Duration TRANSITION_DURATION =
-            Duration.ofMinutes(74);
-
-    private static final Duration MIXED_DURATION =
-            Duration.ofMinutes(148);
+    private static final Duration MIXED_DURATION
+            = Duration.ofMinutes(148);
 
     /*
      * GPU_CPU_COMBINED runs four times total: after RAMP, after
      * CHAOS, after TRANSITION, and after MIXED.
      */
-    private static final Duration GPU_CPU_COMBINED_DURATION_1 =
-            Duration.ofMinutes(30);
+    private static final Duration GPU_CPU_COMBINED_DURATION_1
+            = Duration.ofMinutes(30);
 
-    private static final Duration GPU_CPU_COMBINED_DURATION_2 =
-            Duration.ofMinutes(15);
+    private static final Duration GPU_CPU_COMBINED_DURATION_2
+            = Duration.ofMinutes(15);
 
-    private static final Duration GPU_CPU_COMBINED_DURATION_3 =
-            Duration.ofMinutes(15);
+    private static final Duration GPU_CPU_COMBINED_DURATION_3
+            = Duration.ofMinutes(15);
 
-    private static final Duration GPU_CPU_COMBINED_DURATION_4 =
-            Duration.ofMinutes(15);
+    private static final Duration GPU_CPU_COMBINED_DURATION_4
+            = Duration.ofMinutes(15);
 
-    private static final Duration COOLING_DURATION =
-            Duration.ofMinutes(5);
+    private static final Duration COOLING_DURATION
+            = Duration.ofMinutes(5);
 
-    private static final Duration FINAL_COOLING_DURATION =
-            Duration.ofMinutes(10);
-
+    private static final Duration FINAL_COOLING_DURATION
+            = Duration.ofMinutes(10);
 
     // ============================================================
     // RAMP PROFILE
     // ============================================================
-
-    private static final List<Integer> RAMP_PROFILE =
-            List.of(
+    private static final List<Integer> RAMP_PROFILE
+            = List.of(
                     0, 0,
                     20, 20,
                     40, 40,
@@ -173,49 +151,37 @@ public final class StressTestRunner {
                     0, 0
             );
 
-
     // ============================================================
     // TRANSITION PROFILE
     // ============================================================
-
     private static final int[][] TRANSITION_PAIRS = {
-
-            {0, 100},
-            {100, 0},
-
-            {20, 80},
-            {80, 20},
-
-            {40, 90},
-            {90, 40},
-
-            {80, 30},
-            {30, 80},
-
-            {100, 50},
-            {50, 100}
+        {0, 100},
+        {100, 0},
+        {20, 80},
+        {80, 20},
+        {40, 90},
+        {90, 40},
+        {80, 30},
+        {30, 80},
+        {100, 50},
+        {50, 100}
     };
-
 
     // ============================================================
     // MIXED MODE CONFIGURATION
     // ============================================================
-
     private static final int MIXED_RAMP_STEPS = 12;
 
     private static final int MIXED_CHAOS_STEPS = 12;
 
     private static final int MIXED_TRANSITION_STEPS = 10;
 
-
     private StressTestRunner() {
     }
-
 
     // ============================================================
     // MAIN
     // ============================================================
-
     public static void main(String[] args) throws Exception {
 
         validateConfiguration();
@@ -224,46 +190,40 @@ public final class StressTestRunner {
 
         initialiseRunDirectory(runId);
 
-        Random random =
-                new Random(SEED);
+        Random random
+                = new Random(SEED);
 
-        AtomicBoolean stopRequested =
-                new AtomicBoolean(false);
-
+        AtomicBoolean stopRequested
+                = new AtomicBoolean(false);
 
         // --------------------------------------------------------
         // Initialise GPU stress engine
         // --------------------------------------------------------
-
-        GpuStressEngine gpuEngine =
-                new GpuStressEngine();
+        GpuStressEngine gpuEngine
+                = new GpuStressEngine();
 
         if (gpuEngine.isAvailable()) {
 
             System.out.println(
                     "GPU stress enabled: "
-                            + gpuEngine.getDeviceName()
+                    + gpuEngine.getDeviceName()
             );
 
         } else {
 
             System.out.println(
                     "WARNING: No GPU detected. "
-                            + "Running CPU-only stress."
+                    + "Running CPU-only stress."
             );
         }
-
 
         // --------------------------------------------------------
         // Safe shutdown handling
         // --------------------------------------------------------
-
         GpuStressEngine gpuRef = gpuEngine;
 
         Runtime.getRuntime().addShutdownHook(
-
                 new Thread(
-
                         () -> {
 
                             stopRequested.set(true);
@@ -285,28 +245,23 @@ public final class StressTestRunner {
 
                                 System.err.println(
                                         "Could not record shutdown event: "
-                                                + error.getMessage()
+                                        + error.getMessage()
                                 );
                             }
                         },
-
                         "stress-shutdown"
                 )
         );
 
-
         // --------------------------------------------------------
         // Write experiment configuration
         // --------------------------------------------------------
-
         writeRunMetadata(runId, gpuEngine);
 
         printExperimentPlan(runId, gpuEngine);
 
-
-        Instant fullRunStart =
-                Instant.now();
-
+        Instant fullRunStart
+                = Instant.now();
 
         logInstantEvent(
                 runId,
@@ -317,16 +272,13 @@ public final class StressTestRunner {
                 "Automatic stress experiment started."
         );
 
-
         boolean completedNormally = false;
-
 
         try {
 
             // ====================================================
             // 1. INITIAL IDLE
             // ====================================================
-
             runIdleSession(
                     runId,
                     "INITIAL_IDLE",
@@ -334,11 +286,9 @@ public final class StressTestRunner {
                     stopRequested
             );
 
-
             // ====================================================
             // 2. RAMP
             // ====================================================
-
             runWorkloadSession(
                     runId,
                     WorkloadMode.RAMP,
@@ -348,11 +298,9 @@ public final class StressTestRunner {
                     gpuEngine
             );
 
-
             // ====================================================
             // 3. COOLING AFTER RAMP
             // ====================================================
-
             runIdleSession(
                     runId,
                     "COOLING_AFTER_RAMP",
@@ -360,13 +308,11 @@ public final class StressTestRunner {
                     stopRequested
             );
 
-
             // ====================================================
             // 4. GPU_CPU_COMBINED (30 minutes)
             //
             // GPU is only ever active during this mode.
             // ====================================================
-
             runWorkloadSession(
                     runId,
                     WorkloadMode.GPU_CPU_COMBINED,
@@ -376,11 +322,9 @@ public final class StressTestRunner {
                     gpuEngine
             );
 
-
             // ====================================================
             // 5. COOLING AFTER GPU_CPU_COMBINED (1st)
             // ====================================================
-
             runIdleSession(
                     runId,
                     "COOLING_AFTER_GPU_CPU_COMBINED_1",
@@ -388,11 +332,9 @@ public final class StressTestRunner {
                     stopRequested
             );
 
-
             // ====================================================
             // 6. CHAOS
             // ====================================================
-
             runWorkloadSession(
                     runId,
                     WorkloadMode.CHAOS,
@@ -402,11 +344,9 @@ public final class StressTestRunner {
                     gpuEngine
             );
 
-
             // ====================================================
             // 7. COOLING AFTER CHAOS
             // ====================================================
-
             runIdleSession(
                     runId,
                     "COOLING_AFTER_CHAOS",
@@ -414,13 +354,11 @@ public final class StressTestRunner {
                     stopRequested
             );
 
-
             // ====================================================
             // 8. GPU_CPU_COMBINED (15 minutes)
             //
             // GPU is only ever active during this mode.
             // ====================================================
-
             runWorkloadSession(
                     runId,
                     WorkloadMode.GPU_CPU_COMBINED,
@@ -430,11 +368,9 @@ public final class StressTestRunner {
                     gpuEngine
             );
 
-
             // ====================================================
             // 9. COOLING AFTER GPU_CPU_COMBINED (2nd)
             // ====================================================
-
             runIdleSession(
                     runId,
                     "COOLING_AFTER_GPU_CPU_COMBINED_2",
@@ -442,11 +378,9 @@ public final class StressTestRunner {
                     stopRequested
             );
 
-
             // ====================================================
             // 10. TRANSITION
             // ====================================================
-
             runWorkloadSession(
                     runId,
                     WorkloadMode.TRANSITION,
@@ -456,11 +390,9 @@ public final class StressTestRunner {
                     gpuEngine
             );
 
-
             // ====================================================
             // 11. COOLING AFTER TRANSITION
             // ====================================================
-
             runIdleSession(
                     runId,
                     "COOLING_AFTER_TRANSITION",
@@ -468,13 +400,11 @@ public final class StressTestRunner {
                     stopRequested
             );
 
-
             // ====================================================
             // 12. GPU_CPU_COMBINED (15 minutes)
             //
             // GPU is only ever active during this mode.
             // ====================================================
-
             runWorkloadSession(
                     runId,
                     WorkloadMode.GPU_CPU_COMBINED,
@@ -484,11 +414,9 @@ public final class StressTestRunner {
                     gpuEngine
             );
 
-
             // ====================================================
             // 13. COOLING AFTER GPU_CPU_COMBINED (3rd)
             // ====================================================
-
             runIdleSession(
                     runId,
                     "COOLING_AFTER_GPU_CPU_COMBINED_3",
@@ -496,11 +424,9 @@ public final class StressTestRunner {
                     stopRequested
             );
 
-
             // ====================================================
             // 14. MIXED
             // ====================================================
-
             runWorkloadSession(
                     runId,
                     WorkloadMode.MIXED,
@@ -510,11 +436,9 @@ public final class StressTestRunner {
                     gpuEngine
             );
 
-
             // ====================================================
             // 15. COOLING AFTER MIXED
             // ====================================================
-
             runIdleSession(
                     runId,
                     "COOLING_AFTER_MIXED",
@@ -522,13 +446,11 @@ public final class StressTestRunner {
                     stopRequested
             );
 
-
             // ====================================================
             // 16. GPU_CPU_COMBINED (15 minutes)
             //
             // GPU is only ever active during this mode.
             // ====================================================
-
             runWorkloadSession(
                     runId,
                     WorkloadMode.GPU_CPU_COMBINED,
@@ -538,18 +460,15 @@ public final class StressTestRunner {
                     gpuEngine
             );
 
-
             // ====================================================
             // 17. FINAL COOLING
             // ====================================================
-
             runIdleSession(
                     runId,
                     "FINAL_COOLING",
                     FINAL_COOLING_DURATION,
                     stopRequested
             );
-
 
             if (!stopRequested.get()) {
 
@@ -561,9 +480,8 @@ public final class StressTestRunner {
 
             gpuEngine.shutdown();
 
-            Instant fullRunEnd =
-                    Instant.now();
-
+            Instant fullRunEnd
+                    = Instant.now();
 
             if (completedNormally) {
 
@@ -583,7 +501,6 @@ public final class StressTestRunner {
                 );
             }
         }
-
 
         System.out.println();
         System.out.println("======================================");
@@ -609,23 +526,19 @@ public final class StressTestRunner {
         System.out.println("======================================");
     }
 
-
     // ============================================================
     // CREATE UNIQUE RUN DIRECTORY
     // ============================================================
-
     private static void initialiseRunDirectory(
             String runId
     ) throws IOException {
-
 
         Files.createDirectories(
                 BASE_LOG_DIRECTORY
         );
 
-
-        runDirectory =
-                BASE_LOG_DIRECTORY.resolve(runId);
+        runDirectory
+                = BASE_LOG_DIRECTORY.resolve(runId);
 
 
         /*
@@ -638,15 +551,13 @@ public final class StressTestRunner {
                 runDirectory
         );
 
-
-        eventLogFile =
-                runDirectory.resolve(
+        eventLogFile
+                = runDirectory.resolve(
                         "stress_events.jsonl"
                 );
 
-
-        metadataFile =
-                runDirectory.resolve(
+        metadataFile
+                = runDirectory.resolve(
                         "run_metadata.json"
                 );
 
@@ -661,27 +572,17 @@ public final class StressTestRunner {
         );
     }
 
-
     // ============================================================
     // WORKLOAD SESSION
     // ============================================================
-
     private static void runWorkloadSession(
-
             String runId,
-
             WorkloadMode mode,
-
             Duration sessionDuration,
-
             Random random,
-
             AtomicBoolean stopRequested,
-
             GpuStressEngine gpuEngine
-
     ) throws Exception {
-
 
         System.out.println();
         System.out.println("======================================");
@@ -692,137 +593,93 @@ public final class StressTestRunner {
 
         System.out.println(
                 "Duration: "
-                        + formatDuration(sessionDuration)
+                + formatDuration(sessionDuration)
         );
 
         System.out.println("======================================");
 
+        Instant sessionStart
+                = Instant.now();
 
-        Instant sessionStart =
-                Instant.now();
+        Instant finishAt
+                = sessionStart.plus(sessionDuration);
 
-
-        Instant finishAt =
-                sessionStart.plus(sessionDuration);
-
-
-        LoadSequence sequence =
-                new LoadSequence(
+        LoadSequence sequence
+                = new LoadSequence(
                         mode,
                         random
                 );
 
-
         int stepNumber = 0;
 
+        while (!stopRequested.get()
+                && Instant.now().isBefore(finishAt)) {
 
-        while (
+            StepLoad stepLoad
+                    = sequence.next(stepNumber);
 
-                !stopRequested.get()
+            int load
+                    = stepLoad.cpuLoad();
 
-                        && Instant.now().isBefore(finishAt)
-
-        ) {
-
-
-            StepLoad stepLoad =
-                    sequence.next(stepNumber);
-
-            int load =
-                    stepLoad.cpuLoad();
-
-            int gpuLoad =
-                    mode == WorkloadMode.GPU_CPU_COMBINED
+            int gpuLoad
+                    = mode == WorkloadMode.GPU_CPU_COMBINED
                             ? stepLoad.gpuLoad()
                             : -1;
 
+            Duration selectedDuration
+                    = randomStepDuration(random);
 
-            Duration selectedDuration =
-                    randomStepDuration(random);
-
-
-            Duration remaining =
-                    Duration.between(
+            Duration remaining
+                    = Duration.between(
                             Instant.now(),
                             finishAt
                     );
 
+            Duration actualDuration
+                    = remaining.compareTo(selectedDuration) < 0
+                    ? remaining
+                    : selectedDuration;
 
-            Duration actualDuration =
-
-                    remaining.compareTo(selectedDuration) < 0
-
-                            ? remaining
-
-                            : selectedDuration;
-
-
-            if (
-
-                    actualDuration.isNegative()
-
-                            || actualDuration.isZero()
-
-            ) {
+            if (actualDuration.isNegative()
+                    || actualDuration.isZero()) {
 
                 break;
             }
 
-
-            Instant stepStart =
-                    Instant.now();
-
+            Instant stepStart
+                    = Instant.now();
 
             if (mode == WorkloadMode.GPU_CPU_COMBINED) {
 
                 System.out.printf(
-
                         Locale.ROOT,
-
                         "%s | Step %d | CPU Load %d%% | GPU Load %d%% | Duration %s | Start %s%n",
-
                         mode,
-
                         stepNumber + 1,
-
                         load,
-
                         gpuLoad,
-
                         formatDuration(actualDuration),
-
                         stepStart
-
                 );
 
             } else {
 
                 System.out.printf(
-
                         Locale.ROOT,
-
                         "%s | Step %d | Load %d%% | Duration %s | Start %s%n",
-
                         mode,
-
                         stepNumber + 1,
-
                         load,
-
                         formatDuration(actualDuration),
-
                         stepStart
-
                 );
             }
-
 
             // ----------------------------------------------------
             // Generate CPU + GPU load in parallel.
             //
             // GPU only ever runs when mode == GPU_CPU_COMBINED.
             // ----------------------------------------------------
-
             runCpuAndGpuLoad(
                     mode,
                     load,
@@ -832,97 +689,63 @@ public final class StressTestRunner {
                     gpuEngine
             );
 
-
-            Instant stepEnd =
-                    Instant.now();
-
+            Instant stepEnd
+                    = Instant.now();
 
             // ----------------------------------------------------
             // Log what actually happened
             // ----------------------------------------------------
-
             logCompletedEvent(
-
                     runId,
-
                     "WORKLOAD_STEP",
-
                     mode.name(),
-
                     load,
-
                     gpuLoad,
-
                     stepNumber + 1,
-
                     stepStart,
-
                     stepEnd,
-
                     Duration.between(
                             stepStart,
                             stepEnd
                     ).toSeconds(),
-
                     "Completed workload step."
             );
-
 
             stepNumber++;
         }
 
-
-        Instant sessionEnd =
-                Instant.now();
-
+        Instant sessionEnd
+                = Instant.now();
 
         logCompletedEvent(
-
                 runId,
-
                 "SESSION",
-
                 mode.name(),
-
                 0,
-
                 stepNumber,
-
                 sessionStart,
-
                 sessionEnd,
-
                 Duration.between(
                         sessionStart,
                         sessionEnd
                 ).toSeconds(),
-
                 "Workload session completed."
         );
-
 
         System.out.println(
                 "Finished session: " + mode
         );
     }
 
-
     // ============================================================
     // IDLE / COOLING SESSION
     // ============================================================
-
     private static void runIdleSession(
-
             String runId,
-
             String sessionName,
-
             Duration duration,
-
             AtomicBoolean stopRequested
-
     ) throws Exception {
-
 
         System.out.println();
         System.out.println("======================================");
@@ -933,83 +756,58 @@ public final class StressTestRunner {
 
         System.out.println(
                 "Duration: "
-                        + formatDuration(duration)
+                + formatDuration(duration)
         );
 
         System.out.println("======================================");
 
+        Instant startTime
+                = Instant.now();
 
-        Instant startTime =
-                Instant.now();
-
-
-        long endNanos =
-
-                System.nanoTime()
-
-                        + duration.toNanos();
-
+        long endNanos
+                = System.nanoTime()
+                + duration.toNanos();
 
         waitUntil(
                 endNanos,
                 stopRequested
         );
 
-
-        Instant endTime =
-                Instant.now();
-
+        Instant endTime
+                = Instant.now();
 
         logCompletedEvent(
-
                 runId,
-
                 "SESSION",
-
                 sessionName,
-
                 0,
-
                 0,
-
                 startTime,
-
                 endTime,
-
                 Duration.between(
                         startTime,
                         endTime
                 ).toSeconds(),
-
                 "Idle or cooling session completed."
         );
     }
 
-
     // ============================================================
     // CPU + GPU LOAD GENERATION
     // ============================================================
-
     /**
      * Launches CPU workers and a GPU stress thread in parallel.
      *
-     * Both receive the same target load percentage and duration.
-     * The method blocks until both have completed.
+     * Both receive the same target load percentage and duration. The method
+     * blocks until both have completed.
      */
     private static void runCpuAndGpuLoad(
-
             WorkloadMode mode,
-
             int cpuTargetPercent,
-
             int gpuTargetPercent,
-
             Duration duration,
-
             AtomicBoolean stopRequested,
-
             GpuStressEngine gpuEngine
-
     ) throws InterruptedException {
 
 
@@ -1018,11 +816,9 @@ public final class StressTestRunner {
          * Every other mode (RAMP, CHAOS, TRANSITION, MIXED) is
          * CPU-only, regardless of whether a GPU is available.
          */
-        boolean gpuEnabledForThisStep =
-
-                mode == WorkloadMode.GPU_CPU_COMBINED
-
-                        && gpuEngine.isAvailable();
+        boolean gpuEnabledForThisStep
+                = mode == WorkloadMode.GPU_CPU_COMBINED
+                && gpuEngine.isAvailable();
 
 
         /*
@@ -1030,14 +826,12 @@ public final class StressTestRunner {
          */
         Thread gpuThread = null;
 
-        AtomicBoolean gpuError =
-                new AtomicBoolean(false);
-
+        AtomicBoolean gpuError
+                = new AtomicBoolean(false);
 
         if (gpuEnabledForThisStep) {
 
             gpuThread = new Thread(
-
                     () -> {
 
                         try {
@@ -1058,11 +852,10 @@ public final class StressTestRunner {
 
                             System.err.println(
                                     "GPU load error: "
-                                            + error.getMessage()
+                                    + error.getMessage()
                             );
                         }
                     },
-
                     "gpu-stress-worker"
             );
 
@@ -1093,28 +886,18 @@ public final class StressTestRunner {
         }
     }
 
-
     // ============================================================
     // CPU LOAD GENERATION
     // ============================================================
-
     private static void runCpuLoad(
-
             int targetPercent,
-
             Duration duration,
-
             AtomicBoolean stopRequested
-
     ) throws InterruptedException {
 
-
-        long endNanos =
-
-                System.nanoTime()
-
-                        + duration.toNanos();
-
+        long endNanos
+                = System.nanoTime()
+                + duration.toNanos();
 
         if (targetPercent == 0) {
 
@@ -1126,51 +909,36 @@ public final class StressTestRunner {
             return;
         }
 
+        AtomicBoolean workersRunning
+                = new AtomicBoolean(true);
 
-        AtomicBoolean workersRunning =
-                new AtomicBoolean(true);
-
-
-        ExecutorService workers =
-
-                Executors.newFixedThreadPool(
+        ExecutorService workers
+                = Executors.newFixedThreadPool(
                         PROCESSORS
                 );
 
-
-        for (
-                int worker = 0;
+        for (int worker = 0;
                 worker < PROCESSORS;
-                worker++
-        ) {
+                worker++) {
 
             workers.submit(
-
                     () -> dutyCycleWorker(
-
                             targetPercent,
-
                             endNanos,
-
                             workersRunning,
-
                             stopRequested
                     )
             );
         }
-
 
         waitUntil(
                 endNanos,
                 stopRequested
         );
 
-
         workersRunning.set(false);
 
-
         workers.shutdownNow();
-
 
         workers.awaitTermination(
                 5,
@@ -1178,118 +946,67 @@ public final class StressTestRunner {
         );
     }
 
-
     // ============================================================
     // DUTY CYCLE WORKER
     // ============================================================
-
     private static void dutyCycleWorker(
-
             int targetPercent,
-
             long endNanos,
-
             AtomicBoolean workersRunning,
-
             AtomicBoolean stopRequested
-
     ) {
 
+        long cycleNanos
+                = TimeUnit.MILLISECONDS.toNanos(100);
 
-        long cycleNanos =
-                TimeUnit.MILLISECONDS.toNanos(100);
-
-
-        long busyNanos =
-
-                cycleNanos
-
-                        * targetPercent
-
-                        / 100;
-
+        long busyNanos
+                = cycleNanos
+                * targetPercent
+                / 100;
 
         double value = 0.5;
 
+        while (workersRunning.get()
+                && !stopRequested.get()
+                && !Thread.currentThread().isInterrupted()
+                && System.nanoTime() < endNanos) {
 
-        while (
+            long cycleStart
+                    = System.nanoTime();
 
-                workersRunning.get()
-
-                        && !stopRequested.get()
-
-                        && !Thread.currentThread().isInterrupted()
-
-                        && System.nanoTime() < endNanos
-
-        ) {
-
-
-            long cycleStart =
-                    System.nanoTime();
-
-
-            long busyUntil =
-
-                    Math.min(
-
+            long busyUntil
+                    = Math.min(
                             endNanos,
-
                             cycleStart + busyNanos
                     );
 
+            while (System.nanoTime() < busyUntil
+                    && workersRunning.get()
+                    && !stopRequested.get()) {
 
-            while (
-
-                    System.nanoTime() < busyUntil
-
-                            && workersRunning.get()
-
-                            && !stopRequested.get()
-
-            ) {
-
-
-                for (
-                        int calculation = 0;
+                for (int calculation = 0;
                         calculation < 1_000;
-                        calculation++
-                ) {
+                        calculation++) {
 
-                    value =
-
-                            Math.sin(value)
-
-                                    * Math.cos(
-                                            value + calculation
-                                    )
-
-                                    + 1.000001;
+                    value
+                            = Math.sin(value)
+                            * Math.cos(
+                                    value + calculation
+                            )
+                            + 1.000001;
                 }
             }
 
+            long elapsed
+                    = System.nanoTime()
+                    - cycleStart;
 
-            long elapsed =
+            long sleepNanos
+                    = cycleNanos
+                    - elapsed;
 
-                    System.nanoTime()
-
-                            - cycleStart;
-
-
-            long sleepNanos =
-
-                    cycleNanos
-
-                            - elapsed;
-
-
-            if (
-
-                    sleepNanos > 0
-
-                            && targetPercent < 100
-
-            ) {
+            if (sleepNanos > 0
+                    && targetPercent < 100) {
 
                 try {
 
@@ -1297,9 +1014,7 @@ public final class StressTestRunner {
                             sleepNanos
                     );
 
-                } catch (
-                        InterruptedException interrupted
-                ) {
+                } catch (InterruptedException interrupted) {
 
                     Thread.currentThread().interrupt();
 
@@ -1308,7 +1023,6 @@ public final class StressTestRunner {
             }
         }
 
-
         if (value == Double.MIN_VALUE) {
 
             System.out.print("");
@@ -1316,26 +1030,20 @@ public final class StressTestRunner {
         }
     }
 
-
     // ============================================================
     // RANDOM STEP DURATION
     // ============================================================
-
     private static Duration randomStepDuration(
             Random random
     ) {
 
-
-        int category =
-                random.nextInt(100);
-
+        int category
+                = random.nextInt(100);
 
         // 35% chance: 20-45 seconds
-
         if (category < 35) {
 
             return Duration.ofSeconds(
-
                     random.nextLong(
                             20,
                             46
@@ -1343,13 +1051,10 @@ public final class StressTestRunner {
             );
         }
 
-
         // 40% chance: 46-120 seconds
-
         if (category < 75) {
 
             return Duration.ofSeconds(
-
                     random.nextLong(
                             46,
                             121
@@ -1357,11 +1062,8 @@ public final class StressTestRunner {
             );
         }
 
-
         // 25% chance: 121-240 seconds
-
         return Duration.ofSeconds(
-
                 random.nextLong(
                         121,
                         241
@@ -1369,42 +1071,28 @@ public final class StressTestRunner {
         );
     }
 
-
     // ============================================================
     // WAIT
     // ============================================================
-
     private static void waitUntil(
-
             long endNanos,
-
             AtomicBoolean stopRequested
-
     ) throws InterruptedException {
-
 
         while (!stopRequested.get()) {
 
-
-            long remaining =
-
-                    endNanos
-
-                            - System.nanoTime();
-
+            long remaining
+                    = endNanos
+                    - System.nanoTime();
 
             if (remaining <= 0) {
 
                 return;
             }
 
-
             TimeUnit.NANOSECONDS.sleep(
-
                     Math.min(
-
                             remaining,
-
                             TimeUnit.MILLISECONDS
                                     .toNanos(250)
                     )
@@ -1412,31 +1100,19 @@ public final class StressTestRunner {
         }
     }
 
-
     // ============================================================
     // LOG COMPLETED EVENT
     // ============================================================
-
     private static synchronized void logCompletedEvent(
-
             String runId,
-
             String eventType,
-
             String mode,
-
             int targetLoad,
-
             int stepNumber,
-
             Instant startTime,
-
             Instant endTime,
-
             long actualDurationSeconds,
-
             String message
-
     ) throws IOException {
 
         /*
@@ -1445,207 +1121,129 @@ public final class StressTestRunner {
          * GPU_CPU_COMBINED).
          */
         logCompletedEvent(
-
                 runId,
-
                 eventType,
-
                 mode,
-
                 targetLoad,
-
                 -1,
-
                 stepNumber,
-
                 startTime,
-
                 endTime,
-
                 actualDurationSeconds,
-
                 message
         );
     }
 
-
     private static synchronized void logCompletedEvent(
-
             String runId,
-
             String eventType,
-
             String mode,
-
             int targetLoad,
-
             int gpuTargetLoad,
-
             int stepNumber,
-
             Instant startTime,
-
             Instant endTime,
-
             long actualDurationSeconds,
-
             String message
-
     ) throws IOException {
 
-
-        String jsonLine =
-
-                "{"
-
-                        + "\"eventType\":\""
-                        + escapeJson(eventType)
-                        + "\","
-
-                        + "\"runId\":\""
-                        + escapeJson(runId)
-                        + "\","
-
-                        + "\"deviceId\":\""
-                        + escapeJson(DEVICE_ID)
-                        + "\","
-
-                        + "\"mode\":\""
-                        + escapeJson(mode)
-                        + "\","
-
-                        + "\"targetLoad\":"
-                        + targetLoad
-                        + ","
-
-                        + "\"gpuTargetLoad\":"
-                        + gpuTargetLoad
-                        + ","
-
-                        + "\"stepNumber\":"
-                        + stepNumber
-                        + ","
-
-                        + "\"startTime\":\""
-                        + startTime
-                        + "\","
-
-                        + "\"endTime\":\""
-                        + endTime
-                        + "\","
-
-                        + "\"actualDurationSeconds\":"
-                        + actualDurationSeconds
-                        + ","
-
-                        + "\"seed\":"
-                        + SEED
-                        + ","
-
-                        + "\"message\":\""
-                        + escapeJson(message)
-                        + "\""
-
-                        + "}"
-
-                        + System.lineSeparator();
-
+        String jsonLine
+                = "{"
+                + "\"eventType\":\""
+                + escapeJson(eventType)
+                + "\","
+                + "\"runId\":\""
+                + escapeJson(runId)
+                + "\","
+                + "\"deviceId\":\""
+                + escapeJson(DEVICE_ID)
+                + "\","
+                + "\"mode\":\""
+                + escapeJson(mode)
+                + "\","
+                + "\"targetLoad\":"
+                + targetLoad
+                + ","
+                + "\"gpuTargetLoad\":"
+                + gpuTargetLoad
+                + ","
+                + "\"stepNumber\":"
+                + stepNumber
+                + ","
+                + "\"startTime\":\""
+                + startTime
+                + "\","
+                + "\"endTime\":\""
+                + endTime
+                + "\","
+                + "\"actualDurationSeconds\":"
+                + actualDurationSeconds
+                + ","
+                + "\"seed\":"
+                + SEED
+                + ","
+                + "\"message\":\""
+                + escapeJson(message)
+                + "\""
+                + "}"
+                + System.lineSeparator();
 
         Files.writeString(
-
                 eventLogFile,
-
                 jsonLine,
-
                 StandardCharsets.UTF_8,
-
                 StandardOpenOption.APPEND
         );
     }
 
-
     // ============================================================
     // LOG INSTANT EVENT
     // ============================================================
-
     private static synchronized void logInstantEvent(
-
             String runId,
-
             String eventType,
-
             String mode,
-
             int targetLoad,
-
             int stepNumber,
-
             String message
-
     ) throws IOException {
 
-
-        Instant timestamp =
-                Instant.now();
-
+        Instant timestamp
+                = Instant.now();
 
         logCompletedEvent(
-
                 runId,
-
                 eventType,
-
                 mode,
-
                 targetLoad,
-
                 stepNumber,
-
                 timestamp,
-
                 timestamp,
-
                 0,
-
                 message
         );
     }
 
-
     // ============================================================
     // RUN METADATA
     // ============================================================
-
     private static void writeRunMetadata(
             String runId,
             GpuStressEngine gpuEngine
     ) throws IOException {
 
-
-        long totalMinutes =
-
-                INITIAL_IDLE.toMinutes()
-
-                        + RAMP_DURATION.toMinutes()
-
-                        + GPU_CPU_COMBINED_DURATION_1.toMinutes()
-
-                        + CHAOS_DURATION.toMinutes()
-
-                        + GPU_CPU_COMBINED_DURATION_2.toMinutes()
-
-                        + TRANSITION_DURATION.toMinutes()
-
-                        + GPU_CPU_COMBINED_DURATION_3.toMinutes()
-
-                        + MIXED_DURATION.toMinutes()
-
-                        + GPU_CPU_COMBINED_DURATION_4.toMinutes()
-
-                        + COOLING_DURATION.toMinutes() * 7
-
-                        + FINAL_COOLING_DURATION.toMinutes();
-
+        long totalMinutes
+                = INITIAL_IDLE.toMinutes()
+                + RAMP_DURATION.toMinutes()
+                + GPU_CPU_COMBINED_DURATION_1.toMinutes()
+                + CHAOS_DURATION.toMinutes()
+                + GPU_CPU_COMBINED_DURATION_2.toMinutes()
+                + TRANSITION_DURATION.toMinutes()
+                + GPU_CPU_COMBINED_DURATION_3.toMinutes()
+                + MIXED_DURATION.toMinutes()
+                + GPU_CPU_COMBINED_DURATION_4.toMinutes()
+                + COOLING_DURATION.toMinutes() * 7
+                + FINAL_COOLING_DURATION.toMinutes();
 
         String json = """
 
@@ -1777,86 +1375,50 @@ public final class StressTestRunner {
                   "totalExperimentMinutes": %d
                 }
                 """.formatted(
-
                 escapeJson(runId),
-
                 escapeJson(DEVICE_ID),
-
                 Instant.now(),
-
                 SEED,
-
                 PROCESSORS,
-
                 gpuEngine.isAvailable(),
-
                 escapeJson(gpuEngine.getDeviceName()),
-
                 INITIAL_IDLE.toMinutes(),
-
                 RAMP_DURATION.toMinutes(),
-
                 COOLING_DURATION.toMinutes(),
-
                 GPU_CPU_COMBINED_DURATION_1.toMinutes(),
-
                 COOLING_DURATION.toMinutes(),
-
                 CHAOS_DURATION.toMinutes(),
-
                 COOLING_DURATION.toMinutes(),
-
                 GPU_CPU_COMBINED_DURATION_2.toMinutes(),
-
                 COOLING_DURATION.toMinutes(),
-
                 TRANSITION_DURATION.toMinutes(),
-
                 COOLING_DURATION.toMinutes(),
-
                 GPU_CPU_COMBINED_DURATION_3.toMinutes(),
-
                 COOLING_DURATION.toMinutes(),
-
                 MIXED_DURATION.toMinutes(),
-
                 COOLING_DURATION.toMinutes(),
-
                 GPU_CPU_COMBINED_DURATION_4.toMinutes(),
-
                 FINAL_COOLING_DURATION.toMinutes(),
-
                 totalMinutes
         );
 
-
         Files.writeString(
-
                 metadataFile,
-
                 json,
-
                 StandardCharsets.UTF_8,
-
                 StandardOpenOption.CREATE_NEW
         );
     }
 
-
     // ============================================================
     // WORKLOAD MODES
     // ============================================================
-
     private enum WorkloadMode {
 
         RAMP,
-
         CHAOS,
-
         TRANSITION,
-
         MIXED,
-
         /*
          * CPU + GPU run together in this mode.
          *
@@ -1871,45 +1433,38 @@ public final class StressTestRunner {
         GPU_CPU_COMBINED
     }
 
-
     // ============================================================
     // LOAD SEQUENCE
     // ============================================================
-
     /**
      * Holds the load for a single step.
      *
-     * cpuLoad and gpuLoad are independent: in GPU_CPU_COMBINED mode
-     * they follow completely different sequences. In every other
-     * mode gpuLoad simply mirrors cpuLoad, but it is never actually
-     * used because GPU never runs outside GPU_CPU_COMBINED.
+     * cpuLoad and gpuLoad are independent: in GPU_CPU_COMBINED mode they follow
+     * completely different sequences. In every other mode gpuLoad simply
+     * mirrors cpuLoad, but it is never actually used because GPU never runs
+     * outside GPU_CPU_COMBINED.
      */
     private record StepLoad(
             int cpuLoad,
             int gpuLoad
-    ) {
+            ) {
+
     }
 
-
     private static final class LoadSequence {
-
 
         private final WorkloadMode mode;
 
         private final Random random;
 
-
         private int previousChaosLoad = -1;
 
-
-        private List<WorkloadMode> mixedBlockOrder =
-                new ArrayList<>();
-
+        private List<WorkloadMode> mixedBlockOrder
+                = new ArrayList<>();
 
         private int mixedBlockIndex = 0;
 
         private int mixedStepInBlock = 0;
-
 
         // ----------------------------------------------------
         // GPU_CPU_COMBINED state
@@ -1919,8 +1474,8 @@ public final class StressTestRunner {
          * Fixed (non-shuffled) GPU cycle for GPU_CPU_COMBINED mode:
          * ramping GPU -> chaos GPU -> transition GPU -> repeat.
          */
-        private static final List<WorkloadMode> COMBINED_GPU_BLOCK_ORDER =
-                List.of(
+        private static final List<WorkloadMode> COMBINED_GPU_BLOCK_ORDER
+                = List.of(
                         WorkloadMode.RAMP,
                         WorkloadMode.CHAOS,
                         WorkloadMode.TRANSITION
@@ -1934,19 +1489,14 @@ public final class StressTestRunner {
 
         private int previousCombinedCpuLoad = -1;
 
-
         private LoadSequence(
-
                 WorkloadMode mode,
-
                 Random random
-
         ) {
 
             this.mode = mode;
 
             this.random = random;
-
 
             if (mode == WorkloadMode.MIXED) {
 
@@ -1955,28 +1505,26 @@ public final class StressTestRunner {
             }
         }
 
-
         private StepLoad next(
                 int stepNumber
         ) {
 
-
             return switch (mode) {
 
                 case RAMP ->
-                        uniform(rampLoad(stepNumber));
+                    uniform(rampLoad(stepNumber));
 
                 case CHAOS ->
-                        uniform(chaosLoad());
+                    uniform(chaosLoad());
 
                 case TRANSITION ->
-                        uniform(transitionLoad(stepNumber));
+                    uniform(transitionLoad(stepNumber));
 
                 case MIXED ->
-                        uniform(mixedLoad());
+                    uniform(mixedLoad());
 
                 case GPU_CPU_COMBINED ->
-                        combinedLoad();
+                    combinedLoad();
             };
         }
 
@@ -1996,171 +1544,123 @@ public final class StressTestRunner {
             );
         }
 
-
         // --------------------------------------------------------
         // RAMP
         // --------------------------------------------------------
-
         private int rampLoad(
                 int stepNumber
         ) {
 
-
             return RAMP_PROFILE.get(
-
                     stepNumber
-
-                            % RAMP_PROFILE.size()
+                    % RAMP_PROFILE.size()
             );
         }
-
 
         // --------------------------------------------------------
         // CHAOS
         // --------------------------------------------------------
-
         private int chaosLoad() {
-
-
             int load;
-
-
             do {
+                load
+                        = random.nextInt(11)
+                        * 10;
 
-                load =
+            } while (load == previousChaosLoad);
 
-                        random.nextInt(11)
-
-                                * 10;
-
-            } while (
-                    load == previousChaosLoad
-            );
-
-
-            previousChaosLoad =
-                    load;
-
-
+            previousChaosLoad = load;
             return load;
         }
-
 
         // --------------------------------------------------------
         // TRANSITION
         // --------------------------------------------------------
-
         private int transitionLoad(
                 int stepNumber
         ) {
 
+            int pairIndex
+                    = (stepNumber / 2)
+                    % TRANSITION_PAIRS.length;
 
-            int pairIndex =
+            int pairPosition
+                    = stepNumber % 2;
 
-                    (stepNumber / 2)
-
-                            % TRANSITION_PAIRS.length;
-
-
-            int pairPosition =
-                    stepNumber % 2;
-
-
-            return TRANSITION_PAIRS
-                    [pairIndex]
-                    [pairPosition];
+            return TRANSITION_PAIRS[pairIndex][pairPosition];
         }
-
 
         // --------------------------------------------------------
         // MIXED
         // --------------------------------------------------------
-
         private int mixedLoad() {
 
-
-            WorkloadMode activeBlock =
-
-                    mixedBlockOrder.get(
+            WorkloadMode activeBlock
+                    = mixedBlockOrder.get(
                             mixedBlockIndex
                     );
 
-
             int load;
-
 
             switch (activeBlock) {
 
                 case RAMP ->
 
-                        load = rampLoad(
-                                mixedStepInBlock
-                        );
-
+                    load = rampLoad(
+                            mixedStepInBlock
+                    );
 
                 case CHAOS ->
 
-                        load = chaosLoad();
-
+                    load = chaosLoad();
 
                 case TRANSITION ->
 
-                        load = transitionLoad(
-                                mixedStepInBlock
-                        );
-
+                    load = transitionLoad(
+                            mixedStepInBlock
+                    );
 
                 default ->
 
-                        throw new IllegalStateException(
-                                "Invalid mixed block: "
-                                        + activeBlock
-                        );
+                    throw new IllegalStateException(
+                            "Invalid mixed block: "
+                            + activeBlock
+                    );
             }
-
 
             mixedStepInBlock++;
 
+            int blockLength
+                    = switch (activeBlock) {
 
-            int blockLength =
+                case RAMP ->
+                    MIXED_RAMP_STEPS;
 
-                    switch (activeBlock) {
+                case CHAOS ->
+                    MIXED_CHAOS_STEPS;
 
-                        case RAMP ->
-                                MIXED_RAMP_STEPS;
+                case TRANSITION ->
+                    MIXED_TRANSITION_STEPS;
 
-                        case CHAOS ->
-                                MIXED_CHAOS_STEPS;
-
-                        case TRANSITION ->
-                                MIXED_TRANSITION_STEPS;
-
-                        default ->
-                                throw new IllegalStateException();
-                    };
-
+                default ->
+                    throw new IllegalStateException();
+            };
 
             if (mixedStepInBlock >= blockLength) {
-
 
                 mixedStepInBlock = 0;
 
                 mixedBlockIndex++;
 
-
-                if (
-                        mixedBlockIndex
-                                >= mixedBlockOrder.size()
-                ) {
+                if (mixedBlockIndex
+                        >= mixedBlockOrder.size()) {
 
                     createNewMixedCycle();
                 }
             }
 
-
             return load;
         }
-
 
         // --------------------------------------------------------
         // GPU_CPU_COMBINED
@@ -2175,84 +1675,68 @@ public final class StressTestRunner {
          */
         private StepLoad combinedLoad() {
 
+            int cpuLoad
+                    = combinedCpuLoad();
 
-            int cpuLoad =
-                    combinedCpuLoad();
-
-
-            WorkloadMode activeGpuBlock =
-
-                    COMBINED_GPU_BLOCK_ORDER.get(
+            WorkloadMode activeGpuBlock
+                    = COMBINED_GPU_BLOCK_ORDER.get(
                             combinedGpuBlockIndex
                     );
 
-
             int gpuLoad;
-
 
             switch (activeGpuBlock) {
 
                 case RAMP ->
 
-                        gpuLoad = rampLoad(
-                                combinedGpuStepInBlock
-                        );
-
+                    gpuLoad = rampLoad(
+                            combinedGpuStepInBlock
+                    );
 
                 case CHAOS ->
 
-                        gpuLoad = combinedGpuChaosLoad();
-
+                    gpuLoad = combinedGpuChaosLoad();
 
                 case TRANSITION ->
 
-                        gpuLoad = transitionLoad(
-                                combinedGpuStepInBlock
-                        );
-
+                    gpuLoad = transitionLoad(
+                            combinedGpuStepInBlock
+                    );
 
                 default ->
 
-                        throw new IllegalStateException(
-                                "Invalid GPU_CPU_COMBINED block: "
-                                        + activeGpuBlock
-                        );
+                    throw new IllegalStateException(
+                            "Invalid GPU_CPU_COMBINED block: "
+                            + activeGpuBlock
+                    );
             }
-
 
             combinedGpuStepInBlock++;
 
+            int blockLength
+                    = switch (activeGpuBlock) {
 
-            int blockLength =
+                case RAMP ->
+                    MIXED_RAMP_STEPS;
 
-                    switch (activeGpuBlock) {
+                case CHAOS ->
+                    MIXED_CHAOS_STEPS;
 
-                        case RAMP ->
-                                MIXED_RAMP_STEPS;
+                case TRANSITION ->
+                    MIXED_TRANSITION_STEPS;
 
-                        case CHAOS ->
-                                MIXED_CHAOS_STEPS;
-
-                        case TRANSITION ->
-                                MIXED_TRANSITION_STEPS;
-
-                        default ->
-                                throw new IllegalStateException();
-                    };
-
+                default ->
+                    throw new IllegalStateException();
+            };
 
             if (combinedGpuStepInBlock >= blockLength) {
 
-
                 combinedGpuStepInBlock = 0;
 
-                combinedGpuBlockIndex =
-
-                        (combinedGpuBlockIndex + 1)
-
-                                % COMBINED_GPU_BLOCK_ORDER.size();
+                combinedGpuBlockIndex
+                        = (combinedGpuBlockIndex + 1)
+                        % COMBINED_GPU_BLOCK_ORDER.size();
             }
-
 
             return new StepLoad(
                     cpuLoad,
@@ -2267,28 +1751,11 @@ public final class StressTestRunner {
          * interferes with the GPU's chaos block.
          */
         private int combinedCpuLoad() {
-
-
             int load;
-
-
             do {
-
-                load =
-
-                        random.nextInt(11)
-
-                                * 10;
-
-            } while (
-                    load == previousCombinedCpuLoad
-            );
-
-
-            previousCombinedCpuLoad =
-                    load;
-
-
+                load = random.nextInt(11) * 10;
+            } while (load == previousCombinedCpuLoad);
+            previousCombinedCpuLoad = load;
             return load;
         }
 
@@ -2298,57 +1765,30 @@ public final class StressTestRunner {
          * separate from chaosLoad()'s state for the same reason.
          */
         private int combinedGpuChaosLoad() {
-
-
             int load;
-
-
             do {
+                load = random.nextInt(11) * 10;
 
-                load =
+            } while (load == previousCombinedGpuChaosLoad);
 
-                        random.nextInt(11)
-
-                                * 10;
-
-            } while (
-                    load == previousCombinedGpuChaosLoad
-            );
-
-
-            previousCombinedGpuChaosLoad =
-                    load;
-
-
+            previousCombinedGpuChaosLoad = load;
             return load;
         }
 
-
         private void createNewMixedCycle() {
 
-
-            mixedBlockOrder =
-
-                    new ArrayList<>(
-
-                            List.of(
-
-                                    WorkloadMode.RAMP,
-
-                                    WorkloadMode.CHAOS,
-
-                                    WorkloadMode.TRANSITION
-                            )
-                    );
-
-
-            Collections.shuffle(
-
-                    mixedBlockOrder,
-
-                    random
+            mixedBlockOrder = new ArrayList<>(
+                    List.of(
+                            WorkloadMode.RAMP,
+                            WorkloadMode.CHAOS,
+                            WorkloadMode.TRANSITION
+                    )
             );
 
+            Collections.shuffle(
+                    mixedBlockOrder,
+                    random
+            );
 
             mixedBlockIndex = 0;
 
@@ -2356,22 +1796,16 @@ public final class StressTestRunner {
         }
     }
 
-
     // ============================================================
     // VALIDATION
     // ============================================================
-
     private static void validateConfiguration() {
 
-
-        if (
-                DEVICE_ID.equals(
-                        "CHANGE_THIS_DEVICE_NAME"
-                )
-        ) {
+        if (DEVICE_ID.equals(
+                "CHANGE_THIS_DEVICE_NAME"
+        )) {
 
             throw new IllegalStateException(
-
                     """
 
                     DEVICE_ID has not been configured.
@@ -2391,91 +1825,63 @@ public final class StressTestRunner {
         }
     }
 
-
     // ============================================================
     // CREATE RUN ID
     // ============================================================
-
     private static String createRunId() {
 
-
-        String safeTimestamp =
-
-                Instant.now()
-
+        String safeTimestamp
+                = Instant.now()
                         .toString()
-
                         .replace(":", "-")
-
                         .replace(".", "-");
 
-
         return DEVICE_ID
-
                 + "_"
-
                 + safeTimestamp;
     }
-
 
     // ============================================================
     // JSON ESCAPING
     // ============================================================
-
     private static String escapeJson(
             String value
     ) {
 
-
         return value
-
                 .replace("\\", "\\\\")
-
                 .replace("\"", "\\\"")
-
                 .replace("\n", "\\n")
-
                 .replace("\r", "\\r");
     }
-
 
     // ============================================================
     // DURATION FORMATTING
     // ============================================================
-
     private static String formatDuration(
             Duration duration
     ) {
 
-
-        long seconds =
-
-                Math.max(
+        long seconds
+                = Math.max(
                         0,
                         duration.toSeconds()
                 );
 
-
         return "%02d:%02d:%02d".formatted(
-
                 seconds / 3600,
-
                 seconds % 3600 / 60,
-
                 seconds % 60
         );
     }
 
-
     // ============================================================
     // PRINT EXPERIMENT PLAN
     // ============================================================
-
     private static void printExperimentPlan(
             String runId,
             GpuStressEngine gpuEngine
     ) {
-
 
         System.out.println();
         System.out.println("======================================");
@@ -2500,11 +1906,9 @@ public final class StressTestRunner {
 
         System.out.println(
                 "GPU: "
-                        + (
-                                gpuEngine.isAvailable()
-                                        ? gpuEngine.getDeviceName()
-                                        : "NOT AVAILABLE (CPU-only)"
-                        )
+                + (gpuEngine.isAvailable()
+                ? gpuEngine.getDeviceName()
+                : "NOT AVAILABLE (CPU-only)")
         );
 
         System.out.println();
