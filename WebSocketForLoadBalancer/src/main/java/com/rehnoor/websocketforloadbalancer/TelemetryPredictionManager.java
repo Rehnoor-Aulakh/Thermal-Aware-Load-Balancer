@@ -38,7 +38,7 @@ public class TelemetryPredictionManager {
                 return null;
             }
 
-            rawSequence= new double[REQUIRED_SAMPLES][6];
+            rawSequence = new double[REQUIRED_SAMPLES][TelemetrySample.MODEL_FEATURE_COUNT];
 
             int timestep = 0;
 

@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class PredictionEvaluationService {
-    private static final long FORECAST_SECONDS = 20;
+    private static final long FORECAST_SECONDS = 10;
 
     private final Map<String, Deque<PendingPrediction>> pendingPredictions = new ConcurrentHashMap<>();
 

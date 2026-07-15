@@ -12,38 +12,55 @@ import ai.onnxruntime.OnnxTensor;
 import ai.onnxruntime.OrtEnvironment;
 import ai.onnxruntime.OrtException;
 import ai.onnxruntime.OrtSession;
+import ai.onnxruntime.TensorInfo;
 import jakarta.annotation.PreDestroy;
 
 @Service
 public class TemperaturePredictionService {
-    private static final String MODEL_PATH = "models/best_cross_device_grucnn_all5.onnx";
+    private static final String MODEL_PATH = "models/best_cross_device_gru_all5.onnx";
     private static final String INPUT_NAME = "telemetry_input";
 
     private final OrtEnvironment environment;
     private final OrtSession session;
 
     private static final int TIMESTEPS = 20;
-    private static final int FEATURE_COUNT = 6;
+    private static final int FEATURE_COUNT = TelemetrySample.MODEL_FEATURE_COUNT;
 
     private static final double[] FEATURE_MEANS = {
-        51.10043897,
-        29.70644144,
-        52.88886525,
-        60.22429030,
-        1901.40517269,
-        45.42214573,
-        83.82218344
-};
+
+            51.10043897,
+
+            29.70644144,
+
+            52.88886525,
+
+            60.22429030,
+
+            1901.40517269,
+
+            45.42214573,
+
+            83.82218344
+
+    };
 
     private static final double[] FEATURE_SCALES = {
-        34.28571687,
-        15.76849644,
-        7.78824243,
-        8.26603192,
-        1040.52568746,
-        35.88821269,
-        14.76576228
-};
+
+            34.28571687,
+
+            15.76849644,
+
+            7.78824243,
+
+            8.26603192,
+
+            1040.52568746,
+
+            35.88821269,
+
+            14.76576228
+
+    };
 
     public TemperaturePredictionService() throws IOException, OrtException {
         System.out.println("Loading CPU Temperature Prediction Model...");
@@ -62,7 +79,25 @@ public class TemperaturePredictionService {
 
         System.out.println("Model outputs: "+ session.getOutputInfo().keySet());
 
+        validateModelFeatureCount();
 
+
+    }
+
+    private void validateModelFeatureCount() throws OrtException {
+        var inputInfo = session.getInputInfo().get(INPUT_NAME);
+        if (inputInfo == null || !(inputInfo.getInfo() instanceof TensorInfo tensorInfo)) {
+            throw new IllegalStateException("Model input '" + INPUT_NAME + "' is missing or is not a tensor");
+        }
+
+        long[] shape = tensorInfo.getShape();
+        if (shape.length < 3 || (shape[2] >= 0 && shape[2] != FEATURE_COUNT)) {
+            throw new IllegalStateException(
+                    "Model input '" + INPUT_NAME + "' has shape " + java.util.Arrays.toString(shape)
+                            + " but telemetry provides " + FEATURE_COUNT + " features. "
+                            + "Deploy the ONNX model exported with all seven features."
+            );
+        }
     }
 //    The input must have this shape:
         //
@@ -107,7 +142,7 @@ public class TemperaturePredictionService {
 
         for(int timestep = 0; timestep< TIMESTEPS; timestep++){
             if(rawSequence[timestep].length!=FEATURE_COUNT){
-                throw new IllegalArgumentException("Each telemetry sample must have exactly 6 features");
+                throw new IllegalArgumentException("Each telemetry sample must have exactly 7 features");
             }
             for(int feature = 0; feature<FEATURE_COUNT; feature++){
                 double scaledValue = (rawSequence[timestep][feature] - FEATURE_MEANS[feature]) / FEATURE_SCALES[feature];

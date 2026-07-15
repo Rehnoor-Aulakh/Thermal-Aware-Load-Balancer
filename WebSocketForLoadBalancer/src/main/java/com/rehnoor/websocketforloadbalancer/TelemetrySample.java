@@ -11,6 +11,8 @@ public record TelemetrySample(
         double cpuTemperature
 ) {
 
+    public static final int MODEL_FEATURE_COUNT = 7;
+
     public double[] toModelFeatures() {
         return new double[]{
                 cpuUsage,

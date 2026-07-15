@@ -7,6 +7,8 @@ import TabsBar from "./components/TabsBar";
 import useTelemetryTabs from "./hooks/useTelemetryTabs";
 import PredictionDemo from "./components/PredictionDemo";
 
+/// TODO
+// Use React Router Here
 export default function App() {
   if (window.location.pathname === "/prediction-demo") {
     return <PredictionDemo />;

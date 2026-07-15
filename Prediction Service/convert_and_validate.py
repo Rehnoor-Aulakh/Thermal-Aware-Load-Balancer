@@ -5,7 +5,7 @@ import onnxruntime as ort
 
 
 KERAS_MODEL_PATH = "best_cross_device_lstm.keras"
-ONNX_MODEL_PATH = "with_arshnoor_cross_device_lstm.onnx"
+ONNX_MODEL_PATH = "best_cross_device_lstm_all5.onnx"
 
 
 # ---------------------------------------------------------
@@ -30,7 +30,7 @@ print("Output shape:", keras_model.output_shape)
 
 input_signature = [
     tf.TensorSpec(
-        shape=(None, 20, 6),
+        shape=(None, 20, 7),
         dtype=tf.float32,
         name="telemetry_input"
     )
@@ -78,7 +78,7 @@ np.random.seed(42)
 test_input = np.random.randn(
     1,
     20,
-    6
+    7
 ).astype(np.float32)
 
 print("\nTest input shape:", test_input.shape)
