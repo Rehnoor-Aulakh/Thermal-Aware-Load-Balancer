@@ -1,21 +1,22 @@
 package com.rehnoor.websocketforloadbalancer;
 
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Map;
+
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Service;
+
 import ai.onnxruntime.OnnxTensor;
 import ai.onnxruntime.OrtEnvironment;
 import ai.onnxruntime.OrtException;
 import ai.onnxruntime.OrtSession;
 import jakarta.annotation.PreDestroy;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Map;
 
 @Service
 public class TemperaturePredictionService {
-    private static final String MODEL_PATH = "models/with_arshnoor_cross_device_lstm.onnx";
+    private static final String MODEL_PATH = "models/best_cross_device_grucnn_all5.onnx";
     private static final String INPUT_NAME = "telemetry_input";
 
     private final OrtEnvironment environment;
@@ -25,22 +26,24 @@ public class TemperaturePredictionService {
     private static final int FEATURE_COUNT = 6;
 
     private static final double[] FEATURE_MEANS = {
-            49.37175181,   // cpuUsage
-            73.19980285,   // ramUsage
-            175.93329117,  // networkConnections
-            280.77080739,  // processCount
-            29.02250954,   // cpuPackagePower
-            81.31682946    // cpuTemperature
-    };
+        51.10043897,
+        29.70644144,
+        52.88886525,
+        60.22429030,
+        1901.40517269,
+        45.42214573,
+        83.82218344
+};
 
     private static final double[] FEATURE_SCALES = {
-            34.56165884,   // cpuUsage
-            8.75059068,    // ramUsage
-            71.94112423,   // networkConnections
-            11.39403638,   // processCount
-            16.71204590,   // cpuPackagePower
-            16.06345520    // cpuTemperature
-    };
+        34.28571687,
+        15.76849644,
+        7.78824243,
+        8.26603192,
+        1040.52568746,
+        35.88821269,
+        14.76576228
+};
 
     public TemperaturePredictionService() throws IOException, OrtException {
         System.out.println("Loading CPU Temperature Prediction Model...");
@@ -63,11 +66,11 @@ public class TemperaturePredictionService {
     }
 //    The input must have this shape:
         //
-        //float[1][20][6]
+        //float[1][20][7]
         //
         //1  = one server sequence being predicted
         //20 = last 20 telemetry readings
-        //6  = features in each reading
+        //7  = features in each reading
 //    modelInput
 //│
 //        └── [0]                         one batch

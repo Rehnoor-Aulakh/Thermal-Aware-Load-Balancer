@@ -3,21 +3,22 @@ package com.rehnoor.websocketforloadbalancer;
 public record TelemetrySample(
         String timestamp,
         double cpuUsage,
-        double cpuTemperature,
         double cpuPackagePower,
-        double cpuAverageClock,
-        double ramUsage,
-        int networkConnections,
-        int processCount
+        double gpuCoreTemperature,
+        double gpuHotspotTemperature,
+        double cpuEfficiencyAverageClock,
+        double targetLoad,
+        double cpuTemperature
 ) {
 
     public double[] toModelFeatures() {
         return new double[]{
                 cpuUsage,
-                ramUsage,
-                networkConnections,
-                processCount,
                 cpuPackagePower,
+                gpuCoreTemperature,
+                gpuHotspotTemperature,
+                cpuEfficiencyAverageClock,
+                targetLoad,
                 cpuTemperature
         };
     }
