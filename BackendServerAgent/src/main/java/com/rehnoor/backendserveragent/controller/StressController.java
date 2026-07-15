@@ -23,6 +23,12 @@ public class StressController {
         return ResponseEntity.ok(Map.of("status", "success", "targetLoad", request.targetLoad()));
     }
 
+    @PostMapping("/load/{load}")
+    public ResponseEntity<String> setLoad(@PathVariable int load){
+        stressService.setTargetLoad(load);
+        return ResponseEntity.ok("Target load changed to "+load+"%");
+    }
+
     @GetMapping("/target-load")
     public ResponseEntity<?> getTargetLoad(){
         return ResponseEntity.ok(Map.of("targetLoad", stressService.getTargetLoad()));
