@@ -24,11 +24,14 @@ function createTab(name = "Server 1") {
   };
 }
 
-export default function useTelemetryTabs() {
-  const initialTab = useMemo(() => createTab(), []);
+export default function useTelemetryTabs({ initialServerCount = 1 } = {}) {
+  const initialTabs = useMemo(
+    () => Array.from({ length: initialServerCount }, (_, index) => createTab(`Server ${index + 1}`)),
+    [initialServerCount],
+  );
   const socketsRef = useRef(new Map());
-  const [tabs, setTabs] = useState(() => [initialTab]);
-  const [activeTabId, setActiveTabId] = useState(() => initialTab.id);
+  const [tabs, setTabs] = useState(() => initialTabs);
+  const [activeTabId, setActiveTabId] = useState(() => initialTabs[0].id);
 
   const updateTab = useCallback((tabId, updater) => {
     setTabs((currentTabs) =>

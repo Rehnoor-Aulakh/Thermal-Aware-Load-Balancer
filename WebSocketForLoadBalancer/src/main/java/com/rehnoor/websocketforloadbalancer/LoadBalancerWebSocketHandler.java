@@ -391,7 +391,7 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
 
             forwardBackendMessage(
                     frontendSession,
-                    telemetryJson
+                    withPrediction(telemetryJson, predictedTemperature)
             );
 
         } catch (Exception exception) {
@@ -412,4 +412,20 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
                     telemetryJson
             );
         }
-    }}
+    }
+
+    private String withPrediction(String telemetryJson, double predictedTemperature) {
+        if (!Double.isFinite(predictedTemperature)) {
+            return telemetryJson;
+        }
+
+        int objectEnd = telemetryJson.lastIndexOf('}');
+        if (objectEnd < 0) {
+            return telemetryJson;
+        }
+
+        return telemetryJson.substring(0, objectEnd)
+                + ",\"predictedTemperature\":" + predictedTemperature
+                + telemetryJson.substring(objectEnd);
+    }
+}

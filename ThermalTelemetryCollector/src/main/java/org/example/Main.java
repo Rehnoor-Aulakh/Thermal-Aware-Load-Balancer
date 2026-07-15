@@ -16,9 +16,7 @@ public class Main {
         JsonLogger logger =
                 new JsonLogger();
 
-        TelemetryWebSocketServer telemetryServer =
-                new TelemetryWebSocketServer(
-                        new InetSocketAddress(
+        TelemetryWebSocketServer telemetryServer = new TelemetryWebSocketServer(new InetSocketAddress(
                                 TELEMETRY_WEBSOCKET_PORT
                         )
                 );

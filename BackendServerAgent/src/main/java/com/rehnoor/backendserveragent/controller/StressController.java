@@ -9,6 +9,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/stress")
+@CrossOrigin(origins = "*")
 public class StressController {
 
     private final StressService stressService;

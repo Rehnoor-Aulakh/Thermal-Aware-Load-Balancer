@@ -5,8 +5,13 @@ import EventsTable from "./components/EventsTable";
 import TelemetryTable from "./components/TelemetryTable";
 import TabsBar from "./components/TabsBar";
 import useTelemetryTabs from "./hooks/useTelemetryTabs";
+import PredictionDemo from "./components/PredictionDemo";
 
 export default function App() {
+  if (window.location.pathname === "/prediction-demo") {
+    return <PredictionDemo />;
+  }
+
   const {
     tabs,
     activeTab,
