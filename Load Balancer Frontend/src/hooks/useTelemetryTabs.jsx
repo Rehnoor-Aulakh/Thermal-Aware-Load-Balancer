@@ -76,7 +76,7 @@ export default function useTelemetryTabs({ initialServerCount = 1 } = {}) {
   );
 
   const connect = useCallback(
-    (tabId, backendHost) => {
+    (tabId, backendHost, serverName) => {
       const host = backendHost.trim();
 
       if (!host) {
@@ -107,7 +107,7 @@ export default function useTelemetryTabs({ initialServerCount = 1 } = {}) {
 
       socket.onopen = () => {
         updateTab(tabId, () => ({
-          name: host,
+          name: serverName || host,
           backendHost: host,
           connected: true,
           connecting: false,
@@ -208,6 +208,13 @@ export default function useTelemetryTabs({ initialServerCount = 1 } = {}) {
     [updateTab],
   );
 
+  const updateTabName = useCallback(
+    (tabId, name) => {
+      updateTab(tabId, () => ({ name }));
+    },
+    [updateTab],
+  );
+
   useEffect(() => {
     const sockets = socketsRef.current;
 
@@ -227,6 +234,7 @@ export default function useTelemetryTabs({ initialServerCount = 1 } = {}) {
     addTab,
     closeTab,
     updateBackendHost,
+    updateTabName,
     connect,
     disconnect,
   };

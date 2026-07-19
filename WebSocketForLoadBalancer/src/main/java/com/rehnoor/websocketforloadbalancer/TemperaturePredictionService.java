@@ -17,7 +17,7 @@ import jakarta.annotation.PreDestroy;
 
 @Service
 public class TemperaturePredictionService {
-    private static final String MODEL_PATH = "models/best_cross_device_gru_all5.onnx";
+    private static final String MODEL_PATH = "models/4_datasets_best_cross_device_gru.onnx";
     private static final String INPUT_NAME = "telemetry_input";
 
     private final OrtEnvironment environment;
@@ -28,19 +28,19 @@ public class TemperaturePredictionService {
 
     private static final double[] FEATURE_MEANS = {
 
-            51.10043897,
+            49.26257083,
 
-            29.70644144,
+            28.41215306,
 
-            52.88886525,
+            52.65582340,
 
-            60.22429030,
+            59.62744522,
 
-            1901.40517269,
+            1833.21964534,
 
-            45.42214573,
+            43.79285744,
 
-            83.82218344
+            82.02674002
 
     };
 
