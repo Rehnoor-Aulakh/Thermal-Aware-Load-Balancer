@@ -285,23 +285,22 @@ export default function PredictionDemo() {
       return setMessage(
         "Enter at least one server host before applying the load.",
       );
-    const results = await Promise.allSettled(
-      hosts.map((host) =>
-        fetch(`http://${host}:8080/stress/target-load`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ targetLoad: load }),
-        }),
-      ),
-    );
-    const failed = results.filter(
-      (result) => result.status === "rejected" || !result.value.ok,
-    ).length;
-    setMessage(
-      failed
-        ? `Target sent to ${hosts.length - failed}/${hosts.length} servers; check unreachable servers.`
-        : `CPU target load set to ${load}% on ${hosts.length} server${hosts.length === 1 ? "" : "s"}.`,
-    );
+    try {
+      const response = await fetch("http://localhost:8080/proxy/stress/target-load/batch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ backendIps: hosts, targetLoad: load }),
+      });
+      const data = await response.json();
+      const failed = data.totalServers - data.successCount;
+      setMessage(
+        failed
+          ? `Target sent to ${data.successCount}/${data.totalServers} servers; check unreachable servers.`
+          : `CPU target load set to ${load}% on ${data.totalServers} server${data.totalServers === 1 ? "" : "s"}.`,
+      );
+    } catch (err) {
+      setMessage("Failed to reach the load balancer proxy: " + err.message);
+    }
   }
 
   return (
