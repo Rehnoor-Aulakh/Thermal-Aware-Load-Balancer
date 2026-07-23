@@ -8,22 +8,21 @@ The project collects live system telemetry from backend servers, relays it throu
 
 # ✨ Features
 
-- 🌡️ Real-time CPU, GPU, RAM, and network telemetry
-- 🔌 Distributed architecture using WebSockets
-- 🌍 Remote monitoring across multiple systems using Tailscale
+- 🌡️ Real-time CPU, GPU, memory, storage, and network telemetry collection
+- 🔌 Distributed architecture using Spring Boot and WebSockets
+- 🌍 Remote monitoring across multiple backend systems using Tailscale
 - 📊 Modern React dashboard built with Vite
 - 📑 Live telemetry streaming with JSON logging
-- 🔄 Multiple backend server support
-- 📡 Connection event monitoring
-- 🤖 LSTM-ready telemetry dataset generation
+- 🔄 Multiple backend server support through BackendServerAgent
+- 📡 Connection and server event monitoring
+- 🤖 Dataset generation for deep learning-based temperature prediction
+- 🧠 Support for CNN + GRU and CNN + LSTM temperature prediction models
+- 📦 ONNX model deployment for real-time inference
 - 🌬️ Foundation for thermal-aware request scheduling
 - ⚡ Demonstrates energy-efficient load balancing concepts
 
----
-
 # 🏗️ Architecture
 
-```text
                          React Frontend
                     (Dashboard - Port 5173)
                               │
@@ -35,16 +34,14 @@ The project collects live system telemetry from backend servers, relays it throu
           ┌───────────────────┼───────────────────┐
           │                   │                   │
           ▼                   ▼                   ▼
-Backend Server 1      Backend Server 2     Backend Server N
-Telemetry Server      Telemetry Server     Telemetry Server
-(WebSocket :8086)     (WebSocket :8086)    (WebSocket :8086)
+ BackendServerAgent   BackendServerAgent   BackendServerAgent
+      Server 1             Server 2             Server N
           │                   │                   │
           ▼                   ▼                   ▼
- ThermalTelemetryCollector (collects hardware metrics)
+ ThermalTelemetryCollector (Hardware Telemetry)
           │
           ▼
  LibreHardwareMonitor
-```
 
 ---
 
@@ -69,8 +66,11 @@ Telemetry Server      Telemetry Server     Telemetry Server
 ## Machine Learning
 
 - Python
+- TensorFlow / Keras
+- CNN + GRU
+- CNN + LSTM
+- ONNX Runtime
 - Jupyter Notebook
-- LSTM (TensorFlow/Keras)
 
 ## Networking
 
@@ -93,6 +93,11 @@ ThermalAwareLoadBalancer/
 │   ├── WebSocket Relay
 │   └── Request Router
 │
+├── BackendServerAgent/
+│   ├── Spring Boot Application
+│   ├── Backend Server Agent
+│   └── WebSocket Client
+│
 ├── ThermalTelemetryCollector/
 │   ├── Telemetry Collector
 │   ├── Hardware Monitor Client
@@ -101,14 +106,14 @@ ThermalAwareLoadBalancer/
 ├── Stress Generator/
 │   └── Generates CPU stress events
 │
-├── LSTM/
-│   ├── after_stress_generator.ipynb
-│   └── cross_hardware_lstm.ipynb
+├── cpu-temperature-lstm-v2/
+│   ├── Dataset Generation
+│   ├── Model Training
+│   ├── ONNX Export
+│   └── Model Evaluation
 │
 └── README.md
 ```
-
----
 
 # ⚙️ How It Works
 
@@ -129,16 +134,11 @@ ThermalAwareLoadBalancer/
 - Stores telemetry in JSON logs
 - Broadcasts telemetry over WebSockets
 
-4. The Spring Boot Load Balancer receives telemetry from all connected backend servers.
+4. Each backend machine runs the **BackendServerAgent**, which connects to the centralized Load Balancer.
 
-5. The React dashboard displays:
+5. The BackendServerAgent receives telemetry from the ThermalTelemetryCollector and forwards it to the Spring Boot Load Balancer over WebSockets.
 
-- Live telemetry
-- Connection events
-- Historical telemetry
-- Multiple backend servers simultaneously
-
-6. The collected telemetry is later processed to generate datasets for LSTM-based temperature prediction.
+6. The Load Balancer relays telemetry to the React dashboard for live monitoring and also performs real-time inference using the exported ONNX model for CPU temperature prediction.
 
 ---
 
@@ -176,8 +176,33 @@ ws://<server-ip>:8086/telemetry
 ```
 
 ---
+---
 
-## Step 3 — Run StressTestRunner
+## Step 3 — Run BackendServerAgent
+
+Navigate to the BackendServerAgent project.
+
+Open a terminal inside the project folder and run:
+
+```bash
+./mvnw spring-boot:run
+```
+
+Alternatively, run:
+
+```
+BackendServerAgent
+└── src
+    └── main
+        └── java
+            └── BackendServerAgentApplication.java
+```
+
+This service connects the backend machine to the centralized Load Balancer and continuously forwards telemetry collected by the ThermalTelemetryCollector.
+
+---
+
+## Step 4 — Run StressTestRunner
 
 Navigate to the **Stress Generator** project and execute:
 
@@ -189,7 +214,7 @@ The stress generator creates controlled CPU load while generating corresponding 
 
 ---
 
-## Step 4 — Merge Telemetry and Event Logs
+## Step 5 — Merge Telemetry and Event Logs
 
 Navigate to the **LSTM** folder.
 
@@ -208,7 +233,7 @@ This notebook:
 
 ---
 
-## Step 5 — Train the LSTM Model
+## Step 6 — Train the Prediction Model
 
 After the merged dataset has been generated, run:
 
@@ -220,7 +245,7 @@ This notebook:
 
 - Loads the merged telemetry dataset
 - Performs preprocessing and feature engineering
-- Trains an LSTM model for CPU temperature prediction
+- Trains the latest deep learning model (CNN + GRU / CNN + LSTM / Transformer, depending on the experiment) and exports the best-performing model for deployment.
 - Evaluates prediction accuracy across hardware configurations
 
 ---
@@ -295,11 +320,6 @@ The Load Balancer automatically establishes a WebSocket connection and begins st
 
 ---
 
-# 🤖 Machine Learning Pipeline
-
-The project also provides a complete workflow for thermal prediction.
-
-```
 LibreHardwareMonitor
         │
         ▼
@@ -321,13 +341,20 @@ after_stress_generator.ipynb
 Merged Dataset
         │
         ▼
-cross_hardware_lstm.ipynb
+Model Training
+(CNN + GRU / CNN + LSTM / Transformer)
         │
         ▼
-LSTM Temperature Prediction Model
-```
-
----
+Best Model Selection
+        │
+        ▼
+ONNX Export
+        │
+        ▼
+BackendServerAgent
+        │
+        ▼
+Thermal-Aware Load Balancer
 
 # 🔮 Future Enhancements
 
@@ -355,7 +382,7 @@ The long-term objectives are to:
 - Improve energy efficiency
 - Lower cooling requirements
 - Extend hardware lifespan
-- Enable predictive thermal management using LSTM models
+- Enable predictive thermal management using deep learning models deployed through ONNX for real-time inference.
 
 ---
 

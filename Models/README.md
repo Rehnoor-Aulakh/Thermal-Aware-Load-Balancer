@@ -42,6 +42,49 @@ The repository currently contains the latest deep learning models for CPU temper
 
 Older experimental models have been removed from the repository and replaced with these latest architectures.
 
+# 🔄 GRU vs Transformer Architecture
+
+The project initially explored recurrent neural network architectures such as **GRU** for CPU temperature prediction. In the latest version, **Transformer-based models** have also been implemented to better capture long-range dependencies in hardware telemetry.
+
+| Feature | GRU | Transformer |
+|---------|-----|-------------|
+| Processing Style | Sequential | Parallel |
+| Long-Term Dependencies | Good | Excellent |
+| Training Speed | Slower due to sequential computation | Faster through parallel computation |
+| Memory Mechanism | Hidden state propagation | Self-Attention |
+| Computational Complexity | Lower | Higher |
+| Scalability | Suitable for smaller datasets | Better suited for larger datasets |
+| Captures Global Context | Limited | Excellent |
+
+### GRU
+
+The **Gated Recurrent Unit (GRU)** processes telemetry one timestep at a time while maintaining a hidden state that summarizes previous observations. It is computationally efficient and performs well for time-series forecasting with moderate sequence lengths.
+
+**Advantages**
+- Lightweight architecture with fewer parameters than LSTM.
+- Faster training compared to traditional recurrent networks.
+- Effective for short and medium-length telemetry sequences.
+
+---
+
+### Transformer
+
+The **Transformer architecture** replaces recurrent processing with **Multi-Head Self-Attention**, allowing the model to attend to all timesteps simultaneously. This enables it to learn complex relationships between distant telemetry samples and better capture long-range thermal patterns.
+
+**Advantages**
+- Captures long-range temporal dependencies more effectively.
+- Parallel processing significantly accelerates training.
+- Learns global relationships between hardware metrics using self-attention.
+- Scales better to larger datasets and more complex telemetry features.
+
+---
+
+### Why Transformers?
+
+Hardware telemetry contains interactions between CPU utilization, clock speeds, power consumption, GPU activity, memory usage, and other system metrics that may influence CPU temperature over extended periods. While GRU models rely on sequential hidden states, Transformers directly model these relationships using self-attention, making them well suited for learning complex thermal dynamics across diverse hardware configurations.
+
+The repository now includes both **GRU-based** and **Transformer-based** architectures to compare their effectiveness for real-time CPU temperature prediction and future thermal-aware load balancing.
+
 # 📂 Datasets
 
 The latest version of the project uses telemetry collected from **five different laptops**, providing improved hardware diversity and better cross-device generalization.
