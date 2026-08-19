@@ -6,6 +6,7 @@ import TelemetryTable from "./components/TelemetryTable";
 import TabsBar from "./components/TabsBar";
 import useTelemetryTabs from "./hooks/useTelemetryTabs";
 import PredictionDemo from "./components/PredictionDemo";
+import ServerHealthDemo from "./components/ServerHealthDemo";
 import { Routes, Route, Link, useLocation } from "react-router-dom";
 
 function Navbar() {
@@ -23,6 +24,12 @@ function Navbar() {
         className={`font-bold transition-colors ${location.pathname === '/prediction-demo' ? 'text-amber-400' : 'text-slate-300 hover:text-white'}`}
       >
         Prediction Demo
+      </Link>
+      <Link 
+        to="/server-health-demo" 
+        className={`font-bold transition-colors ${location.pathname === '/server-health-demo' ? 'text-amber-400' : 'text-slate-300 hover:text-white'}`}
+      >
+        Server Health Demo
       </Link>
     </nav>
   );
@@ -103,6 +110,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<MainApp />} />
           <Route path="/prediction-demo" element={<PredictionDemo />} />
+          <Route path="/server-health-demo" element={<ServerHealthDemo />} />
         </Routes>
       </div>
     </div>
