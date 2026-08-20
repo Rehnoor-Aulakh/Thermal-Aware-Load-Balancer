@@ -15,8 +15,7 @@ import java.util.regex.Pattern;
 
 public class TelemetryCollector {
 
-        private static final URI LIBRE_HARDWARE_MONITOR_URL =
-                        URI.create("http://192.168.1.90:8085/data.json");
+        private final URI libreHardwareMonitorUrl;
 
         private static final Pattern NUMBER_PATTERN =
                         Pattern.compile("-?\\d+(?:\\.\\d+)?");
@@ -24,6 +23,10 @@ public class TelemetryCollector {
         private final SystemInfo si = new SystemInfo();
         private final ObjectMapper mapper = new ObjectMapper();
         private final HttpClient client = HttpClient.newHttpClient();
+
+        public TelemetryCollector(String libreHardwareMonitorUrl) {
+                this.libreHardwareMonitorUrl = URI.create(libreHardwareMonitorUrl);
+        }
 
         private double cpuClockSum = 0;
         private int cpuClockCount = 0;
@@ -101,7 +104,7 @@ public class TelemetryCollector {
 
                 try {
 
-                        HttpRequest request = HttpRequest.newBuilder().uri(LIBRE_HARDWARE_MONITOR_URL).build();
+                        HttpRequest request = HttpRequest.newBuilder().uri(libreHardwareMonitorUrl).build();
 
                         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 

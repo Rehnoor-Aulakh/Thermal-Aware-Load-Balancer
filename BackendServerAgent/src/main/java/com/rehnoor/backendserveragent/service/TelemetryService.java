@@ -21,7 +21,7 @@ public class TelemetryService {
     private final int webSocketPort;
     private final String webSocketHost;
 
-    private final TelemetryCollector collector = new TelemetryCollector();
+    private final TelemetryCollector collector;
     private final JsonLogger logger = new JsonLogger();
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(r -> {
         Thread thread = new Thread(r, "telemetry-collector");
@@ -35,7 +35,8 @@ public class TelemetryService {
             StressService stressService,
             @Value("${telemetry.interval-ms:2000}") long intervalMs,
             @Value("${telemetry.websocket.port:8086}") int webSocketPort,
-            @Value("${telemetry.websocket.host:0.0.0.0}") String webSocketHost
+            @Value("${telemetry.websocket.host:0.0.0.0}") String webSocketHost,
+            @Value("${telemetry.librehardwaremonitor.url:http://localhost:8085/data.json}") String lhmUrl
     ) {
         if (intervalMs <= 0) {
             throw new IllegalArgumentException("telemetry.interval-ms must be positive");
@@ -44,6 +45,7 @@ public class TelemetryService {
         this.intervalMs = intervalMs;
         this.webSocketPort = webSocketPort;
         this.webSocketHost = webSocketHost;
+        this.collector = new TelemetryCollector(lhmUrl);
     }
 
     @PostConstruct
