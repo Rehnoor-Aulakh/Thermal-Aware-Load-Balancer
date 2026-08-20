@@ -35,4 +35,14 @@ public class StressController {
         return ResponseEntity.ok(Map.of("targetLoad", stressService.getTargetLoad()));
     }
 
+    @GetMapping("/status")
+    public ResponseEntity<?> getStatus(){
+        return ResponseEntity.ok(Map.of(
+                "targetLoad", stressService.getTargetLoad(),
+                "activeWorkers", stressService.getActiveWorkerCount(),
+                "expectedWorkers", stressService.getExpectedWorkerCount(),
+                "poolAlive", stressService.isPoolAlive()
+        ));
+    }
+
 }
