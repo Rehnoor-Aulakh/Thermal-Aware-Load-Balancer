@@ -40,12 +40,14 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
     private final Map<String, ScheduledFuture<?>> noDataWarnings = new ConcurrentHashMap<>();
     private final TelemetryPredictionManager predictionManager;
     private PredictionEvaluationService evaluationService = null;
+    private final ServerHealthManager serverHealthManager;
 
-    public LoadBalancerWebSocketHandler(ObjectMapper objectMapper, TelemetryPredictionManager predictionManager, PredictionEvaluationService evaluationService) {
+    public LoadBalancerWebSocketHandler(ObjectMapper objectMapper, TelemetryPredictionManager predictionManager, PredictionEvaluationService evaluationService, ServerHealthManager serverHealthManager) {
         this.objectMapper = objectMapper;
         this.httpClient = HttpClient.newHttpClient();
         this.predictionManager = predictionManager;
         this.evaluationService = evaluationService;
+        this.serverHealthManager = serverHealthManager;
     }
 
     // Frontend's session and it has backendIp of the request as a query parameter
@@ -144,6 +146,7 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
                         ));
                         predictionManager.removeBackend(backendIp);
                         evaluationService.removeBackend(backendIp);
+                        serverHealthManager.removeServer(backendIp);
                         return CompletableFuture.completedFuture(null);
                     }
 
@@ -152,6 +155,7 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
                         cancelNoTelemetryWarning(frontendSession.getId());
                         upstreamConnections.remove(frontendSession.getId(), webSocket);
                         predictionManager.removeBackend(backendIp);
+                        serverHealthManager.removeServer(backendIp);
                         sendJson(frontendSession, Map.of(
                                 "type", "error",
                                 "timestamp", Instant.now().toString(),
@@ -375,6 +379,16 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
                     sample.cpuTemperature()
                             + predictedDeltaT;
 
+            serverHealthManager.updateScore(backendId, predictedTemperature, sample);
+            
+            // Re-calculate the score here to include in JSON since we don't have a direct getter in ServerHealthManager,
+            // or we could add a getter. Let's just calculate it.
+            double thermalScore = 0.45 * predictedTemperature
+                    + 0.25 * sample.cpuUsage()
+                    + 0.15 * sample.cpuPackagePower()
+                    + 0.10 * sample.gpuCoreTemperature()
+                    + 0.05 * sample.targetLoad();
+
             System.out.println(
                     "Backend "
                             + backendId
@@ -387,11 +401,13 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
                             + " | Predicted Temp: "
                             + predictedTemperature
                             + "°C"
+                            + " | Thermal Score: "
+                            + String.format("%.2f", thermalScore)
             );
 
             forwardBackendMessage(
                     frontendSession,
-                    withPrediction(telemetryJson, predictedTemperature)
+                    withPredictionAndScore(telemetryJson, predictedTemperature, thermalScore)
             );
 
         } catch (Exception exception) {
@@ -414,7 +430,7 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    private String withPrediction(String telemetryJson, double predictedTemperature) {
+    private String withPredictionAndScore(String telemetryJson, double predictedTemperature, double thermalScore) {
         if (!Double.isFinite(predictedTemperature)) {
             return telemetryJson;
         }
@@ -426,6 +442,7 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
 
         return telemetryJson.substring(0, objectEnd)
                 + ",\"predictedTemperature\":" + predictedTemperature
+                + ",\"thermalScore\":" + thermalScore
                 + telemetryJson.substring(objectEnd);
     }
 }
