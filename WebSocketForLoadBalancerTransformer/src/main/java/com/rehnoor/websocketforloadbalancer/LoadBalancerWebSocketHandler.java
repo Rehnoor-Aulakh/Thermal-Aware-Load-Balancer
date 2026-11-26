@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,6 +39,7 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private final Map<String, WebSocket> upstreamConnections = new ConcurrentHashMap<>();
     private final Map<String, ScheduledFuture<?>> noDataWarnings = new ConcurrentHashMap<>();
+    private final Set<String> backendsWithSensorFault = ConcurrentHashMap.newKeySet();
     private final TelemetryPredictionManager predictionManager;
     private PredictionEvaluationService evaluationService = null;
     private final ServerHealthManager serverHealthManager;
@@ -127,6 +129,10 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
                         messageBuffer.append(data);
                         if (last) {
                             String telemetryJson = messageBuffer.toString();
+                            // Data arrived, so restart the silence countdown.
+                            if (frontendSession.isOpen()) {
+                                scheduleNoTelemetryWarning(frontendSession, backendIp);
+                            }
                             processTelemetryMessage(frontendSession, backendIp, telemetryJson);
 
                             messageBuffer.setLength(0);
@@ -249,6 +255,8 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
         cancelNoTelemetryWarning(frontendSession.getId());
         ScheduledFuture<?> future = scheduler.schedule(() -> {
             if (frontendSession.isOpen()) {
+                // A silent backend must not keep its old place in the queue.
+                discardBackendState(backendIp);
                 sendJson(frontendSession, Map.of(
                         "type", "warning",
                         "timestamp", Instant.now().toString(),
@@ -260,8 +268,11 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
         noDataWarnings.put(frontendSession.getId(), future);
     }
 
-    private void resetNoTelemetryWarning(WebSocketSession frontendSession, String backendIp) {
-        scheduleNoTelemetryWarning(frontendSession, backendIp);
+    /** Drops buffered samples, pending predictions and the queue entry. */
+    private void discardBackendState(String backendIp) {
+        predictionManager.removeBackend(backendIp);
+        evaluationService.removeBackend(backendIp);
+        serverHealthManager.removeServer(backendIp);
     }
 
     private void cancelNoTelemetryWarning(String sessionId) {
@@ -318,6 +329,25 @@ public class LoadBalancerWebSocketHandler extends TextWebSocketHandler {
                             telemetryJson,
                             TelemetrySample.class
                     );
+
+            if (!sample.hasValidCpuReadings()) {
+                discardBackendState(backendId);
+
+                // Report once per fault, not on every sample.
+                if (backendsWithSensorFault.add(backendId)) {
+                    sendJson(frontendSession, Map.of(
+                            "type", "warning",
+                            "timestamp", Instant.now().toString(),
+                            "message", "CPU sensor readings from " + backendId
+                                    + " are missing or invalid, so it is out of the priority queue. "
+                                    + "Check that Libre Hardware Monitor is running."
+                    ));
+                }
+
+                forwardBackendMessage(frontendSession, telemetryJson);
+                return;
+            }
+            backendsWithSensorFault.remove(backendId);
 
             /*
              * First, use this new real telemetry reading

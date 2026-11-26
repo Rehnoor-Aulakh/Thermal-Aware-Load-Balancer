@@ -17,7 +17,7 @@ import jakarta.annotation.PreDestroy;
 
 @Service
 public class TemperaturePredictionService {
-    private static final String MODEL_PATH = "models/4_datasets_best_cross_device_gru.onnx";
+    private static final String MODEL_PATH = "models/best_cross_device_gru_all5.onnx";
     private static final String INPUT_NAME = "telemetry_input";
 
     private final OrtEnvironment environment;
@@ -26,21 +26,23 @@ public class TemperaturePredictionService {
     private static final int TIMESTEPS = 20;
     private static final int FEATURE_COUNT = TelemetrySample.MODEL_FEATURE_COUNT;
 
+    // Means and scales must come from the scaler saved with the model above:
+    // Models/gru_cnn_..._89.21/cross_device_feature_scaler (4).pkl
     private static final double[] FEATURE_MEANS = {
 
-            49.26257083,
+            51.10043897,
 
-            28.41215306,
+            29.70644144,
 
-            52.65582340,
+            52.88886525,
 
-            59.62744522,
+            60.22429030,
 
-            1833.21964534,
+            1901.40517269,
 
-            43.79285744,
+            45.42214573,
 
-            82.02674002
+            83.82218344
 
     };
 

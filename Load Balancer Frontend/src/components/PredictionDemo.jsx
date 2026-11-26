@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import useTelemetryTabs from "../hooks/useTelemetryTabs";
+import { forecastSeries, latestForecastError } from "../utils/forecast";
 
 const POINTS = 30;
 const usable = (value) => Number.isFinite(Number(value)) && Number(value) >= 0;
@@ -23,28 +24,21 @@ function Stat({ label, value, green = false }) {
 }
 
 function TemperatureChart({ logs }) {
-  const points = useMemo(
-    () =>
-      logs
-        .slice(0, POINTS)
-        .reverse()
-        .map((log, i) => ({
-          i,
-          timestamp: log.timestamp,
-          actual: Number(log.cpuTemperature),
-          predicted: Number(log.predictedTemperature),
-        }))
-        .filter((point) => usable(point.actual)),
+  const { actual, predicted } = useMemo(
+    () => forecastSeries(logs.slice(0, POINTS)),
     [logs],
   );
-  if (!points.length)
+  if (!actual.length)
     return (
       <p className="py-12 text-center text-sm text-slate-400">
         Waiting for telemetry data…
       </p>
     );
 
-  const values = points.flatMap((p) => [p.actual, p.predicted]).filter(usable);
+  const all = [...actual, ...predicted];
+  const values = all.map((point) => point.value);
+  const start = Math.min(...all.map((point) => point.time));
+  const end = Math.max(...all.map((point) => point.time));
   const min = Math.floor(Math.min(...values) - 2);
   const max = Math.ceil(Math.max(...values) + 2);
   const range = Math.max(max - min, 1),
@@ -54,13 +48,12 @@ function TemperatureChart({ logs }) {
     right = 18,
     top = 18,
     bottom = 38;
-  const x = (i) =>
-    left + (i / Math.max(points.length - 1, 1)) * (width - left - right);
+  const x = (time) =>
+    left + ((time - start) / Math.max(end - start, 1)) * (width - left - right);
   const y = (v) => top + (1 - (v - min) / range) * (height - top - bottom);
-  const line = (field) =>
-    points
-      .filter((p) => usable(p[field]))
-      .map((p, i) => `${i ? "L" : "M"}${x(p.i)} ${y(p[field])}`)
+  const line = (series) =>
+    series
+      .map((p, i) => `${i ? "L" : "M"}${x(p.time)} ${y(p.value)}`)
       .join(" ");
 
   return (
@@ -90,21 +83,21 @@ function TemperatureChart({ logs }) {
           );
         })}
         <path
-          d={line("actual")}
+          d={line(actual)}
           fill="none"
           stroke="#4ade80"
           strokeWidth="3"
           strokeLinecap="round"
         />
         <path
-          d={line("predicted")}
+          d={line(predicted)}
           fill="none"
           stroke="#facc15"
           strokeWidth="3"
           strokeLinecap="round"
         />
         <text x={left} y={height - 12} fill="#94a3b8" fontSize="11">
-          {new Date(points[0].timestamp).toLocaleTimeString()}
+          {new Date(start).toLocaleTimeString()}
         </text>
         <text
           x={width - right}
@@ -113,7 +106,7 @@ function TemperatureChart({ logs }) {
           fill="#94a3b8"
           fontSize="11"
         >
-          {new Date(points.at(-1).timestamp).toLocaleTimeString()}
+          {new Date(end).toLocaleTimeString()}
         </text>
       </svg>
     </div>
@@ -122,10 +115,7 @@ function TemperatureChart({ logs }) {
 
 function ServerCard({ tab, updateHost, updateName, connect, disconnect }) {
   const latest = tab.logs[0];
-  const error =
-    usable(latest?.cpuTemperature) && usable(latest?.predictedTemperature)
-      ? Math.abs(latest.cpuTemperature - latest.predictedTemperature)
-      : null;
+  const error = latestForecastError(tab.logs);
 
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [history, setHistory] = useState([]);
@@ -242,7 +232,7 @@ function ServerCard({ tab, updateHost, updateName, connect, disconnect }) {
           value={temperature(latest?.cpuTemperature)}
         />
         <Stat
-          label="Predicted temp"
+          label="Predicted (+10 s)"
           value={temperature(latest?.predictedTemperature)}
         />
         <Stat label="CPU usage" value={latest ? `${latest.cpuUsage}%` : "—"} />
@@ -255,7 +245,7 @@ function ServerCard({ tab, updateHost, updateName, connect, disconnect }) {
           value={latest ? `${latest.cpuPackagePower} W` : "—"}
         />
         <Stat
-          label="Prediction error"
+          label="10 s forecast error"
           value={error === null ? "Warming up" : `${error.toFixed(2)}°C`}
           green={error !== null && error < 2}
         />
@@ -311,8 +301,8 @@ export default function PredictionDemo() {
         </a>
         <h1 className="mt-5 text-4xl font-bold">Temperature prediction demo</h1>
         <p className="mt-2 text-slate-300">
-          Green is current CPU temperature; yellow is the model prediction.
-          Smaller separation means lower error.
+          Green is the measured CPU temperature; yellow is the 10-second
+          forecast, drawn at the time it is for. Closer lines mean lower error.
         </p>
         <section className="mt-6 rounded-3xl border border-white/10 bg-slate-900/70 p-5">
           <label className="block text-sm font-semibold">

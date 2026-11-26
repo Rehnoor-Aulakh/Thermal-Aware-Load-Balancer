@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import useTelemetryTabs from "../hooks/useTelemetryTabs";
+import { forecastSeries } from "../utils/forecast";
 
 const POINTS = 30;
 const usable = (value) => Number.isFinite(Number(value)) && Number(value) >= 0;
@@ -25,29 +26,22 @@ function Stat({ label, value, highlight = false, color = "text-emerald-300" }) {
 }
 
 function TemperatureChartMini({ logs }) {
-  const points = useMemo(
-    () =>
-      logs
-        .slice(0, POINTS)
-        .reverse()
-        .map((log, i) => ({
-          i,
-          timestamp: log.timestamp,
-          actual: Number(log.cpuTemperature),
-          predicted: Number(log.predictedTemperature),
-        }))
-        .filter((point) => usable(point.actual)),
+  const { actual, predicted } = useMemo(
+    () => forecastSeries(logs.slice(0, POINTS)),
     [logs],
   );
   
-  if (!points.length)
+  if (!actual.length)
     return (
       <div className="h-32 flex items-center justify-center">
         <p className="text-xs text-slate-400">Waiting for data…</p>
       </div>
     );
 
-  const values = points.flatMap((p) => [p.actual, p.predicted]).filter(usable);
+  const all = [...actual, ...predicted];
+  const values = all.map((point) => point.value);
+  const start = Math.min(...all.map((point) => point.time));
+  const end = Math.max(...all.map((point) => point.time));
   const min = Math.floor(Math.min(...values) - 2);
   const max = Math.ceil(Math.max(...values) + 2);
   const range = Math.max(max - min, 1),
@@ -57,13 +51,12 @@ function TemperatureChartMini({ logs }) {
     right = 10,
     top = 10,
     bottom = 20;
-  const x = (i) =>
-    left + (i / Math.max(points.length - 1, 1)) * (width - left - right);
+  const x = (time) =>
+    left + ((time - start) / Math.max(end - start, 1)) * (width - left - right);
   const y = (v) => top + (1 - (v - min) / range) * (height - top - bottom);
-  const line = (field) =>
-    points
-      .filter((p) => usable(p[field]))
-      .map((p, i) => `${i ? "L" : "M"}${x(p.i)} ${y(p[field])}`)
+  const line = (series) =>
+    series
+      .map((p, i) => `${i ? "L" : "M"}${x(p.time)} ${y(p.value)}`)
       .join(" ");
 
   return (
@@ -85,8 +78,8 @@ function TemperatureChartMini({ logs }) {
           </g>
         );
       })}
-      <path d={line("actual")} fill="none" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" />
-      <path d={line("predicted")} fill="none" stroke="#facc15" strokeWidth="2" strokeLinecap="round" strokeDasharray="4" />
+      <path d={line(actual)} fill="none" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" />
+      <path d={line(predicted)} fill="none" stroke="#facc15" strokeWidth="2" strokeLinecap="round" strokeDasharray="4" />
     </svg>
   );
 }
@@ -226,7 +219,7 @@ function ServerCard({ tab, updateHost, updateName, connect, disconnect }) {
       <div className="grid grid-cols-2 gap-2 text-sm">
         <Stat label="CPU load" value={latest ? `${latest.cpuUsage}%` : "—"} />
         <Stat label="CPU temp" value={temperature(latest?.cpuTemperature)} />
-        <Stat label="Predicted" value={temperature(latest?.predictedTemperature)} />
+        <Stat label="Predicted (+10 s)" value={temperature(latest?.predictedTemperature)} />
         <Stat label="Score" value={scoreStr(latest?.thermalScore)} highlight={usable(latest?.thermalScore)} color="text-amber-400" />
       </div>
 
