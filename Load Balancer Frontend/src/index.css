@@ -1,7 +1,36 @@
 @import "tailwindcss";
 
+/* Dark native controls (dropdown lists, carets) with an amber accent. */
+:root {
+  color-scheme: dark;
+  accent-color: #f59e0b;
+}
+
 body {
-
   margin: 0;
+  background-color: #07111f;
+}
 
+/* Scrollbars: amber thumb on a dark track instead of the white default. */
+* {
+  scrollbar-color: #f59e0b #1e293b;
+  scrollbar-width: thin;
+}
+
+/* Number input steppers (Chrome, Brave, Edge, Safari). */
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 28px;
+  margin-left: 6px;
+  cursor: pointer;
+  opacity: 1;
+  border-radius: 6px;
+  background: #f59e0b
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 28' fill='none' stroke='%23020617' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 10l4-4 4 4M5 18l4 4 4-4'/%3E%3C/svg%3E")
+    center / 18px 28px no-repeat;
+}
+
+input[type="number"]::-webkit-inner-spin-button:hover {
+  background-color: #fb923c;
 }

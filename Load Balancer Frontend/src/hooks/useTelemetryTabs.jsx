@@ -24,11 +24,14 @@ function createTab(name = "Server 1") {
   };
 }
 
-export default function useTelemetryTabs() {
-  const initialTab = useMemo(() => createTab(), []);
+export default function useTelemetryTabs({ initialServerCount = 1 } = {}) {
+  const initialTabs = useMemo(
+    () => Array.from({ length: initialServerCount }, (_, index) => createTab(`Server ${index + 1}`)),
+    [initialServerCount],
+  );
   const socketsRef = useRef(new Map());
-  const [tabs, setTabs] = useState(() => [initialTab]);
-  const [activeTabId, setActiveTabId] = useState(() => initialTab.id);
+  const [tabs, setTabs] = useState(() => initialTabs);
+  const [activeTabId, setActiveTabId] = useState(() => initialTabs[0].id);
 
   const updateTab = useCallback((tabId, updater) => {
     setTabs((currentTabs) =>
@@ -73,7 +76,7 @@ export default function useTelemetryTabs() {
   );
 
   const connect = useCallback(
-    (tabId, backendHost) => {
+    (tabId, backendHost, serverName) => {
       const host = backendHost.trim();
 
       if (!host) {
@@ -104,7 +107,7 @@ export default function useTelemetryTabs() {
 
       socket.onopen = () => {
         updateTab(tabId, () => ({
-          name: host,
+          name: serverName || host,
           backendHost: host,
           connected: true,
           connecting: false,
@@ -205,6 +208,13 @@ export default function useTelemetryTabs() {
     [updateTab],
   );
 
+  const updateTabName = useCallback(
+    (tabId, name) => {
+      updateTab(tabId, () => ({ name }));
+    },
+    [updateTab],
+  );
+
   useEffect(() => {
     const sockets = socketsRef.current;
 
@@ -224,6 +234,7 @@ export default function useTelemetryTabs() {
     addTab,
     closeTab,
     updateBackendHost,
+    updateTabName,
     connect,
     disconnect,
   };
