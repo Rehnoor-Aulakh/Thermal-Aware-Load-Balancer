@@ -1,4 +1,4 @@
-package com.rehnoor.websocketforloadbalancer;
+package com.rehnoor.websocketforloadbalancer.service;
 
 
 import java.io.IOException;

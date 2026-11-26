@@ -1,4 +1,4 @@
-package com.rehnoor.websocketforloadbalancer;
+package com.rehnoor.websocketforloadbalancer.model;
 
 import java.time.LocalDateTime;
 

@@ -1,4 +1,6 @@
-package com.rehnoor.websocketforloadbalancer;
+package com.rehnoor.websocketforloadbalancer.config;
+
+import com.rehnoor.websocketforloadbalancer.websocket.LoadBalancerWebSocketHandler;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;

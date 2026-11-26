@@ -1,4 +1,6 @@
-package com.rehnoor.websocketforloadbalancer;
+package com.rehnoor.websocketforloadbalancer.controller;
+
+import com.rehnoor.websocketforloadbalancer.service.ServerHealthManager;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;

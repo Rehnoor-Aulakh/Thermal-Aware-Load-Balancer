@@ -1,4 +1,6 @@
-package com.rehnoor.websocketforloadbalancer;
+package com.rehnoor.websocketforloadbalancer.service;
+
+import com.rehnoor.websocketforloadbalancer.model.TelemetrySample;
 
 import org.springframework.stereotype.Service;
 
@@ -22,13 +24,16 @@ public class ServerHealthManager {
             return;
         }
 
-        double score = 0.45 * predictedTemp
+        serverScores.put(backendIp, calculateScore(predictedTemp, sample));
+    }
+
+    /** The Thermal Score formula. Lower is better. */
+    public double calculateScore(double predictedTemp, TelemetrySample sample) {
+        return 0.45 * predictedTemp
                 + 0.25 * sample.cpuUsage()
                 + 0.15 * sample.cpuPackagePower()
                 + 0.10 * sample.gpuCoreTemperature()
                 + 0.05 * sample.targetLoad();
-
-        serverScores.put(backendIp, score);
     }
 
     /**

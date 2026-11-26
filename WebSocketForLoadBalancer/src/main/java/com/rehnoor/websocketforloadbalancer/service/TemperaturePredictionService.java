@@ -1,4 +1,6 @@
-package com.rehnoor.websocketforloadbalancer;
+package com.rehnoor.websocketforloadbalancer.service;
+
+import com.rehnoor.websocketforloadbalancer.model.TelemetrySample;
 
 
 import java.io.IOException;

@@ -1,4 +1,6 @@
-package com.rehnoor.websocketforloadbalancer;
+package com.rehnoor.websocketforloadbalancer.service;
+
+import com.rehnoor.websocketforloadbalancer.model.TelemetrySample;
 
 
 import ai.onnxruntime.OrtException;
@@ -13,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /// THIS CLASS WILL MAINTAIN ONE ROLLING SEQUENCE PER BACKEND SERVER
 @Service
 public class TelemetryPredictionManager {
-    private static final int REQUIRED_SAMPLES = 39;
+    private static final int REQUIRED_SAMPLES = 20;
     private final TemperaturePredictionService predictionService;
 
     private final Map<String, Deque<TelemetrySample>> buffers = new ConcurrentHashMap<>();
@@ -38,7 +40,7 @@ public class TelemetryPredictionManager {
                 return null;
             }
 
-            rawSequence= new double[REQUIRED_SAMPLES][7];
+            rawSequence = new double[REQUIRED_SAMPLES][TelemetrySample.MODEL_FEATURE_COUNT];
 
             int timestep = 0;
 

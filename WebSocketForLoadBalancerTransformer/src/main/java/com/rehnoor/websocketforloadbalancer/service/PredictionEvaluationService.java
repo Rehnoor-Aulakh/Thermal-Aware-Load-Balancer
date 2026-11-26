@@ -1,4 +1,8 @@
-package com.rehnoor.websocketforloadbalancer;
+package com.rehnoor.websocketforloadbalancer.service;
+
+import com.rehnoor.websocketforloadbalancer.model.PendingPrediction;
+import com.rehnoor.websocketforloadbalancer.model.PredictionEvaluation;
+import com.rehnoor.websocketforloadbalancer.model.TelemetrySample;
 
 import org.springframework.stereotype.Service;
 
