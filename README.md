@@ -289,8 +289,10 @@ Thermal-Aware-Load-Balancer/
 
 | Machine | Needs |
 |---|---|
-| Each backend server | Windows (for the bundled LibreHardwareMonitor), JDK 17 or later |
+| Each backend server | Windows (for the bundled LibreHardwareMonitor), JDK 17 to 22 recommended (see below) |
 | Load balancer and dashboard | JDK 17 or later, Node.js 20.19+ or 22.12+ |
+
+> **Java version for the backend agent:** it compiles with **JDK 22** but fails with **JDK 27**, apparently because its Lombok library does not support that version. Versions between 22 and 27 have not been tested. Check with `mvn -version` or `java -version`.
 
 > The agent and the load balancer **both use HTTP port 8080**, so run them on **different machines**. The dashboard expects the load balancer at `localhost:8080`, so run the dashboard on the same machine as the load balancer.
 
@@ -307,7 +309,13 @@ cd BackendServerAgent
 ./mvnw spring-boot:run
 ```
 
-On Windows use `mvnw.cmd spring-boot:run`. To use a different sensor address, set `telemetry.librehardwaremonitor.url`.
+On Windows use `mvnw.cmd spring-boot:run`. If a newer JDK is the default, point `JAVA_HOME` to a JDK 17 to 22 installation first. On macOS, for example:
+
+```bash
+JAVA_HOME=$(/usr/libexec/java_home -v 22) sh mvnw spring-boot:run
+```
+
+To use a different sensor address, set `telemetry.librehardwaremonitor.url`.
 
 ### Step 3: start the load balancer
 
