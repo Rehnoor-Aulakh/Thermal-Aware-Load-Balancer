@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class TelemetryService {
 
     private final StressService stressService;
+    private final FanControlService fanControlService;
     private final long intervalMs;
     private final int webSocketPort;
     private final String webSocketHost;
@@ -33,6 +34,7 @@ public class TelemetryService {
 
     public TelemetryService(
             StressService stressService,
+            FanControlService fanControlService,
             @Value("${telemetry.interval-ms:2000}") long intervalMs,
             @Value("${telemetry.websocket.port:8086}") int webSocketPort,
             @Value("${telemetry.websocket.host:0.0.0.0}") String webSocketHost,
@@ -42,6 +44,7 @@ public class TelemetryService {
             throw new IllegalArgumentException("telemetry.interval-ms must be positive");
         }
         this.stressService = stressService;
+        this.fanControlService = fanControlService;
         this.intervalMs = intervalMs;
         this.webSocketPort = webSocketPort;
         this.webSocketHost = webSocketHost;
@@ -50,7 +53,10 @@ public class TelemetryService {
 
     @PostConstruct
     public void start() {
-        webSocketServer = new TelemetryWebSocketServer(new InetSocketAddress(webSocketHost, webSocketPort));
+        webSocketServer = new TelemetryWebSocketServer(
+                new InetSocketAddress(webSocketHost, webSocketPort),
+                fanControlService::handleMessage
+        );
         webSocketServer.start();
         executor.scheduleWithFixedDelay(this::collectAndPublish, 0, intervalMs, TimeUnit.MILLISECONDS);
     }
@@ -71,6 +77,7 @@ public class TelemetryService {
         try {
             SystemLog log = collector.collect();
             log.targetLoad = stressService.getTargetLoad();
+            log.fanSpeed = fanControlService.update(log.cpuTemperature);
             String json = logger.write(log);
             webSocketServer.publish(json);
         } catch (Exception exception) {

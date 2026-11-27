@@ -120,7 +120,7 @@ public class BackendConnectionManager {
                 if (frontendSession.isOpen()) {
                     scheduleNoTelemetryWarning(frontendSession, backendIp);
                 }
-                relay(telemetryJson);
+                relay(webSocket, telemetryJson);
 
                 messageBuffer.setLength(0);
             }
@@ -147,14 +147,29 @@ public class BackendConnectionManager {
             sendConnectionError(frontendSession, backendIp, backendUriText, error);
         }
 
-        private void relay(String telemetryJson) {
+        private void relay(WebSocket webSocket, String telemetryJson) {
             ProcessedTelemetry processed = telemetryProcessing.process(backendIp, telemetryJson);
+
+            if (processed.predictedTemperature() != null) {
+                sendPrediction(webSocket, processed.predictedTemperature());
+            }
 
             if (processed.warning() != null) {
                 messenger.sendEvent(frontendSession, "warning", Map.of("message", processed.warning()));
             }
             messenger.send(frontendSession, processed.payload());
         }
+    }
+
+    /** Tells the backend its forecast temperature, which it uses for fan control. */
+    private void sendPrediction(WebSocket webSocket, double predictedTemperature) {
+        String message = "{\"type\":\"prediction\",\"predictedTemperature\":" + predictedTemperature + "}";
+
+        webSocket.sendText(message, true).exceptionally(error -> {
+            // The next sample brings a newer prediction, so there is no retry.
+            System.err.println("Could not send a prediction to a backend: " + error.getMessage());
+            return null;
+        });
     }
 
     private void closeBackendConnection(String sessionId) {

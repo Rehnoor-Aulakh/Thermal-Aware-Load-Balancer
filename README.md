@@ -79,6 +79,68 @@ The training data was sampled at a median interval of about 2.02 to 2.04 s, whic
 
 ---
 
+## 🌬️ Predictive Fan Control
+
+An ESP32 drives a fan on a backend server. The fan speed follows a **fixed rule, not a second ML model**.
+
+```text
+Load balancer ── predicted temperature ──► Backend agent ── "FAN <speed> <cpu> <pred>" ──► ESP32 ──► Fan
+              (same WebSocket, :8086)                       (USB serial, 115200 baud)
+```
+
+### The rule (runs in the backend agent)
+
+```text
+effective = max(current CPU temperature, predicted temperature)
+fan speed = fan curve(effective)
+```
+
+| CPU temperature (°C) | ≤ 55 | 70 | 80 | 85 | ≥ 90 |
+|---|---|---|---|---|---|
+| Fan speed (%) | 30 | 45 | 65 | 80 | 100 |
+
+Speeds between the points are interpolated.
+
+| Situation | Behaviour |
+|---|---|
+| Temperature predicted to rise | Fan speeds up about 10 s early |
+| Prediction lower than the current temperature | Current temperature is used |
+| Temperature falling | Fan slows only after a 3 °C drop |
+| No prediction in the last 6 s (warm-up, no dashboard, balancer down) | Current temperature is used |
+| CPU sensor unreadable | Fan at 100% |
+| ESP32 hears nothing for 10 s after the agent had been sending | Fan at 100% |
+| ESP32 has not yet heard from the agent | Fan stays off (manual control) |
+
+**Why decide in the agent?** The agent has the freshest temperature reading and is connected to the fan, so cooling keeps working without the load balancer or dashboard. The balancer only supplies the forecast.
+
+### Hardware
+
+| Part | ESP32 pin |
+|---|---|
+| Motor driver IN1, IN2 | GPIO 25, 26 |
+| Motor driver ENA (PWM, 25 kHz) | GPIO 27 |
+| DHT22 (room temperature and humidity) | GPIO 4 |
+| SSD1306 OLED (I²C, 0x3C) | SDA 21, SCL 22 |
+
+Power the fan through the motor driver from its own supply, with a ground shared with the ESP32. On an L298N board, remove the ENA jumper so the PWM signal controls the speed.
+
+### Setup
+
+1. Open `FanController/FanController.ino` in the Arduino IDE. Install the ESP32 board package and the libraries **DHT sensor library**, **Adafruit GFX** and **Adafruit SSD1306**, then upload. (In PlatformIO, use the file as `src/main.cpp`.)
+2. Test by hand: in a serial monitor at 115200 baud, type a speed such as `60`. Then **close the serial monitor**, because only one program can use the port.
+3. Find the port name (Windows Device Manager, for example `COM3`).
+4. Start the agent with the port, either in `application.properties` (`fan.serial.port=COM3`) or on the command line:
+
+```bash
+sh mvnw spring-boot:run -Dspring-boot.run.arguments=--fan.serial.port=COM3
+```
+
+On Windows PowerShell: `.\mvnw.cmd spring-boot:run "-Dspring-boot.run.arguments=--fan.serial.port=COM3"`
+
+Leave the port empty on servers without a fan. The curve, hysteresis and prediction age limit can be changed in `application.properties`. If the fan does not spin at low speeds, raise the first point of the curve. Telemetry includes `fanSpeed` (-1 when fan control is off).
+
+---
+
 ## 🔄 How One Prediction Is Made
 
 1. **Collect.** The agent reads LibreHardwareMonitor (temperature, power, clocks, loads) and OSHI (memory, processes, network).
@@ -235,7 +297,8 @@ Thermal-Aware-Load-Balancer/
 │       ├── controller/              StressController (target-load API)
 │       ├── dto/                     TargetLoadRequest
 │       ├── model/                   SystemLog (one telemetry sample)
-│       ├── service/                 TelemetryService, StressService, TelemetryWebSocketServer
+│       ├── service/                 TelemetryService, StressService, TelemetryWebSocketServer,
+│       │                            FanControlService, FanSpeedPolicy, FanCurve, FanSerialLink
 │       └── utils/                   TelemetryCollector, JsonLogger
 │
 ├── WebSocketForLoadBalancer/        The load balancer (CNN + GRU)
@@ -253,6 +316,8 @@ Thermal-Aware-Load-Balancer/
 │       └── resources/models/        ONNX models
 │
 ├── WebSocketForLoadBalancerTransformer/   Same structure, PatchTST model (experimental)
+│
+├── FanController/                   ESP32 sketch for the fan, OLED and DHT22
 │
 ├── Load Balancer Frontend/          React + Vite dashboard
 │   └── src/
@@ -398,6 +463,8 @@ Suggested flow:
 - Training and testing use different time blocks from the **same five laptops**; accuracy on an unseen laptop has not been established.
 - The effect on temperature or energy compared with a conventional balancer (such as round robin) has not been measured.
 - Thermal Score weights are hand-picked and combine different units.
+- Fan control has no speed feedback from the fan, and the model was not trained with the external fan running.
+- The benefit of predictive over reactive fan control has not been measured.
 - The live stress service loads the CPU only, while the training schedule also included GPU load.
 
 ## 🔮 Future Work

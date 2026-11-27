@@ -51,7 +51,7 @@ public class TelemetryProcessingService {
                         + "Check that Libre Hardware Monitor is running."
                         : null;
 
-                return new ProcessedTelemetry(telemetryJson, warning);
+                return new ProcessedTelemetry(telemetryJson, warning, null);
             }
             backendsWithSensorFault.remove(backendId);
 
@@ -130,8 +130,10 @@ public class TelemetryProcessingService {
                             + String.format("%.2f", thermalScore)
             );
 
-            return ProcessedTelemetry.of(
-                    withPredictionAndScore(telemetryJson, predictedTemperature, thermalScore)
+            return new ProcessedTelemetry(
+                    withPredictionAndScore(telemetryJson, predictedTemperature, thermalScore),
+                    null,
+                    Double.isFinite(predictedTemperature) ? predictedTemperature : null
             );
 
         } catch (Exception exception) {

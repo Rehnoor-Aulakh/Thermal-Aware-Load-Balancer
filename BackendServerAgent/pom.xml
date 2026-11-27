@@ -61,6 +61,13 @@
             <version>2.18.2</version>
         </dependency>
 
+        <!-- USB serial link to the ESP32 fan controller -->
+        <dependency>
+            <groupId>com.fazecast</groupId>
+            <artifactId>jSerialComm</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

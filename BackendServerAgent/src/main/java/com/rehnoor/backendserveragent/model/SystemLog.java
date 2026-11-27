@@ -35,6 +35,9 @@ public class SystemLog {
     /** CPU load currently requested from {@code StressService}. */
     public int targetLoad;
 
+    /** Fan speed (%) sent to the ESP32, or -1 when fan control is disabled. */
+    public int fanSpeed = -1;
+
     public int networkConnections;
     public int processCount;
 }
